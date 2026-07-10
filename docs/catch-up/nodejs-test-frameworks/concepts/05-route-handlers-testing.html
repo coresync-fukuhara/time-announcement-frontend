@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>05. Route Handlers(BFF)のテスト</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 05 / 07</div>
+    <h1>Route Handlers(BFF)のテスト</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    本プロジェクトの BFF(<code>app/api/schedules/route.ts</code>)は Next.js の Route Handler として実装される。
+    Route Handler は <code>NextRequest</code> を受け取り <code>Response</code> を返す関数だが、
+    ブラウザや実サーバーを起動せずにテストしたい。そこで使うのが
+    <strong>next-test-api-route-handler(NTARH)</strong>。
+  </p>
+  <p>
+    例えるなら、実際の郵便システム(HTTPサーバー)を丸ごと動かさなくても、
+    「窓口の人(ハンドラー関数)に直接封筒(リクエスト)を渡して、返ってきた封筒(レスポンス)を確認する」ような検査方法。
+  </p>
+
+  <h2>コード例</h2>
+  <pre><code class="language-ts">// app/api/schedules/route.test.ts
+import { testApiHandler } from 'next-test-api-route-handler' // 最初にimportする
+import { describe, it, expect, vi } from 'vitest'
+import * as appHandler from './route'
+import * as store from '@/lib/schedule-store'
+
+describe('GET /api/schedules', () =&gt; {
+  it('保存済みのスケジュールを返す', async () =&gt; {
+    vi.spyOn(store, 'readSchedules').mockResolvedValue({
+      monday: [{ hour: 9, minutes: [0] }],
+      /* ...省略... */
+    })
+
+    await testApiHandler({
+      appHandler,
+      async test({ fetch }) {
+        const res = await fetch({ method: 'GET' })
+        expect(res.status).toBe(200)
+        const body = await res.json()
+        expect(body.monday[0].hour).toBe(9)
+      },
+    })
+  })
+})
+
+describe('PUT /api/schedules', () =&gt; {
+  it('バリデーション違反なら400を返す', async () =&gt; {
+    await testApiHandler({
+      appHandler,
+      async test({ fetch }) {
+        const res = await fetch({
+          method: 'PUT',
+          body: JSON.stringify({ invalid: true }),
+        })
+        expect(res.status).toBe(400)
+      },
+    })
+  })
+})
+</code></pre>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li><code>testApiHandler</code> の import は他の import より前に書く(Next.js の内部動作の都合)</li>
+    <li><code>appHandler</code> にテスト対象の <code>route.ts</code> をそのまま渡す</li>
+    <li><code>vi.mock</code>(完全に差し替え)と <code>vi.spyOn</code>(元の実装を保ちつつ呼び出しを監視)を使い分ける。
+        ファイル I/O 部分(<code>schedule-store.ts</code>)は spyOn/mock で差し替え、実ファイルには触れないようにする</li>
+    <li>テストは「実行(fetchでリクエスト送信)→ 検証(ステータス・ボディ)→ 確認(モックが正しく呼ばれたか)」の順で書く</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>NTARH を使うと、実際のHTTPサーバーを起動せずに何をテストできますか?</li>
+      <li><code>vi.mock</code> と <code>vi.spyOn</code> の違いを説明してください。</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="04-nextjs-considerations.html">← 前: Next.js 特有の注意点</a>
+    <a href="06-msw-mocking.html">次: MSW によるAPIモック →</a>
+  </div>
+</div>
+</body>
+</html>

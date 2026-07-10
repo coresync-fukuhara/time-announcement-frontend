@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04. Docker MCP Toolkit / Catalog</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 04 / 06</div>
+    <h1>Docker MCP Toolkit / Catalog</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    Docker MCP Toolkit は Docker Desktop に組み込まれた機能で、
+    MCP サーバーを<strong>コンテナとして隔離実行</strong>することに力点を置く。
+    Docker MCP Catalog は 300 以上の検証済みサーバーをコンテナイメージとして提供するカタログで、
+    署名・SBOM(部品表)による真正性検証が行われている。
+  </p>
+  <p>
+    例えるなら、正体不明の作業員(MCPサーバー)を家(ホストマシン)に直接入れるのではなく、
+    ガラス張りの隔離作業室(コンテナ)の中だけで作業させ、
+    使える道具(CPU/メモリ)や持ち出せる荷物(ホストファイルシステムへのアクセス)を制限するイメージ。
+  </p>
+  <p>
+    本プロジェクトはすでに devcontainer(Docker)を使った開発環境を構築済みのため
+    ([.devcontainer/devcontainer.json](../../../../.devcontainer/devcontainer.json))、Docker との親和性は高い。
+  </p>
+
+  <h2>コード例(セットアップの流れ)</h2>
+  <pre><code class="language-bash"># Docker Desktop の Catalog タブからサーバーを追加(GUI操作)
+# その後、VSCodeなどのクライアントを接続する場合
+docker mcp client connect vscode --profile my-profile
+</code></pre>
+
+  <h2>メリット</h2>
+  <ul class="points">
+    <li>MCPサーバーは1CPU・メモリ2GB上限のコンテナに隔離され、ホストファイルシステムへは既定でアクセス不可</li>
+    <li>デジタル署名・SBOMによる真正性検証があり、「怪しいMCPサーバーを誤って実行してしまう」リスクを下げられる</li>
+    <li>秘密情報(APIキー等)を含むツール要求を遮断する仕組みがあり、OAuth連携も自動管理</li>
+    <li>Claude Desktop・VS Code・Cursor など複数クライアントに MCP Gateway 経由で接続できる</li>
+  </ul>
+
+  <h2>デメリット</h2>
+  <ul class="points">
+    <li>Docker Desktop(4.62以降)が前提。Docker自体を使わない/使えない環境では選べない</li>
+    <li>コンテナ起動のオーバーヘッドがあり、軽量なCLIツールに比べると起動が重い場合がある</li>
+    <li>Skill やAgentの管理機能はなく、あくまでMCPサーバーが対象</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>Docker MCP Toolkit がセキュリティ面で採っている「能動的」な対策を2つ挙げてください。</li>
+      <li>本プロジェクトの開発環境と Docker MCP Toolkit の親和性が高い理由を説明してください。</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="03-smithery.html">← 前: Smithery</a>
+    <a href="05-install-mcp.html">次: install-mcp →</a>
+  </div>
+</div>
+</body>
+</html>

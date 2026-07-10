@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>06. MSW によるAPIモック</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 06 / 07</div>
+    <h1>MSW によるAPIモック</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    MSW(Mock Service Worker)は、リクエストを<strong>ネットワークレベル</strong>でインターセプトしてモックのレスポンスを返す仕組み。
+    「どの HTTP クライアントを使っているか(fetch か axios か)」をテストコードが気にする必要がない点が最大の利点。
+  </p>
+  <p>
+    例えるなら、コンビニの本部(外部API)に発注をかける代わりに、
+    店の前に「本部そっくりの受付窓口」を用意して、本当に発注が飛んだかのように振る舞わせるイメージ。
+    アプリ側のコードは相手が本物かモックかを区別できない。
+  </p>
+  <p>
+    本プロジェクトでは BFF がファイル I/O(<code>fs</code>)を行うため外部 HTTP 通信は多くないが、
+    将来外部 API(通知連携など)を追加した場合や、フロントエンドのフェッチ処理をテストする場合に有効。
+  </p>
+
+  <h2>コード例</h2>
+  <pre><code class="language-ts">// mocks/handlers.ts
+import { http, HttpResponse } from 'msw'
+
+export const handlers = [
+  http.get('/api/schedules', () =&gt; {
+    return HttpResponse.json({
+      monday: [{ hour: 9, minutes: [0, 30] }],
+    })
+  }),
+]
+
+// mocks/server.ts (Node.js/テスト用)
+import { setupServer } from 'msw/node'
+import { handlers } from './handlers'
+
+export const server = setupServer(...handlers)
+</code></pre>
+
+  <pre><code class="language-ts">// vitest.setup.ts
+import { beforeAll, afterEach, afterAll } from 'vitest'
+import { server } from './mocks/server'
+
+beforeAll(() =&gt; server.listen())
+afterEach(() =&gt; server.resetHandlers())
+afterAll(() =&gt; server.close())
+</code></pre>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li><code>http.get</code>/<code>http.put</code> など Web 標準の Request/Response に近い形で書ける</li>
+    <li><code>setupServer</code>(Node.js用)と <code>setupWorker</code>(ブラウザ用)があり、同じ handlers を使い回せる</li>
+    <li><code>beforeAll</code>/<code>afterEach</code>/<code>afterAll</code> でモックサーバーの起動・リセット・終了を行うのが定型パターン</li>
+    <li>本プロジェクトの現段階(外部API通信なし)では必須ではないが、
+        フロントエンドの <code>fetch('/api/schedules')</code> 呼び出しをコンポーネントテストで検証する際に活用できる</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>MSW が「ライブラリ単位」ではなく「ネットワークレベル」でインターセプトすることの利点を説明してください。</li>
+      <li><code>afterEach</code> で <code>server.resetHandlers()</code> を呼ぶ理由を考えて説明してください。</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="05-route-handlers-testing.html">← 前: Route Handlers のテスト</a>
+    <a href="07-playwright-e2e.html">次: Playwright による E2E テスト →</a>
+  </div>
+</div>
+</body>
+</html>

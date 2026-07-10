@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02. Vitest の基礎</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 02 / 07</div>
+    <h1>Vitest の基礎</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    Vitest はビルドツール Vite 上で動くテストランナー。<code>describe</code>/<code>it</code>/<code>expect</code> といった
+    API は Jest とほぼ同じ(「Jest 互換」)なので、Jest の経験があればほぼそのまま書ける。
+    違いは中身のエンジンで、Vite の変換の仕組みをそのまま使うため TypeScript/ESM の設定がほぼ不要、
+    かつ起動・再実行が大幅に速い。
+  </p>
+  <p>
+    例えるなら、Jest が「毎回フルコースを作り直す」のに対し、Vitest は「材料を仕込んだまま次の一皿だけ作る」イメージ。
+    変更したファイルだけを再変換するので watch mode が特に速い。
+  </p>
+
+  <h2>コード例</h2>
+  <pre><code class="language-ts">// sum.ts
+export function sum(a: number, b: number) {
+  return a + b
+}
+
+// sum.test.ts
+import { describe, it, expect } from 'vitest'
+import { sum } from './sum'
+
+describe('sum', () => {
+  it('adds 1 + 2 to equal 3', () => {
+    expect(sum(1, 2)).toBe(3)
+  })
+})
+</code></pre>
+
+  <pre><code class="language-bash"># 1回だけ実行(CI向け)
+npx vitest run
+
+# ファイル変更を監視して自動再実行(開発中)
+npx vitest
+</code></pre>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li><code>describe</code>/<code>it</code>/<code>expect</code>/<code>beforeEach</code> は Jest とほぼ同じ書き方</li>
+    <li>デフォルトは watch mode。CI では <code>vitest run</code> を使う</li>
+    <li>TDD では「red(失敗するテストを書く)→ green(通す実装)→ refactor」のサイクルを回すため、
+        watch mode で保存するたびに即座に結果が見えることが重要</li>
+    <li>設定ファイルは <code>vitest.config.mts</code>(詳細は次の概念でNext.js向け設定を扱う)</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>Vitest が Jest よりも起動・再実行が速いのはなぜですか?</li>
+      <li>CI で1回だけテストを実行したいとき、どのコマンドを使いますか?</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="01-overview.html">← 前: 全体像</a>
+    <a href="03-react-testing-library.html">次: React Testing Library →</a>
+  </div>
+</div>
+</body>
+</html>

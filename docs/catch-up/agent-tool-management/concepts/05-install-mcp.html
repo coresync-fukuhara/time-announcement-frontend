@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>05. install-mcp(軽量CLIインストーラー)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 05 / 06</div>
+    <h1>install-mcp(軽量CLIインストーラー)</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    install-mcp は、レジストリもホスティングも持たない、
+    「クライアントの設定ファイルへの追記」だけを自動化する<strong>最小構成のCLI</strong>。
+    16種類以上のクライアント(claude-desktop, cursor, cline, windsurf, VS Code, Zed, Warp など)に対応し、
+    パッケージ名を指定するだけでそのクライアント向けの設定を書き込んでくれる。
+  </p>
+  <p>
+    例えるなら、家具屋(レジストリ)やレンタル倉庫(ホスティング)は使わず、
+    「自分で選んだ家具を、指定した部屋の配置図に書き込むだけ」を代行してくれる作業員のようなもの。
+    何を入れるかは自分で決める前提で、置き場所への転記だけを楽にする。
+  </p>
+
+  <h2>コード例</h2>
+  <pre><code class="language-bash"># 基本形
+npx install-mcp パッケージ名 --client claude-desktop
+
+# OAuth認証やカスタムヘッダーが必要な場合も対応
+npx install-mcp @playwright/mcp --client claude-code
+</code></pre>
+
+  <h2>メリット</h2>
+  <ul class="points">
+    <li>アカウント登録・ホスティング契約が一切不要。ローカルで完結する</li>
+    <li>対応クライアントの種類が非常に多い(16種類以上)</li>
+    <li>「何を追加するか」を自分で完全にコントロールできる(隠れた仲介レイヤーがない)</li>
+    <li>追加コストが発生しない(OSS・無料)</li>
+  </ul>
+
+  <h2>デメリット</h2>
+  <ul class="points">
+    <li>レジストリ/検索機能がないため、「どんなMCPサーバーがあるか」は別途自分で調べる必要がある</li>
+    <li>セキュリティ検証(署名確認・隔離実行等)の機能は持たない。導入するサーバーの信頼性は利用者が判断する</li>
+    <li>Skill やAgentの管理機能はなく、あくまでMCPサーバーの設定追記のみ</li>
+    <li>チーム内での構成共有は、結局 `.mcp.json` 等の設定ファイルをコミットする従来の方法に頼ることになる</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>install-mcp が Smithery や Docker MCP Toolkit と比べて「持っていない」機能は何ですか?</li>
+      <li>install-mcp のような最小構成のツールが向いている状況はどんな場合だと考えられますか?</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="04-docker-mcp-toolkit.html">← 前: Docker MCP Toolkit / Catalog</a>
+    <a href="06-comparison-summary.html">次: 比較まとめ →</a>
+  </div>
+</div>
+</body>
+</html>

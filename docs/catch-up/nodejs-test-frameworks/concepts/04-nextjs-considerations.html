@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04. Next.js 特有の注意点</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 04 / 07</div>
+    <h1>Next.js 特有の注意点</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    Next.js の App Router には、ブラウザの標準的な React アプリと違う点がいくつかある。
+    テストを書く前に、この3点を押さえておかないと「なぜか動かない/なぜかテストできない」に直面する。
+  </p>
+
+  <h3>1. jsdom 環境が必要</h3>
+  <p>
+    コンポーネントテストは実ブラウザではなく Node.js 上で疑似 DOM(jsdom)を使って動かす。
+    <code>vitest.config.mts</code> で <code>environment: 'jsdom'</code> を指定する。
+  </p>
+
+  <h3>2. next/navigation のモックが必要な場合がある</h3>
+  <p>
+    <code>useRouter</code>/<code>usePathname</code>/<code>useSearchParams</code> を使うコンポーネントは、
+    テスト実行環境に実際のルーターが存在しないためモックが必要になることがある。
+  </p>
+
+  <h3>3. 非同期 Server Component はユニットテスト不可</h3>
+  <p>
+    Next.js 公式ドキュメントに明記されている制約:「async Server Components は React エコシステムでまだ新しく、
+    Vitest は現時点でサポートしていない」。同期コンポーネントはユニットテストできるが、
+    非同期コンポーネントは <strong>E2E テスト(Playwright)</strong> で検証する方針にする。
+  </p>
+
+  <h2>コード例(Vitest 設定)</h2>
+  <pre><code class="language-ts">// vitest.config.mts
+import { defineConfig } from 'vitest/config'
+import react from '@vitejs/plugin-react'
+import tsconfigPaths from 'vite-tsconfig-paths'
+
+export default defineConfig({
+  plugins: [tsconfigPaths(), react()],
+  test: {
+    environment: 'jsdom',
+  },
+})
+</code></pre>
+
+  <pre><code class="language-ts">// next/navigation のモック例
+import { vi } from 'vitest'
+
+vi.mock('next/navigation', () =&gt; ({
+  useRouter: () =&gt; ({ push: vi.fn(), replace: vi.fn() }),
+  usePathname: () =&gt; '/',
+}))
+</code></pre>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li>コンポーネントテストは <code>environment: 'jsdom'</code> が前提</li>
+    <li><code>next/navigation</code> 系フックを使う画面は、テスト側でモックする</li>
+    <li>非同期 Server Component(データ取得を伴う画面)は Vitest 対象外 → Playwright の担当</li>
+    <li>本プロジェクトのスケジュール画面はクライアントコンポーネント中心の想定のため、
+        大部分は Vitest + RTL でカバーできる見込み</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>コンポーネントテストで <code>environment: 'jsdom'</code> が必要な理由を説明してください。</li>
+      <li>非同期 Server Component の検証を Vitest ではなく Playwright に任せるのはなぜですか?</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="03-react-testing-library.html">← 前: React Testing Library</a>
+    <a href="05-route-handlers-testing.html">次: Route Handlers のテスト →</a>
+  </div>
+</div>
+</body>
+</html>

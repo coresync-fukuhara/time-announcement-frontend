@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>03. Smithery</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 03 / 06</div>
+    <h1>Smithery</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    Smithery は MCP サーバー版の「Docker Hub」を目指すサードパーティサービス。
+    7,000以上の MCP サーバーを検索できるレジストリに加え、
+    サーバー自体を Smithery のインフラ上で動かして<strong>リモートエンドポイントとして提供</strong>する
+    ホスティング機能を持つ。
+  </p>
+  <p>
+    さらに「Toolbox」という meta-MCP(MCPサーバーそのものをMCPで提供する入れ子構造)があり、
+    エージェントは Toolbox に接続するだけで、裏側でレジストリ内の複数サーバーに動的につながる。
+    1つずつ手動で `.mcp.json` に追記しなくても済む。
+  </p>
+  <p>
+    例えるなら、個別の店(MCPサーバー)を1軒ずつ契約する代わりに、
+    ショッピングモールの共通入り口(Toolbox)を1つ契約すれば、
+    中の色々な店に自動的に案内してもらえるイメージ。
+  </p>
+
+  <h2>コード例(利用イメージ)</h2>
+  <pre><code class="language-json">// Smithery経由でホスティングされたサーバーに接続する例
+{
+  "mcpServers": {
+    "toolbox": {
+      "url": "https://server.smithery.ai/toolbox/mcp",
+      "headers": { "Authorization": "Bearer &lt;token&gt;" }
+    }
+  }
+}
+</code></pre>
+
+  <h2>メリット</h2>
+  <ul class="points">
+    <li>レジストリ検索の情報(verified, useCount, owner等)で信頼性を判断しやすい</li>
+    <li>ホスティングを使えばローカルにインストール・運用しなくても良い(サーバーの実行責任をSmithery側に委ねられる)</li>
+    <li>OAuthの認証フローを自前実装しなくてよい(トークン自動更新・暗号化保管)</li>
+    <li>Cursor・Claude Code・ChatGPT など複数クライアントに対応</li>
+  </ul>
+
+  <h2>デメリット</h2>
+  <ul class="points">
+    <li>ホスティング利用は無料枠を超えると有料。利用状況次第でコストが発生する</li>
+    <li>サードパーティのインフラを経由するため、機密性の高いデータを扱う場合は
+        経路・保存先のセキュリティポリシーを確認する必要がある</li>
+    <li>Skill やAgentの管理機能はなく、あくまでMCPサーバーが対象</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>Smithery の「Toolbox」が解決している課題を説明してください。</li>
+      <li>Smithery を使う際に注意すべきコスト・セキュリティ面の懸念は何ですか?</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="02-claude-code-plugins.html">← 前: Claude Code Plugins &amp; Marketplace</a>
+    <a href="04-docker-mcp-toolkit.html">次: Docker MCP Toolkit / Catalog →</a>
+  </div>
+</div>
+</body>
+</html>

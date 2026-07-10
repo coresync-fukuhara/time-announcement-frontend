@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>03. Next.js DevTools MCP</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 03 / 03</div>
+    <h1>Next.js DevTools MCP</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    Next.js 16 以降は、開発サーバー起動時に <code>/_next/mcp</code> という MCP エンドポイントを内蔵している。
+    <code>next-devtools-mcp</code>(<code>vercel/next-devtools-mcp</code>)は、
+    このエンドポイントを見つけて中継するだけの<strong>薄いコネクタ</strong>で、
+    エージェントはこれを通じて実行中の Next.js アプリの内部状態(ビルドエラー・ルーティング情報など)を参照できる。
+  </p>
+  <p>
+    例えるなら、工場の生産ラインに最初から設置されている診断ポート(<code>/_next/mcp</code>)に、
+    診断ケーブル(<code>next-devtools-mcp</code>)を挿して現場の状況を読み取るイメージ。
+    ケーブル自体は情報を作らず、ラインが持っている情報をそのまま橋渡しする。
+  </p>
+  <p>
+    本プロジェクトでは BFF(Route Handlers)を含む Next.js アプリを開発するため、
+    「ビルドは通るが挙動がおかしい」といった調査で、エージェントが
+    ブラウザのコンソールログやNext.js自身のエラー情報に直接アクセスできるようになる。
+  </p>
+
+  <h2>コード例(設定)</h2>
+  <pre><code class="language-bash"># 最も簡単な追加方法
+npx add-mcp next-devtools-mcp@latest
+
+# Claude Code CLI で追加する場合
+claude mcp add next-devtools npx next-devtools-mcp@latest
+</code></pre>
+
+  <pre><code class="language-json">// .mcp.json
+{
+  "mcpServers": {
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"]
+    }
+  }
+}
+</code></pre>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li><strong>Next.js 16 以上が必須</strong>(<code>/_next/mcp</code> エンドポイントがこのバージョン以降にのみ存在)。
+        本プロジェクトは新規構築のため、最新版採用であれば要件を満たす</li>
+    <li>複数ポートで動く複数の Next.js インスタンスも自動で見つけて接続できる</li>
+    <li>あくまで開発サーバー(<code>next dev</code>)向けの機能。本番ビルド/本番運用には影響しない</li>
+    <li>Playwright MCP(ブラウザ側の操作)と組み合わせることで、
+        「ブラウザで何が起きたか」と「サーバー側で何が起きたか」の両方をエージェントが横断的に調査できる</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>Next.js DevTools MCP が動作するために必須の Next.js バージョンはいくつですか?</li>
+      <li>Next.js DevTools MCP と Playwright MCP を組み合わせる利点を説明してください。</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="02-playwright-mcp.html">← 前: Playwright MCP</a>
+    <a href="../index.html">学習インデックスに戻る →</a>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01. 全体像:なぜこの組み合わせなのか</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 01 / 07</div>
+    <h1>全体像:なぜこの組み合わせなのか</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    テストには大きく3つの層がある。<strong>ユニット/コンポーネント</strong>(1つの関数・1つの画面部品)、
+    <strong>API(BFF)</strong>(Route Handlers 1本の入出力)、<strong>E2E</strong>(ブラウザを実際に動かして画面から画面までの流れ)。
+    層ごとに得意なツールが違うので、1つのツールで全部をカバーしようとしない。
+  </p>
+  <p>
+    例えるなら、ユニットテストは「部品単体の検品」、API テストは「工程ごとの検品」、
+    E2E は「完成品の試運転」。試運転だけで全部を確認しようとすると遅くて壊れやすい試験になる。
+  </p>
+
+  <h2>比較表(2025〜2026年の実態)</h2>
+  <table>
+    <thead><tr><th>層</th><th>採用</th><th>不採用/補助</th><th>根拠</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>ユニット/コンポーネント</td>
+        <td><strong>Vitest</strong> + React Testing Library</td>
+        <td>Jest(満足度低下傾向)、node:test(機能が薄い)</td>
+        <td>Next.js公式ドキュメントがVitestのセットアップ手順を掲載。ESM/TypeScriptがそのまま動き、Jest比で大幅に高速</td>
+      </tr>
+      <tr>
+        <td>API(Route Handlers)</td>
+        <td><strong>Vitest</strong> + next-test-api-route-handler(NTARH)</td>
+        <td>スーパーテスト系ライブラリ(Express前提で非採用)</td>
+        <td>NextRequest/NextResponseをそのまま扱えるNext.js専用ヘルパー</td>
+      </tr>
+      <tr>
+        <td>外部APIモック</td>
+        <td><strong>MSW</strong>(Mock Service Worker)</td>
+        <td>nock(Node.js限定・legacy向け)</td>
+        <td>ネットワークレベルでインターセプトするため、ブラウザ/Node両方・fetch APIでもそのまま使える</td>
+      </tr>
+      <tr>
+        <td>E2E</td>
+        <td><strong>Playwright</strong></td>
+        <td>Cypress(並列実行が有料、非同期Server Componentの確認はE2Eに委ねる必要がある)</td>
+        <td>State of JS 2025で「最も採用が伸びたツール」。CI費用も低く、Next.js公式でも紹介</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>コード例(全体構成イメージ)</h2>
+  <pre><code>frontend/
+├── vitest.config.mts        # Vitest設定(jsdom環境)
+├── playwright.config.ts     # Playwright設定
+├── __tests__/               # ユニット/コンポーネントテスト
+│   └── page.test.tsx
+├── app/api/schedules/
+│   ├── route.ts
+│   └── route.test.ts        # NTARHでのRoute Handlerテスト
+└── e2e/
+    └── schedule-editing.spec.ts  # Playwright E2E
+</code></pre>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li>「全部をE2Eで確認する」は遅く壊れやすい。ピラミッド型(ユニット多め・E2E少なめ)を意識する</li>
+    <li>非同期 Server Component は Vitest では検証できない制約がある → その部分だけ Playwright(E2E)で担保する</li>
+    <li>TDD では「まず失敗するテストを書く」ため、実行速度が速いVitestの採用が特に効いてくる</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>ユニットテスト・APIテスト・E2Eテストは、それぞれ何を検証する層か説明してください。</li>
+      <li>なぜ非同期 Server Component は Vitest だけで検証できないのか説明してください。</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <span></span>
+    <a href="02-vitest-basics.html">次: Vitest の基礎 →</a>
+  </div>
+</div>
+</body>
+</html>

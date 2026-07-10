@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02. Playwright MCP</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 02 / 03</div>
+    <h1>Playwright MCP</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    Playwright MCP(<code>microsoft/playwright-mcp</code>)は、ブラウザ操作を MCP ツールとして
+    エージェントに公開するサーバー。スクリーンショット画像を都度解析するのではなく、
+    <strong>アクセシビリティツリー</strong>(見出し・ボタン・リンクなどの構造化データ)を使って
+    ページの状態を把握するため、軽量かつ決定的に操作できる。
+  </p>
+  <p>
+    例えるなら、目の見えない人が画面を「見る」代わりに、
+    画面の構造を音声で読み上げる「スクリーンリーダー」を使って操作するイメージ。
+    エージェントは画像を推測で解釈する必要がなく、要素名で確実にクリック先を指定できる。
+  </p>
+  <p>
+    本プロジェクトでは E2E テスト(Playwright, [キャッチアップ教材 07](../../nodejs-test-frameworks/concepts/07-playwright-e2e.html))を
+    書く/デバッグする際に、エージェントが実際にブラウザを操作しながら
+    「なぜこのテストが失敗するのか」を調査する用途で活用する。
+  </p>
+
+  <h2>コード例(設定)</h2>
+  <pre><code class="language-bash"># Claude Code CLI で追加する場合
+claude mcp add playwright npx @playwright/mcp@latest
+</code></pre>
+
+  <pre><code class="language-json">// .mcp.json(プロジェクトに配置し、チームで共有する設定)
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
+    }
+  }
+}
+</code></pre>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li>提供されるツール例: ページ遷移(navigate)、クリック・入力、スクリーンショット、
+        タブ操作、キーボード/マウス操作</li>
+    <li>ビジョンモデル(画像認識)は不要。アクセシビリティツリーで要素を特定するため、
+        DOM 構造が変わらない限り安定して動作する</li>
+    <li>VS Code / Cursor / Windsurf / Claude Code など主要な MCP クライアントに対応</li>
+    <li>本プロジェクトでの活用例: 「初期化ダイアログ→曜日タブ切り替え→保存→再読み込み」
+        のE2Eシナリオが失敗したとき、エージェントが実際にブラウザを操作して原因を切り分ける</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>Playwright MCP がスクリーンショット画像ではなく「アクセシビリティツリー」を使う利点を説明してください。</li>
+      <li>本プロジェクトで Playwright MCP をどのような場面で活用しますか?</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="01-overview.html">← 前: 全体像</a>
+    <a href="03-nextjs-devtools-mcp.html">次: Next.js DevTools MCP →</a>
+  </div>
+</div>
+</body>
+</html>

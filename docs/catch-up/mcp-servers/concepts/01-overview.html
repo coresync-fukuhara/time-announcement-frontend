@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01. 全体像:公式 MCP の判定基準と採用可否</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 01 / 03</div>
+    <h1>全体像:公式 MCP の判定基準と採用可否</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    MCP(Model Context Protocol)は、LLM がツールやリソースを呼び出すための標準プロトコル。
+    フレームワークの<strong>開発元自身</strong>が MCP サーバーを公開している場合、
+    そのフレームワークの内部状態(ビルドエラー・ブラウザの状態など)を
+    エージェントが正確に把握できるようになる。
+  </p>
+  <p>
+    ただし「公式」を名乗るリポジトリが必ずしも開発元管理とは限らない。
+    例えるなら、ある製品の「公認代理店」を名乗る店が、実際には本社と関係のない個人商店だった、
+    というようなケースが MCP エコシステムにも存在する。
+    採用前に <strong>organization(GitHub上の所有者)が開発元と一致するか</strong> を必ず確認する。
+  </p>
+
+  <h2>今回の判定結果</h2>
+  <table>
+    <thead><tr><th>フレームワーク</th><th>候補</th><th>判定</th><th>判定理由</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Playwright</td>
+        <td><code>microsoft/playwright-mcp</code></td>
+        <td class="status-done">✅ 採用</td>
+        <td>Playwright 自体が Microsoft の OSS。organization が一致し、Playwright 公式ドキュメントからもリンクされている</td>
+      </tr>
+      <tr>
+        <td>Next.js</td>
+        <td><code>vercel/next-devtools-mcp</code></td>
+        <td class="status-done">✅ 採用</td>
+        <td>Next.js の開発元は Vercel。Next.js 16+ の組み込みエンドポイント(<code>/_next/mcp</code>)に接続する公式コネクタ</td>
+      </tr>
+      <tr>
+        <td>Vitest</td>
+        <td><code>vitest-community/mcp</code></td>
+        <td class="status-todo">❌ 非採用</td>
+        <td>organization が <code>vitest-dev</code>(公式)ではなく <code>vitest-community</code>。
+            README に "Work in progress" と明記され、開発初期段階</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>コード例(判定に使った確認観点)</h2>
+  <pre><code># 確認したポイント(疑似コマンド)
+1. GitHub organization が製品の開発元と一致するか
+   → microsoft/playwright-mcp: 一致(Playwright = Microsoft製)
+   → vercel/next-devtools-mcp: 一致(Next.js = Vercel製)
+   → vitest-community/mcp: 不一致(Vitest公式は vitest-dev)
+
+2. 公式ドキュメントからリンクされているか
+   → Playwright: playwright.dev からリンクあり
+   → Next.js: nextjs.org/docs からリンクあり
+   → Vitest: vitest.dev からのリンクは確認できず
+</code></pre>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li>「official」という単語がREADMEにあっても、organization の一致まで確認する</li>
+    <li>本プロジェクトでは Playwright MCP と Next.js DevTools MCP の2つを採用</li>
+    <li>MSW・Ajv には調査時点(2026年7月)で公式MCPが存在しないため、追加しない</li>
+    <li>Vercel プラットフォーム全体の MCP(デプロイ管理用)は、自前 Docker 運用のため対象外</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>「公式」を名乗る MCP サーバーを採用する前に、何を確認すべきですか?</li>
+      <li>今回 Vitest MCP を採用しなかった理由を2つ挙げてください。</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <span></span>
+    <a href="02-playwright-mcp.html">次: Playwright MCP →</a>
+  </div>
+</div>
+</body>
+</html>

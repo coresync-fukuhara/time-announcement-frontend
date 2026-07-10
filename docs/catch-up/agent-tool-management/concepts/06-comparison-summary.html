@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>06. 比較まとめ(判断材料)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 06 / 06</div>
+    <h1>比較まとめ(判断材料)</h1>
+  </header>
+
+  <div class="card">
+    <p style="margin:0">
+      <strong>このページは特定のツールを推奨するものではありません。</strong>
+      プロジェクトの状況(チーム規模・対応クライアント・セキュリティ要件・コスト許容度)に応じて、
+      以下の一覧を判断材料としてご活用ください。
+    </p>
+  </div>
+
+  <h2>総合比較表</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>観点</th>
+        <th>Claude Code Plugins</th>
+        <th>Smithery</th>
+        <th>Docker MCP Toolkit</th>
+        <th>install-mcp</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>管理対象</td>
+        <td>Skill+Agent+Hook+MCP+LSP</td>
+        <td>MCPのみ</td>
+        <td>MCPのみ</td>
+        <td>MCPのみ</td>
+      </tr>
+      <tr>
+        <td>対応クライアント</td>
+        <td>Claude Code専用</td>
+        <td>複数(Cursor/Claude Code/ChatGPT等)</td>
+        <td>複数(Claude Desktop/VSCode/Cursor等)</td>
+        <td>16種類以上</td>
+      </tr>
+      <tr>
+        <td>レジストリ/検索</td>
+        <td>あり(マーケットプレイス)</td>
+        <td>あり(7,000+サーバー)</td>
+        <td>あり(300+検証済み)</td>
+        <td>なし</td>
+      </tr>
+      <tr>
+        <td>ホスティング</td>
+        <td>なし(ローカル実行)</td>
+        <td>あり(リモート実行可)</td>
+        <td>なし(ローカルコンテナ実行)</td>
+        <td>なし</td>
+      </tr>
+      <tr>
+        <td>セキュリティ機構</td>
+        <td>特になし</td>
+        <td>OAuth自動管理</td>
+        <td>コンテナ隔離・署名検証・リソース制限(強)</td>
+        <td>特になし</td>
+      </tr>
+      <tr>
+        <td>料金</td>
+        <td>無料(個別プラグインの料金は提供者次第)</td>
+        <td>登録・CLIは無料/ホスティングは従量課金あり</td>
+        <td>無料(Docker Desktop自体は個人利用無料)</td>
+        <td>無料(OSS)</td>
+      </tr>
+      <tr>
+        <td>導入の手軽さ</td>
+        <td>中(マーケットプレイス選定が必要)</td>
+        <td>中(アカウント登録が必要な場合あり)</td>
+        <td>中(Docker Desktopが前提)</td>
+        <td>高(その場でコマンド一発)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>メリット・デメリットの再掲</h2>
+  <table>
+    <thead><tr><th>ツール</th><th>最大のメリット</th><th>最大のデメリット</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Claude Code Plugins</td>
+        <td>Skill含め丸ごと1パッケージで配布・共有できる</td>
+        <td>Claude Code専用。他クライアントには使えない</td>
+      </tr>
+      <tr>
+        <td>Smithery</td>
+        <td>ホスティングとOAuth自動化で運用の手間を減らせる</td>
+        <td>サードパーティ経由。コストとデータ経路の確認が必要</td>
+      </tr>
+      <tr>
+        <td>Docker MCP Toolkit</td>
+        <td>コンテナ隔離・署名検証でセキュリティ面が最も堅い</td>
+        <td>Docker Desktopが前提。起動がやや重い</td>
+      </tr>
+      <tr>
+        <td>install-mcp</td>
+        <td>依存や契約が一切なく、その場ですぐ使える</td>
+        <td>発見・セキュリティ検証は自分で行う必要がある</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>判断の切り口(例)</h2>
+  <ul class="points">
+    <li><strong>Skill配布も含めて統一管理したい</strong> → 選択肢は実質 Claude Code Plugins のみ</li>
+    <li><strong>複数クライアントを横断して使う/チームの標準を揃えたい</strong> → Smithery か Docker MCP Toolkit</li>
+    <li><strong>信頼性の低い/出所不明なMCPサーバーも試したい、隔離実行を重視したい</strong> → Docker MCP Toolkit</li>
+    <li><strong>とにかく手早く1つだけ追加したい、余計な依存を増やしたくない</strong> → install-mcp
+        (本プロジェクトの <code>.mcp.json</code> への手動追記も実質これに近い方式)</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>Skillも含めて管理したい場合、4候補のうちどれを選ぶべきですか? 理由も添えてください。</li>
+      <li>セキュリティ(隔離実行)を最優先したい場合、どのツールが適していますか?</li>
+      <li>本プロジェクトの現状(<code>.mcp.json</code> への手動追記方式)は、4候補のうちどれに最も近い運用ですか?</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="05-install-mcp.html">← 前: install-mcp</a>
+    <a href="../index.html">学習インデックスに戻る →</a>
+  </div>
+</div>
+</body>
+</html>

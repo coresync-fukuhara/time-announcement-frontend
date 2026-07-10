@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01. なぜ管理ツールが必要か</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 01 / 06</div>
+    <h1>なぜ管理ツールが必要か</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    Claude Code のようなコーディングエージェントは、そのままでも便利だが、
+    <strong>MCP サーバー</strong>(外部システムと繋がるツール)や
+    <strong>Skill</strong>(特定作業の手順書、<code>/name</code>で呼び出せる)を追加することで能力を拡張できる。
+    本プロジェクトでもすでに Playwright MCP・Next.js DevTools MCP を追加した
+    ([MCP サーバー導入設計書](../../../mcp-servers-design.md))。
+  </p>
+  <p>
+    追加するパーツが増えると、次のような課題が出てくる。
+  </p>
+  <ul class="points">
+    <li><strong>発見</strong>: どんな MCP サーバー/Skill が存在するか、公式かどうかをどう調べるか</li>
+    <li><strong>インストール</strong>: クライアント(Claude Code, Cursor, VS Code等)ごとに設定形式が違う</li>
+    <li><strong>更新</strong>: バージョンが上がったときに追従する仕組みがあるか</li>
+    <li><strong>共有</strong>: チームメンバーに同じ構成を配れるか</li>
+    <li><strong>セキュリティ</strong>: 得体の知れないMCPサーバーを野放しに実行して大丈夫か</li>
+  </ul>
+  <p>
+    例えるなら、スマホにアプリを1つずつ apk ファイルで手動インストールするか、
+    App Store のようなストアを使うか、という違い。パーツの数が少なければ手動で十分だが、
+    増えてくると「ストア(管理ツール)」があったほうが楽になる。
+  </p>
+
+  <h2>今回比較する4つの立ち位置</h2>
+  <table>
+    <thead><tr><th>ツール</th><th>管理対象</th><th>提供形態</th></tr></thead>
+    <tbody>
+      <tr><td>Claude Code Plugins &amp; Marketplace</td><td>Skill + Agent + Hook + MCP + LSP をまとめて1パッケージ</td><td>Anthropic公式・Claude Code専用</td></tr>
+      <tr><td>Smithery</td><td>MCP サーバーのみ</td><td>サードパーティのレジストリ+ホスティング</td></tr>
+      <tr><td>Docker MCP Toolkit</td><td>MCP サーバーのみ</td><td>Docker公式・コンテナ実行基盤</td></tr>
+      <tr><td>install-mcp</td><td>MCP サーバーのみ</td><td>OSSの軽量CLI(設定ファイル編集の自動化のみ)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li>Skill も含めてまとめて管理したいなら、選択肢は実質 Claude Code Plugins のみ
+        (他3つはMCPサーバーのみが対象)</li>
+    <li>「レジストリ(見つける)」「ホスティング(動かす)」「セキュリティ(隔離実行)」
+        「軽量インストール(設定を書くだけ)」で、ツールごとに力点が異なる</li>
+    <li>4つは排他ではなく、Claude Code Plugins ✕ Docker MCP Toolkit のように組み合わせることも可能</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>MCP/Skillが増えたときに生じる課題を3つ挙げてください。</li>
+      <li>今回の4候補のうち、Skillの管理まで含んでいるのはどれですか?</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <span></span>
+    <a href="02-claude-code-plugins.html">次: Claude Code Plugins &amp; Marketplace →</a>
+  </div>
+</div>
+</body>
+</html>

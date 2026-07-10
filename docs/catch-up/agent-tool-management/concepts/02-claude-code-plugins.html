@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02. Claude Code Plugins & Marketplace</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 02 / 06</div>
+    <h1>Claude Code Plugins &amp; Marketplace</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    Claude Code の「プラグイン」は、Skill・Agent(サブエージェント)・Hook・MCP サーバー・LSP サーバー・
+    monitor をひとつのディレクトリにまとめた<strong>自己完結パッケージ</strong>。
+    「マーケットプレイス」はこのプラグインを配布する仕組みで、
+    <code>/plugin install &lt;name&gt;@&lt;marketplace&gt;</code> の一言でチームメンバーに同じ構成を配れる。
+  </p>
+  <p>
+    例えるなら、アプリ本体だけでなく「使い方の説明書(Skill)」「専門スタッフ(Agent)」
+    「自動反応するセンサー(Hook)」までをひとつの箱に詰めて配る、総合キットのようなもの。
+  </p>
+
+  <h2>コード例(構成イメージ)</h2>
+  <pre><code>my-plugin/
+├── plugin.json
+├── skills/
+│   └── code-reviewer/SKILL.md
+├── agents/
+│   └── reviewer.md
+├── hooks/
+│   └── pre-commit.json
+└── mcp/
+    └── servers.json          # このプラグインが持ち込むMCPサーバー定義
+</code></pre>
+
+  <pre><code class="language-bash"># マーケットプレイスからインストール
+/plugin install code-reviewer@my-team-marketplace
+
+# インストール済みプラグイン一覧
+/plugin list
+</code></pre>
+
+  <h2>メリット</h2>
+  <ul class="points">
+    <li>Skill・Agent・Hook・MCP をまとめて1単位でバージョン管理・配布できる(今回の調査対象で唯一Skillも含む)</li>
+    <li>Claude Code 純正のため、追加のツールやアカウント登録が不要</li>
+    <li>プロジェクト設定を直接いじらずに、プラグインの有効/無効を切り替えられる</li>
+    <li>2026年時点でマーケットプレイスの規模が大きく育っており(21,700+ Skills, 12,500+ MCPサーバー)、選択肢が豊富</li>
+  </ul>
+
+  <h2>デメリット</h2>
+  <ul class="points">
+    <li>Claude Code 専用の仕組みのため、Cursor や VS Code Copilot など他クライアントでは使えない</li>
+    <li>マーケットプレイスが多数乱立しており、Skillと同様に「公式か・信頼できるか」の見極めが必要
+        (誰でもマーケットプレイスを作って公開できる)</li>
+    <li>MCPサーバー単体を隔離実行するようなセキュリティ機構(コンテナ分離等)は持たない</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>Claude Code のプラグインには、MCP サーバー以外に何が含められますか?</li>
+      <li>Claude Code Plugins の最大の制約(適用範囲)は何ですか?</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="01-overview.html">← 前: なぜ管理ツールが必要か</a>
+    <a href="03-smithery.html">次: Smithery →</a>
+  </div>
+</div>
+</body>
+</html>

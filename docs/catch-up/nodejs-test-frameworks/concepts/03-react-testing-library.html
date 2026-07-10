@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>03. React Testing Library でのコンポーネントテスト</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 03 / 07</div>
+    <h1>React Testing Library でのコンポーネントテスト</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    React Testing Library(RTL)の中心思想は
+    「実際の使われ方に近いテストほど、テストは信頼できる」というもの。
+    コンポーネントの内部実装(state名や関数名)ではなく、
+    <strong>画面に見えているもの・ユーザーが押せるもの</strong>を基準にテストを書く。
+  </p>
+  <p>
+    例えるなら、店員の接客チェックを「マニュアル通りの内部手順」で採点するのではなく、
+    「お客さんから見てちゃんと案内できているか」で採点するイメージ。
+    実装をリファクタリングしても、見た目の振る舞いが変わらなければテストは壊れない。
+  </p>
+
+  <h2>コード例</h2>
+  <pre><code class="language-tsx">// app/page.tsx
+export default function Page() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Home&lt;/h1&gt;
+      &lt;button&gt;保存&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+
+// __tests__/page.test.tsx
+import { expect, test } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import Page from '../app/page'
+
+test('見出しが表示される', () =&gt; {
+  render(&lt;Page /&gt;)
+  expect(screen.getByRole('heading', { level: 1, name: 'Home' })).toBeDefined()
+})
+
+test('保存ボタンを押せる', async () =&gt; {
+  const user = userEvent.setup()
+  render(&lt;Page /&gt;)
+  await user.click(screen.getByRole('button', { name: '保存' }))
+})
+</code></pre>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li><code>render</code> でコンポーネントを描画し、<code>screen</code> で画面上の要素を取得する</li>
+    <li>要素の取得は「ロール名+アクセシブルな名前」(<code>getByRole</code>)を優先する。
+        `data-testid` は他に手段がない場合の最終手段</li>
+    <li><code>userEvent</code> は実際のユーザー操作(クリック・入力)に近い形でイベントを発火する</li>
+    <li>本プロジェクトのスケジュール画面では「時刻ボタンのトグル」「保存ボタン押下」を
+        この形式でテストする想定</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>RTL が「実装の詳細」ではなく何を基準にテストすべきと考えているか説明してください。</li>
+      <li><code>getByRole</code> と <code>data-testid</code> はどちらを優先して使うべきですか? 理由も含めて答えてください。</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="02-vitest-basics.html">← 前: Vitest の基礎</a>
+    <a href="04-nextjs-considerations.html">次: Next.js 特有の注意点 →</a>
+  </div>
+</div>
+</body>
+</html>

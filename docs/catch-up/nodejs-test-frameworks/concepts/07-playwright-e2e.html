@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>07. Playwright による E2E テスト</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 07 / 07</div>
+    <h1>Playwright による E2E テスト</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    Playwright は実際のブラウザ(Chromium/Firefox/WebKit)を自動操作して、
+    「ユーザーがブラウザで実際に行う操作」を丸ごと検証するツール。
+    ユニットテストでは検証できない、非同期 Server Component を含む画面や、
+    複数の操作をまたぐシナリオ(タブ切り替え→トグル操作→保存→再読み込みして確認)はここで担保する。
+  </p>
+  <p>
+    例えるなら、部品検査(ユニットテスト)と工程検査(APIテスト)を終えた後に行う
+    「実際にお客さんとして使ってみる試運転」。手間はかかるが、実際に動くかどうかの最終確認になる。
+  </p>
+
+  <h2>コード例</h2>
+  <pre><code class="language-ts">// e2e/schedule-editing.spec.ts
+import { test, expect } from '@playwright/test'
+
+test('月曜9:00をONにして保存すると再読み込み後も反映されている', async ({ page }) =&gt; {
+  await page.goto('/')
+
+  await page.getByRole('tab', { name: '月' }).click()
+  await page.getByRole('button', { name: '9時 00分' }).click()
+  await page.getByRole('button', { name: '保存' }).click()
+
+  await expect(page.getByText('保存しました')).toBeVisible()
+
+  await page.reload()
+  await expect(page.getByRole('button', { name: '9時 00分' })).toHaveAttribute(
+    'aria-pressed',
+    'true'
+  )
+})
+</code></pre>
+
+  <pre><code class="language-bash"># セットアップ(初回のみ)
+npm init playwright@latest
+
+# 実行
+npx playwright test
+
+# ブラウザを表示しながら実行(デバッグ用)
+npx playwright test --headed
+</code></pre>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li><code>page.goto</code>/<code>page.getByRole</code>/<code>expect(locator).toBeVisible()</code> など
+        「Web-first assertions」を使い、要素が現れるまで自動で待つ</li>
+    <li>並列実行・複数ブラウザエンジン対応・トレースビューアが無料(Cypressは並列実行が有料)</li>
+    <li>本プロジェクトでは「初期化ダイアログの選択」「曜日タブ切り替え」「保存→再読み込み後の反映確認」
+        など画面をまたぐ主要シナリオをE2Eの対象にする</li>
+    <li>ユニット/APIテストで担保できる範囲はE2Eに持ち込まない(重複させて実行時間を無駄にしない)</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>ユニットテストではなくE2Eテストでしか確認できないことの例を1つ挙げてください。</li>
+      <li>Playwright が Cypress に対して持つ、CIコスト面での優位性を説明してください。</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="06-msw-mocking.html">← 前: MSW によるAPIモック</a>
+    <a href="../index.html">学習インデックスに戻る →</a>
+  </div>
+</div>
+</body>
+</html>
