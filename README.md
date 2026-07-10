@@ -16,6 +16,7 @@
 | ディレクトリ | 内容 |
 | --- | --- |
 | [docs/](./docs) | 設計書一式(概要設計・テスト設計・MCP サーバー導入・要件不足事項) |
+| [tasks/](./tasks) | TODO 管理(設計→実装→デプロイのフェーズ別サブディレクトリ、全体は [tasks/TASKS.md](./tasks/TASKS.md) で一覧) |
 | [.devcontainer/](./.devcontainer) | VS Code Dev Container 定義・開発環境セットアップ |
 
 各ディレクトリの README を参照してください。
