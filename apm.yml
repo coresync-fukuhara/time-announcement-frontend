@@ -13,6 +13,12 @@ dependencies:
     - anthropics/claude-plugins-official/plugins/hookify
     - anthropics/claude-plugins-official/plugins/security-guidance
     - anthropics/claude-plugins-official/plugins/frontend-design
+    - vercel-labs/agent-skills/skills/react-best-practices
+    - vercel-labs/agent-skills/skills/composition-patterns
+    - vercel-labs/agent-skills/skills/web-design-guidelines
+    - vercel/next.js/skills/next-dev-loop#canary
+    - vercel/next.js/skills/next-cache-components-adoption#canary
+    - vercel/next.js/skills/next-cache-components-optimizer#canary
   mcp:
     - name: playwright
       registry: false

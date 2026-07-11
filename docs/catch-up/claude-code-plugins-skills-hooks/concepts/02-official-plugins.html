@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02. Anthropic公式マーケットプレイスの厳選プラグイン</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 02 / 05</div>
+    <h1>Anthropic公式マーケットプレイスの厳選プラグイン</h1>
+  </header>
+
+  <div class="card">
+    <p style="margin:0">
+      <strong>マーケットプレイス</strong>: <a href="https://github.com/anthropics/claude-plugins-official" target="_blank" rel="noopener">github.com/anthropics/claude-plugins-official</a> ·
+      2026年5月22日公開・255プラグイン掲載(2026-07時点)。Claude Code起動時に自動で参照可能。
+      ここで紹介する9つはいずれも <code>author: Anthropic</code>(一次配布)。
+    </p>
+  </div>
+
+  <h2>説明</h2>
+  <p>
+    255プラグインの大半はSaaS連携(AWS・Salesforce・Datadog等)で、
+    家庭内LAN・単一利用者運用の本プロジェクトには不要。
+    その中から「TypeScript/Next.js開発」「コード品質」「プロジェクト運用」に関連する
+    9つを抜粋した。
+  </p>
+
+  <h2>開発・コード品質系</h2>
+  <table>
+    <thead><tr><th>プラグイン</th><th>概要</th><th>本プロジェクトでの用途</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>typescript-lsp</code></td>
+        <td>TypeScript/JavaScript 言語サーバーによるコード解析強化</td>
+        <td>Next.js実装フェーズで型エラー・参照関係をエージェントが正確に把握できるようになる</td>
+      </tr>
+      <tr>
+        <td><code>frontend-design</code></td>
+        <td>高品質・独自性のあるフロントエンドUI実装を支援</td>
+        <td>曜日タブ×時刻グリッドのUI実装で、汎用的すぎないデザインを狙う際に有用</td>
+      </tr>
+      <tr>
+        <td><code>feature-dev</code></td>
+        <td>コードベース探索・アーキテクチャ設計・品質レビューの専門エージェントによる
+            機能開発ワークフロー</td>
+        <td>schedule-store.ts や API Route Handler など、まとまった機能を1から実装する際に使える</td>
+      </tr>
+      <tr>
+        <td><code>pr-review-toolkit</code></td>
+        <td>コメント・テスト・エラー処理・型設計・簡潔化に特化したPRレビューエージェント群</td>
+        <td>ファイル同期の安全規則(アトミック書き込み・バリデーション等)のような
+            妥協不可な要件のレビューに活用できる</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>プロジェクト運用系</h2>
+  <table>
+    <thead><tr><th>プラグイン</th><th>概要</th><th>本プロジェクトでの用途</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>commit-commands</code></td>
+        <td>commit/push/PR作成のgitワークフローを簡略化するコマンド</td>
+        <td>タスク完了ごとのコミット運用(本セッションでも都度実施している)を定型化できる</td>
+      </tr>
+      <tr>
+        <td><code>claude-md-management</code></td>
+        <td>CLAUDE.md の品質監査・セッション学習の記録・鮮度維持</td>
+        <td>本リポジトリの <code>CLAUDE.md</code> 自体の陳腐化を防ぐのに直接使える</td>
+      </tr>
+      <tr>
+        <td><code>hookify</code></td>
+        <td>会話パターンの分析や明示指示から Hook を自動生成</td>
+        <td>「<code>settings/schedules.json</code> を直接編集しようとしたら止める」といった
+            ファイル同期の安全規則をHookとして機械的に強制する際の足がかりになる</td>
+      </tr>
+      <tr>
+        <td><code>security-guidance</code></td>
+        <td>パターンベースの警告 + LLMによるdiffレビュー + コミットレビューで
+            インジェクション・XSS・SSRF・ハードコードされた秘密情報等25種以上の脆弱性を検出</td>
+        <td>将来実装する <code>/api/schedules</code> Route Handler のセキュリティレビューに有用</td>
+      </tr>
+      <tr>
+        <td><code>skill-creator</code></td>
+        <td>新規Skillの作成・既存Skillの改善・性能計測</td>
+        <td>このプロジェクト独自のワークフロー(例: schedules.json編集手順)をSkill化したくなった時に使う</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>インストール方法(参考)</h2>
+  <pre><code class="language-bash"># 公式マーケットプレイスからインストールする一般形
+/plugin install typescript-lsp@claude-plugins-official
+/plugin install claude-md-management@claude-plugins-official</code></pre>
+
+  <h2>注意</h2>
+  <ul class="points">
+    <li><code>code-review</code>・<code>code-simplifier</code> といった類似プラグインも
+        マーケットプレイスには存在するが、Claude Codeにはこれらに相当する Skill が
+        標準で組み込まれている場合がある。重複を避けるため、導入前に手元の環境で
+        既に同等の機能が使えないか確認すること</li>
+    <li>本教材はカタログ化のみで、実際のインストール・<code>apm.yml</code> への追加は行っていない</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li><code>claude-md-management</code> がこのリポジトリにとって直接的に有用な理由は何ですか?</li>
+      <li><code>hookify</code> を使うと、CLAUDE.md に記載された「ファイル同期の安全規則」の
+          どの部分を機械的に強制できそうですか?</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="01-overview.html">← 前: 用語整理と調査方針</a>
+    <a href="03-vercel-nextjs-skills.html">次: Vercel / Next.js 公式 Skill →</a>
+  </div>
+</div>
+</body>
+</html>

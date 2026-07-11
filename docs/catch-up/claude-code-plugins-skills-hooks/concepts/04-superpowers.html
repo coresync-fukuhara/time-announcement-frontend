@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04. superpowers(TDD特化・高star)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 04 / 05</div>
+    <h1>superpowers(TDD特化・高star)</h1>
+  </header>
+
+  <div class="card">
+    <p style="margin:0">
+      <strong>GitHub</strong>: <a href="https://github.com/obra/superpowers" target="_blank" rel="noopener">github.com/obra/superpowers</a> ·
+      252,008 stars / 22,496 forks(2026-07-11時点) · 2025年10月作成、活発に開発中(直近プッシュも当日) ·
+      サードパーティ製だが <strong>Anthropic公式マーケットプレイスに特定コミットSHAで採録</strong>されている
+    </p>
+  </div>
+
+  <h2>説明</h2>
+  <p>
+    superpowers は「composable skillsの上に構築された、コーディングエージェント向けの
+    完全なソフトウェア開発方法論」を謳うプラグイン。単発のSkillではなく、
+    要求分析→設計レビュー→実装計画→実装、という一連の開発プロセス全体をカバーする。
+  </p>
+
+  <h2>動作の流れ</h2>
+  <ol>
+    <li>コードを書き始める前に、まず「本当は何を実現したいか」をユーザーに問い返す</li>
+    <li>会話から引き出した仕様を、読みやすい単位に分けて提示し、ユーザーの承認を得る</li>
+    <li>承認後、<strong>true red/green TDD・YAGNI・DRY</strong> を重視した実装計画を立てる</li>
+    <li>「go」の合図で <strong>subagent-driven-development</strong>(サブエージェントが各タスクを実行し、
+        組み込みのコードレビューで相互チェックしながら進める)を開始する</li>
+  </ol>
+
+  <h2>本プロジェクトとの親和性</h2>
+  <ul class="points">
+    <li><strong>TDD</strong>: <a href="../../../schedule-ui-testing-design.md">テスト設計書</a>で
+        「TDD、3層のテストピラミッド。最も下のレイヤーから先にテストを書く」と明記されており、
+        superpowersのtrue red/green TDD方針とそのまま合致する</li>
+    <li><strong>YAGNI/DRY</strong>: 本リポジトリの <code>CLAUDE.md</code> が
+        「追加機能や抽象化を要求以上に持ち込まない」「3つの似たような行の方が早すぎる抽象化より良い」
+        と明記しているのと同じ思想</li>
+    <li><strong>サブエージェント駆動開発</strong>: <code>settings/schedules.json</code> の
+        ファイル同期の安全規則(バリデーション→アトミック書き込み→直列化→バックアップ)のような
+        妥協不可な要件を、複数タスクに分けて相互レビューしながら実装するのに向いている</li>
+  </ul>
+
+  <h2>インストール方法(参考)</h2>
+  <pre><code class="language-bash"># Anthropic公式マーケットプレイス経由(推奨)
+/plugin install superpowers@claude-plugins-official</code></pre>
+
+  <h2>注意</h2>
+  <ul class="points">
+    <li>「開発プロセス全体」を扱う性質上、既存の <code>CLAUDE.md</code> の指示(TDD・YAGNI等)と
+        重複・競合しないか、導入前に確認したほうがよい</li>
+    <li>star数が9か月で25万を超えるという急成長ぶりは、2026年のAIエージェントツール界隈の
+        盛り上がりを踏まえても際立って大きい。Anthropic公式マーケットプレイスに
+        コミットSHA固定で採録されている点を信頼性の裏付けとして重視した
+        (単独のGitHub star数だけで判断していない)</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>superpowers の開発フローを4段階で説明してください。</li>
+      <li>本プロジェクトの <code>CLAUDE.md</code> や テスト設計書と、
+          superpowers の思想が一致している点を2つ挙げてください。</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="03-vercel-nextjs-skills.html">← 前: Vercel / Next.js 公式 Skill</a>
+    <a href="05-comparison-summary.html">次: 比較まとめ(導入優先度・判断材料) →</a>
+  </div>
+</div>
+</body>
+</html>

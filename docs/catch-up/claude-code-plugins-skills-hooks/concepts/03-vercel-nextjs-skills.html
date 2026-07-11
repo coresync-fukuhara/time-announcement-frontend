@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>03. Vercel / Next.js 公式 Skill</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 03 / 05</div>
+    <h1>Vercel / Next.js 公式 Skill</h1>
+  </header>
+
+  <h2>vercel-labs/agent-skills(28,924 stars)</h2>
+  <div class="card">
+    <p style="margin:0">
+      <strong>GitHub</strong>: <a href="https://github.com/vercel-labs/agent-skills" target="_blank" rel="noopener">github.com/vercel-labs/agent-skills</a> ·
+      Vercel公式("Vercel's official collection of agent skills") · MIT
+    </p>
+  </div>
+  <table>
+    <thead><tr><th>Skill</th><th>概要</th><th>本プロジェクトでの用途</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>react-best-practices</code></td>
+        <td>Vercel Engineeringによる React/Next.js パフォーマンス最適化ガイドライン
+            (バレルインポート・非同期ウォーターフォール・不要な再レンダリング等69項目をチェック)</td>
+        <td>時刻グリッドの5分刻みトグルボタン(多数のコンポーネントが並ぶUI)の再レンダリング最適化に直結</td>
+      </tr>
+      <tr>
+        <td><code>composition-patterns</code></td>
+        <td>boolean propの氾濫を避ける、複合コンポーネント・render props・Context等の
+            コンポーネント設計パターン(React 19対応)</td>
+        <td>曜日タブ×時刻グリッドという2軸のUIをコンポーネント分割する際の設計指針になる</td>
+      </tr>
+      <tr>
+        <td><code>web-design-guidelines</code></td>
+        <td>Web Interface GuidelinesへのUIコード準拠をレビュー(アクセシビリティ・UX観点)</td>
+        <td>1画面完結のUIを実装した後、仕上げのアクセシビリティレビューに使える</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>vercel/next.js の /skills(140,802 stars, 本体リポジトリに統合)</h2>
+  <div class="card">
+    <p style="margin:0">
+      <strong>GitHub</strong>: <a href="https://github.com/vercel/next.js/tree/canary/skills" target="_blank" rel="noopener">github.com/vercel/next.js/tree/canary/skills</a> ·
+      以前は別リポジトリだったが、フレームワーク本体とバージョン追従させるため
+      <code>vercel/next.js</code> 本体に統合された
+    </p>
+  </div>
+  <table>
+    <thead><tr><th>Skill</th><th>概要</th><th>本プロジェクトでの用途</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>next-dev-loop</code></td>
+        <td>実行中の <code>next dev</code> に対し、<code>/_next/mcp</code>(Next.jsの視点)と
+            ブラウザ操作(ブラウザの視点)を組み合わせて「型/ビルドが通るだけでなく
+            実際に動くこと」を検証する</td>
+        <td><strong>本プロジェクトが既に導入している Next.js DevTools MCP + Playwright MCP
+            の組み合わせと、まさに同じ発想</strong>。編集→検証のループを型式化するのに直結する</td>
+      </tr>
+      <tr>
+        <td><code>next-cache-components-adoption</code></td>
+        <td>Cache Components(<code>cacheComponents</code>フラグ)を有効化し、
+            発生するブロッキングルートを解消する</td>
+        <td>現時点では1画面構成の小規模UIのため優先度は低いが、将来の最適化フェーズで検討候補</td>
+      </tr>
+      <tr>
+        <td><code>next-cache-components-optimizer</code></td>
+        <td>Cache Components導入後の初回表示・画面遷移を最適化する2つの診断ループ</td>
+        <td>同上(Cache Components導入後に初めて意味を持つ)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>インストール方法(参考)</h2>
+  <pre><code class="language-bash"># Vercel Skills(skills.sh)経由でのインストール一般形
+npx skills add vercel-labs/agent-skills --skill react-best-practices
+npx skills add vercel/next.js --skill next-dev-loop</code></pre>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li><code>next-dev-loop</code> は本プロジェクトが
+        <a href="../../../mcp-servers-design.md">MCP サーバー導入設計書</a>で選定した
+        Playwright MCP・Next.js DevTools MCP の使い方そのものをSkill化したものであり、
+        4候補の中で最も直接的に関連が深い</li>
+    <li><code>react-best-practices</code>・<code>composition-patterns</code> はUI実装の設計段階から、
+        <code>web-design-guidelines</code> は実装後のレビュー段階から、それぞれ活用できる</li>
+    <li>Cache Components関連の2つは、現状の1画面構成では優先度が低い(将来の拡張時に再検討)</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li><code>next-dev-loop</code> が本プロジェクトの既存MCP構成とどう関連していますか?</li>
+      <li>Cache Components関連の2つのSkillを、今すぐ導入しなくてよいと考えられる理由は何ですか?</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="02-official-plugins.html">← 前: Anthropic公式マーケットプレイスの厳選プラグイン</a>
+    <a href="04-superpowers.html">次: superpowers(TDD特化・高star) →</a>
+  </div>
+</div>
+</body>
+</html>

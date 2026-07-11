@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01. 用語整理と調査方針</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 01 / 05</div>
+    <h1>用語整理と調査方針</h1>
+  </header>
+
+  <h2>説明</h2>
+  <p>
+    <a href="../../agent-tool-management/index.html">agent-tool-management/</a> では
+    「MCP/Skillを発見・インストール・依存管理するツール」自体を比較した。本教材はその一段下、
+    「実際にそのツールへ乗せる中身」である <strong>Plugin・Skill・Hook</strong> を、
+    このリポジトリ(Next.js + React + TypeScript のスケジュール編集UI、TDD前提、
+    devcontainer + Claude Code)に有用そうなものに絞ってカタログ化する。
+  </p>
+
+  <h2>3つの用語</h2>
+  <table>
+    <thead><tr><th>用語</th><th>説明</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Skill</td>
+        <td><code>SKILL.md</code> という手順書。特定の状況でエージェントが自律的に読み込む
+            (または <code>/name</code> で明示的に呼び出す)。例: 「Reactのパフォーマンス最適化パターン」</td>
+      </tr>
+      <tr>
+        <td>Plugin</td>
+        <td>Skill・Agent(サブエージェント)・Hook・MCPサーバー・LSPサーバーなどをひとつの
+            ディレクトリにまとめた配布単位。<code>/plugin install</code> でチームに配れる
+            (詳細は agent-tool-management の
+            <a href="../../agent-tool-management/concepts/02-claude-code-plugins.html">Claude Code Plugins & Marketplace</a>)</td>
+      </tr>
+      <tr>
+        <td>Hook</td>
+        <td>ツール呼び出しの前後(<code>PreToolUse</code>/<code>PostToolUse</code>/<code>Stop</code>等)に
+            自動実行されるシェルコマンド。例: ファイル編集後に自動で <code>prettier</code> をかける</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>調査方針</h2>
+  <ul class="points">
+    <li><strong>公式または高star数のみ対象</strong>: Anthropic公式マーケットプレイス
+        (<code>anthropics/claude-plugins-official</code>)、Vercel/Next.js公式リポジトリ、
+        またはGitHub star数が数千〜数十万規模の実績あるものに限定する</li>
+    <li><strong>信頼性の確認方法</strong>: マーケットプレイス掲載物は <code>author</code> フィールドで
+        一次配布元を確認。サードパーティは GitHub API で star数・fork数・直近更新日・
+        アーカイブ状態を機械的に確認した(詳細は
+        <code>docs/catch-up/claude-code-plugins-skills-hooks/research.md</code>)</li>
+    <li><strong>APM(<code>apm.yml</code>)への追加は行わない</strong>: 本教材はカタログ化のみ。
+        実際に導入する場合は、必要になったタイミングで個別に検討する</li>
+  </ul>
+
+  <h2>本教材で扱う4カテゴリ</h2>
+  <table>
+    <thead><tr><th>カテゴリ</th><th>提供元</th><th>信頼性の根拠</th></tr></thead>
+    <tbody>
+      <tr><td>Anthropic公式マーケットプレイスの厳選プラグイン(9つ)</td><td>Anthropic</td><td>公式一次配布(<code>author: Anthropic</code>)</td></tr>
+      <tr><td>Vercel / Next.js公式Skill</td><td>Vercel</td><td>公式一次配布 + star数 28,924〜140,802</td></tr>
+      <tr><td>superpowers(TDD特化)</td><td>obra(サードパーティ)</td><td>star数 252,008 + Anthropic公式マーケットプレイスに採録</td></tr>
+      <tr><td>検討したが対象外にしたもの</td><td>各種</td><td>star数不足・役割重複等の理由を記録</td></tr>
+    </tbody>
+  </table>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>Skill・Plugin・Hook の違いを一言ずつで説明してください。</li>
+      <li>本教材が「公式または高star」に絞った理由と、その確認方法を説明してください。</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <span></span>
+    <a href="02-official-plugins.html">次: Anthropic公式マーケットプレイスの厳選プラグイン →</a>
+  </div>
+</div>
+</body>
+</html>

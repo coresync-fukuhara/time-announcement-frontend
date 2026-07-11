@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>05. 比較まとめ(導入優先度・判断材料)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 05 / 05</div>
+    <h1>比較まとめ(導入優先度・判断材料)</h1>
+  </header>
+
+  <div class="card">
+    <p style="margin:0">
+      <strong>このページはカタログとして書かれたが、その後 <code>apm.yml</code> への実導入も行われた。</strong>
+      当初「本教材はカタログ化のみでAPMへの追加は行わない」方針だったが、後日ユーザーの指示により
+      7つ(下表「導入状況」列参照)を <code>apm install</code> 経由で実際に追加した。
+      残りは引き続き判断材料として掲載している。
+    </p>
+  </div>
+
+  <h2>全候補一覧</h2>
+  <table>
+    <thead>
+      <tr><th>名前</th><th>種別</th><th>提供元</th><th>信頼性の根拠</th><th>導入状況</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>typescript-lsp</td><td>Plugin</td><td>Anthropic公式</td><td>一次配布</td><td class="status-todo">⬜ 未導入(APM非対応、下記コラム参照)</td></tr>
+      <tr><td>frontend-design</td><td>Plugin</td><td>Anthropic公式</td><td>一次配布</td><td class="status-done">✅ apm install 済み</td></tr>
+      <tr><td>feature-dev</td><td>Plugin</td><td>Anthropic公式</td><td>一次配布</td><td class="status-done">✅ apm install 済み</td></tr>
+      <tr><td>pr-review-toolkit</td><td>Plugin</td><td>Anthropic公式</td><td>一次配布</td><td class="status-done">✅ apm install 済み</td></tr>
+      <tr><td>commit-commands</td><td>Plugin</td><td>Anthropic公式</td><td>一次配布</td><td class="status-done">✅ apm install 済み</td></tr>
+      <tr><td>claude-md-management</td><td>Plugin</td><td>Anthropic公式</td><td>一次配布</td><td class="status-done">✅ apm install 済み</td></tr>
+      <tr><td>hookify</td><td>Plugin(Hook生成)</td><td>Anthropic公式</td><td>一次配布</td><td class="status-done">✅ apm install 済み(Hook有効化済み)</td></tr>
+      <tr><td>security-guidance</td><td>Plugin</td><td>Anthropic公式</td><td>一次配布</td><td class="status-done">✅ apm install 済み(Hook有効化済み)</td></tr>
+      <tr><td>skill-creator</td><td>Plugin</td><td>Anthropic公式</td><td>一次配布</td><td class="status-todo">⬜ 未導入</td></tr>
+      <tr><td>react-best-practices / composition-patterns / web-design-guidelines</td><td>Skill</td><td>Vercel公式</td><td>一次配布 + 28,924 stars(リポジトリ全体)</td><td class="status-done">✅ apm install 済み</td></tr>
+      <tr><td>next-dev-loop / next-cache-components-*</td><td>Skill</td><td>Vercel(Next.js本体)公式</td><td>一次配布 + 140,802 stars(リポジトリ全体)</td><td class="status-done">✅ apm install 済み(<code>#canary</code>ブランチ指定)</td></tr>
+      <tr><td>superpowers</td><td>Plugin(開発方法論)</td><td>サードパーティ(obra)</td><td>252,008 stars + 公式マーケットプレイス採録</td><td class="status-todo">⬜ 未導入</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card">
+    <h3 style="margin-top:0">typescript-lsp が導入できなかった理由</h3>
+    <p style="margin:0">
+      他のプラグインは <code>.claude-plugin/plugin.json</code> を持つ標準的なプラグイン構成だが、
+      <code>typescript-lsp</code> は <code>marketplace.json</code> 内の <code>lspServers</code>
+      フィールドとして直接定義される特殊な形式で、実体となるファイル一式が存在しない。
+      APMの汎用インストーラ(<code>apm.yml</code>/<code>SKILL.md</code>/<code>plugin.json</code>の
+      いずれかを探す)では検出できずエラーになるため、Claude Code純正の
+      <code>/plugin install typescript-lsp@claude-plugins-official</code> で個別に導入する必要がある。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">vercel/next.js 由来のSkillでハマった点</h3>
+    <p style="margin:0">
+      <code>apm install</code> はリポジトリのデフォルトブランチを <code>main</code>/<code>master</code>
+      決め打ちで試すため、デフォルトブランチが <code>canary</code> の <code>vercel/next.js</code> では
+      <code>vercel/next.js/skills/next-dev-loop</code> のような素の指定だと
+      「not accessible or doesn't exist」で失敗した。
+      <code>vercel/next.js/skills/next-dev-loop#canary</code> のように
+      <code>#&lt;ブランチ名&gt;</code> を明示することで解決した。
+    </p>
+  </div>
+
+  <h2>導入優先度(判断の切り口)</h2>
+  <ul class="points">
+    <li><strong>今すぐ実装に効いてきそうなもの</strong>:
+        <code>typescript-lsp</code>(型解析)、<code>next-dev-loop</code>(既存MCP構成の型式化)、
+        <code>react-best-practices</code>/<code>composition-patterns</code>(UI実装の設計指針)</li>
+    <li><strong>プロジェクト運用を支えるもの</strong>:
+        <code>claude-md-management</code>(CLAUDE.mdの鮮度維持)、<code>commit-commands</code>、
+        <code>skill-creator</code>(独自ワークフローのSkill化)</li>
+    <li><strong>実装が進んでからで良いもの</strong>:
+        <code>frontend-design</code>・<code>web-design-guidelines</code>(UIが形になってから)、
+        <code>pr-review-toolkit</code>・<code>security-guidance</code>(APIルート実装後)、
+        <code>next-cache-components-*</code>(最適化フェーズ)</li>
+    <li><strong>開発プロセス自体を変える大きな選択</strong>:
+        <code>superpowers</code> は個別のSkill導入とは性質が異なり、
+        既存の <code>CLAUDE.md</code> の指示との重複・競合を確認したうえで
+        全体方針として採用するかどうかを検討する話になる</li>
+  </ul>
+
+  <h2>検討したが対象外にしたもの</h2>
+  <table>
+    <thead><tr><th>候補</th><th>stars</th><th>不採用理由</th></tr></thead>
+    <tbody>
+      <tr><td>ryanlewis/claude-format-hook</td><td>4</td><td>star数が少なすぎる</td></tr>
+      <tr><td>bartolli/claude-code-typescript-hooks</td><td>178</td><td>star数が中途半端。同等機能は公式 <code>hookify</code> で代替可能</td></tr>
+      <tr><td>wsimmonds/claude-nextjs-skills</td><td>108</td><td>個人のPoC。Next.js公式Skillが <code>vercel/next.js</code> 本体に統合済み</td></tr>
+      <tr><td>lackeyjb/playwright-skill</td><td>2,889</td><td>star数は十分だが、既存のPlaywright MCPと役割が重複</td></tr>
+    </tbody>
+  </table>
+
+  <h2>まとめ</h2>
+  <ul class="points">
+    <li>Anthropic公式・Vercel公式・「公式マーケットプレイス採録+高star」のいずれかを満たすもの
+        のみをカタログ化した。個人リポジトリの小規模ツールは原則対象外とした</li>
+    <li>特に <code>next-dev-loop</code> は、本プロジェクトが既に選定したPlaywright MCP・
+        Next.js DevTools MCPの使い方をSkill化したものであり、最も直接的に関連が深い</li>
+    <li>後日、7つ(frontend-design・feature-dev・pr-review-toolkit・commit-commands・
+        claude-md-management・hookify・security-guidance)を
+        <code>apm install anthropics/claude-plugins-official/plugins/&lt;name&gt; --target claude</code>
+        で <code>apm.yml</code> に追加した。<code>apm install --mcp</code> と同様、
+        Plugin/Skill単位でも <a href="../../agent-tool-management/concepts/06-microsoft-apm.html">Microsoft APM</a>
+        経由で宣言的にインストールできることを確認済み</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>「今すぐ実装に効いてきそうなもの」として挙げた3つを説明してください。</li>
+      <li>superpowersが他の候補と性質的に異なる点は何ですか?</li>
+      <li>検討したが対象外にした4つのうち、star数以外の理由で見送られたものはどれですか?</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="04-superpowers.html">← 前: superpowers(TDD特化・高star)</a>
+    <a href="../index.html">学習インデックスに戻る →</a>
+  </div>
+</div>
+</body>
+</html>
