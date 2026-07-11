@@ -1,0 +1,4 @@
+# APM(Agent Package Manager)がダウンロードした依存の実体。apm.lock.yaml から再構築されるため
+# コミットしない(APM公式の "What to commit" 指針: apm.yml/apm.lock.yaml/.apm/.claude 等はコミットし、
+# apm_modules/ のみ除外する)。
+apm_modules/

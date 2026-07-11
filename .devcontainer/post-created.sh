@@ -28,6 +28,14 @@ claude_ownership() {
 # APM (Agent Package Manager, microsoft/apm) を導入する
 setup_apm() {
     curl -sSL https://aka.ms/apm-unix | sh
+    # apm.yml がまだ無い段階でも失敗しない (setup_node の package.json チェックと同じパターン)
+    if [ -f apm.yml ]; then
+        if [ -f apm.lock.yaml ]; then
+            apm install --frozen
+        else
+            apm install
+        fi
+    fi
 }
 
 main() {

@@ -17,7 +17,14 @@ VS Code Dev Containers での開発環境定義です。
 - `~/.claude` の所有者を `vscode` に変更(root でマウントされるため)
 - [APM(Agent Package Manager, microsoft/apm)](https://github.com/microsoft/apm) を
   公式インストールスクリプト経由(`curl -sSL https://aka.ms/apm-unix | sh`)で導入
-  (選定理由は [agent-tool-management キャッチアップ教材](../docs/catch-up/agent-tool-management/concepts/06-microsoft-apm.html) を参照)
+  (選定理由は [agent-tool-management キャッチアップ教材](../docs/catch-up/agent-tool-management/concepts/06-microsoft-apm.html) を参照)。
+  `apm.yml` 追加後は `apm install`(`apm.lock.yaml` があれば `--frozen`)で依存を復元する
+
+## APM が管理するファイル
+
+APM 公式の "What to commit" 指針([microsoft/apm の apm-usage スキル](https://github.com/microsoft/apm/blob/main/packages/apm-guide/.apm/skills/apm-usage/workflow.md)より)
+に従い、`apm.yml`・`apm.lock.yaml`・`.apm/`・`.claude/` 等の各ランタイム向け展開ファイルはコミットし、
+ダウンロードした依存の実体である `apm_modules/` のみ `.gitignore` で除外する。
 
 ## MCP サーバー
 
