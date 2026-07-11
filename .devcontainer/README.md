@@ -2,7 +2,8 @@
 
 VS Code Dev Containers での開発環境定義です。
 
-- ベースイメージ: `mcr.microsoft.com/devcontainers/base:bookworm`
+- ベースイメージ: `mcr.microsoft.com/devcontainers/base:debian`(Debianの最新安定版を指すfloatingタグ。
+  2026-07時点ではDebian 13 trixieを指す。特定バージョンに固定する理由がないため`bookworm`(12)から変更)
 - 含まれるもの: Node.js 22、GitHub CLI、Claude Code
 - ワークスペース: ホストの `.` を `/app` に bind mount
 - Claude Code の設定(`~/.claude`)は volume `claude-code-config` に永続化

@@ -1,6 +1,6 @@
 {
     "name": "time-announcement-frontend",
-    "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
     "workspaceFolder": "/app",
     "workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind,consistency=cached",
     "mounts": [
@@ -17,6 +17,7 @@
     "customizations": {
         "vscode": {
             "extensions": [
+                "ritwickdey.LiveServer",
                 "dbaeumer.vscode-eslint",
                 "esbenp.prettier-vscode",
                 "ms-azuretools.vscode-docker",
