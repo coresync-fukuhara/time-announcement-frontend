@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>07. Vercel Skills(skills.sh)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 07 / 09</div>
+    <h1>Vercel Skills(skills.sh)</h1>
+  </header>
+
+  <div class="card">
+    <p style="margin:0">
+      <strong>GitHub</strong>: <a href="https://github.com/vercel-labs/skills" target="_blank" rel="noopener">github.com/vercel-labs/skills</a> ·
+      25,780 stars / 2,159 forks(2026-07-11時点) · 2026年1月14日作成、Vercel公式が発表・運用
+    </p>
+  </div>
+
+  <h2>説明</h2>
+  <p>
+    <strong>Skills.sh</strong> は Vercel が2026年1月に発表した、Skill(再利用可能なエージェント向け
+    ワークフロー・ベストプラクティス・ドメイン知識)専門の配布エコシステム。
+    「Skill は文脈(context)における npm の瞬間だ」というコンセプトで、
+    毎回長い指示をコピペする代わりに、Skill を一度インストールしておけばエージェントが
+    必要な時に読み込んでくれる。
+  </p>
+  <p>
+    <code>npx skills</code> コマンドで完結するシンプルな CLI が特徴で、
+    Claude Code・Cursor・GitHub Copilot・Aider・OpenCode など30以上のエージェントに対応。
+  </p>
+
+  <h2>主なコマンド</h2>
+  <pre><code>npx skills find &lt;keyword&gt;     # キーワードで公開済みSkillを対話的に検索
+npx skills add &lt;package-name&gt; # 指定したSkillをプロジェクトに直接インストール</code></pre>
+
+  <h2>実績・コミュニティの勢い</h2>
+  <ul class="points">
+    <li>発表からわずか6時間で、人気Skillのインストール数が20,000件を突破</li>
+    <li>Stripe が発表当日に自社Skillを公開するなど、大手企業の参加も早い</li>
+    <li>skills.sh 自体が「ディレクトリ + リーダーボード」として機能し、
+        実際のインストール数を基準に人気Skillを追跡できる</li>
+  </ul>
+
+  <h2>Microsoft APM との違い</h2>
+  <table>
+    <thead><tr><th>観点</th><th>Vercel Skills</th><th>Microsoft APM</th></tr></thead>
+    <tbody>
+      <tr><td>管理対象</td><td>Skillのみ</td><td>Skill+Prompt+Instructions+Plugin+MCP+Hook</td></tr>
+      <tr><td>力点</td><td>発見・共有・コミュニティの規模</td><td>宣言的依存管理・ロック・組織ガバナンス</td></tr>
+      <tr><td>ロックファイル</td><td>特になし(都度installする軽量モデル)</td><td><code>apm.lock.yaml</code>でSHA固定</td></tr>
+      <tr><td>後ろ盾</td><td>Vercel(上場前提の大手フロントエンド企業)</td><td>Microsoft(元は個人OSSの移管)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li>「信頼できるか」という観点では、Vercelという大手企業が主導し、
+        star数・実インストール数の実績も大きいため、現時点で最も裏付けの強い選択肢の一つ</li>
+    <li>ただしSkill専用であり、MCPサーバーの管理やロックファイルによる再現性保証までは範囲外</li>
+    <li>「Skillの流通量・コミュニティの厚みを重視するか」「MCP/Hookも含めた依存管理・ガバナンスを重視するか」
+        で APM と使い分ける、あるいは併用する余地がある</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>Vercel Skills が Microsoft APM と比べて管理対象が狭い代わりに強みとしている点は何ですか?</li>
+      <li>Skill配布の実績(信頼性の裏付け)として、本文中で挙げられている具体的な数字を2つ挙げてください。</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="06-microsoft-apm.html">← 前: Microsoft APM</a>
+    <a href="08-other-alternatives.html">次: その他の選択肢と注意点 →</a>
+  </div>
+</div>
+</body>
+</html>

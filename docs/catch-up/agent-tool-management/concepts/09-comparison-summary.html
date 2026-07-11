@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>09. 比較まとめ(判断材料)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 09 / 09</div>
+    <h1>比較まとめ(判断材料)</h1>
+  </header>
+
+  <div class="card">
+    <p style="margin:0">
+      <strong>このページは特定のツールを推奨するものではありません。</strong>
+      プロジェクトの状況(チーム規模・対応クライアント・セキュリティ要件・ガバナンス要件・コスト許容度)に応じて、
+      以下の一覧を判断材料としてご活用ください。特に「そもそも package manager 級のツール
+      (Microsoft APM 等)まで必要か、発見・インストール系のツールで足りるか」を判断できることを
+      このページのゴールとする。
+    </p>
+  </div>
+
+  <h2>8ツールの全体像</h2>
+  <table>
+    <thead>
+      <tr><th>ツール</th><th>方向性</th><th>管理対象</th><th>対応クライアント</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Claude Code Plugins</td><td>発見・インストール</td><td>Skill+Agent+Hook+MCP+LSP</td><td>Claude Code専用</td></tr>
+      <tr><td>Smithery</td><td>発見・インストール</td><td>MCPのみ</td><td>複数(Cursor/Claude Code/ChatGPT等)</td></tr>
+      <tr><td>Docker MCP Toolkit</td><td>発見・インストール</td><td>MCPのみ</td><td>複数(Claude Desktop/VSCode/Cursor等)</td></tr>
+      <tr><td>install-mcp</td><td>発見・インストール(最軽量)</td><td>MCPのみ</td><td>16種類以上</td></tr>
+      <tr><td>Microsoft APM</td><td>宣言的依存管理・再現性・ガバナンス</td><td>Skill+Prompt+Instructions+Plugin+MCP+Hook</td><td>8種(Copilot/Claude Code/Cursor等)</td></tr>
+      <tr><td>Vercel Skills</td><td>宣言的インストール・大規模流通</td><td>Skillのみ</td><td>30種以上</td></tr>
+      <tr><td>agent-sh/agentsys</td><td>宣言的インストール(バンドル配布)</td><td>Plugin+Agent+Skill</td><td>5種</td></tr>
+      <tr><td>agentget</td><td>発見・インストール(最軽量)</td><td>Agent/Skill/Instructions</td><td>38種以上(謳っている数)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>詳細比較: 発見・インストール系(02〜05)</h2>
+  <div style="overflow-x:auto">
+  <table>
+    <thead>
+      <tr>
+        <th>観点</th>
+        <th>Claude Code Plugins</th>
+        <th>Smithery</th>
+        <th>Docker MCP Toolkit</th>
+        <th>install-mcp</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>レジストリ/検索</td>
+        <td>あり(マーケットプレイス)</td>
+        <td>あり(7,000+サーバー)</td>
+        <td>あり(300+検証済み)</td>
+        <td>なし</td>
+      </tr>
+      <tr>
+        <td>ホスティング</td>
+        <td>なし(ローカル実行)</td>
+        <td>あり(リモート実行可)</td>
+        <td>なし(ローカルコンテナ実行)</td>
+        <td>なし</td>
+      </tr>
+      <tr>
+        <td>セキュリティ機構</td>
+        <td>特になし</td>
+        <td>OAuth自動管理</td>
+        <td>コンテナ隔離・署名検証・リソース制限(強)</td>
+        <td>特になし</td>
+      </tr>
+      <tr>
+        <td>再現性(ロックファイル等)</td>
+        <td>なし</td>
+        <td>なし</td>
+        <td>なし</td>
+        <td>なし</td>
+      </tr>
+      <tr>
+        <td>料金</td>
+        <td>無料(個別プラグインの料金は提供者次第)</td>
+        <td>登録・CLIは無料/ホスティングは従量課金あり</td>
+        <td>無料(Docker Desktop自体は個人利用無料)</td>
+        <td>無料(OSS)</td>
+      </tr>
+      <tr>
+        <td>導入の手軽さ</td>
+        <td>中(マーケットプレイス選定が必要)</td>
+        <td>中(アカウント登録が必要な場合あり)</td>
+        <td>中(Docker Desktopが前提)</td>
+        <td>高(その場でコマンド一発)</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>詳細比較: 宣言的依存管理系(06〜08)</h2>
+  <div style="overflow-x:auto">
+  <table>
+    <thead>
+      <tr>
+        <th>観点</th>
+        <th>Microsoft APM</th>
+        <th>Vercel Skills</th>
+        <th>agent-sh/agentsys</th>
+        <th>agentget</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>ロックファイル/再現性</td>
+        <td>あり(<code>apm.lock.yaml</code>でSHA固定)</td>
+        <td>なし(都度install)</td>
+        <td>明確な記載なし</td>
+        <td>なし</td>
+      </tr>
+      <tr>
+        <td>ガバナンス機構</td>
+        <td>あり(<code>apm-policy.yml</code>で組織統制)</td>
+        <td>なし</td>
+        <td>なし</td>
+        <td>なし</td>
+      </tr>
+      <tr>
+        <td>GitHub stars(2026-07-11)</td>
+        <td>3,169</td>
+        <td>25,780</td>
+        <td>890</td>
+        <td>33</td>
+      </tr>
+      <tr>
+        <td>後ろ盾</td>
+        <td>Microsoft(元は個人OSSの移管)</td>
+        <td>Vercel(公式)</td>
+        <td>コミュニティ(個人/OSS org)</td>
+        <td>個人開発者</td>
+      </tr>
+      <tr>
+        <td>料金</td>
+        <td>無料(OSS・MIT)</td>
+        <td>無料(OSS)</td>
+        <td>無料(OSS・MIT)</td>
+        <td>無料(OSS・Apache-2.0)</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>メリット・デメリットの再掲(8ツール)</h2>
+  <table>
+    <thead><tr><th>ツール</th><th>最大のメリット</th><th>最大のデメリット</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Claude Code Plugins</td>
+        <td>Skill含め丸ごと1パッケージで配布・共有できる</td>
+        <td>Claude Code専用。他クライアントには使えない</td>
+      </tr>
+      <tr>
+        <td>Smithery</td>
+        <td>ホスティングとOAuth自動化で運用の手間を減らせる</td>
+        <td>サードパーティ経由。コストとデータ経路の確認が必要</td>
+      </tr>
+      <tr>
+        <td>Docker MCP Toolkit</td>
+        <td>コンテナ隔離・署名検証でセキュリティ面が最も堅い</td>
+        <td>Docker Desktopが前提。起動がやや重い</td>
+      </tr>
+      <tr>
+        <td>install-mcp</td>
+        <td>依存や契約が一切なく、その場ですぐ使える</td>
+        <td>発見・セキュリティ検証は自分で行う必要がある</td>
+      </tr>
+      <tr>
+        <td>Microsoft APM</td>
+        <td>Skill/MCP/Hookまで丸ごと宣言的に管理でき、ロックファイルとガバナンスで企業導入にも耐える</td>
+        <td>他候補より学習コストが高め。ガバナンス機能はまだ発展途上</td>
+      </tr>
+      <tr>
+        <td>Vercel Skills</td>
+        <td>大手企業(Vercel)の後ろ盾とコミュニティの実績(インストール数)が最も大きい</td>
+        <td>Skill専用。MCPサーバーやロックファイルによる再現性保証は範囲外</td>
+      </tr>
+      <tr>
+        <td>agent-sh/agentsys</td>
+        <td>Plugin/Agent/Skillをまとめて「フルセット」で試せる</td>
+        <td>実績(star数)がまだ小さく、ガバナンス機構もない</td>
+      </tr>
+      <tr>
+        <td>agentget</td>
+        <td>GitHubリポジトリをそのままレジストリにできる手軽さ</td>
+        <td>個人開発かつ実績が最小。導入前に中身を自分で検証する前提が必要</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>「package manager まで必要か」を判断する手順</h2>
+  <p>
+    01で挙げた目安を、実際に順番に当てはめると次のようになる。
+  </p>
+  <ol>
+    <li>
+      <strong>Step1: 現状の運用で何に困っているか</strong> —
+      困りごとが特にない(1人で使っていて、都度 <code>.mcp.json</code> を手で書けば済む)なら、
+      02〜05すら不要で現状維持でよい
+    </li>
+    <li>
+      <strong>Step2: 困りごとが「発見しにくい」「隔離実行したい」「マーケットプレイスで配りたい」なら</strong> →
+      02〜05(発見・インストール系)で足りる。追加の依存管理・ロックファイルは過剰
+    </li>
+    <li>
+      <strong>Step3: 困りごとが「環境間で構成がズレる」「チーム/CIで寸分違わず再現したい」
+      「Skillだけでなく全部丸ごとロック・統制したい」なら</strong> →
+      06 Microsoft APM のような宣言的依存管理まで踏み込む価値がある
+    </li>
+    <li>
+      <strong>Step4: 「Skill流通の実績・コミュニティの厚みだけを重視したい」なら</strong> →
+      07 Vercel Skills で十分。フルスタックな依存管理(APM)は過剰な場合が多い
+    </li>
+  </ol>
+
+  <div class="card">
+    <h3 style="margin-top:0">このプロジェクト(schedule-ui)への当てはめ</h3>
+    <p>
+      本リポジトリは家庭内LAN・単一利用者運用が前提で、認証も楽観ロックも持たない設計になっている
+      (<a href="../../../schedule-ui-overview-design.md">schedule-ui-overview-design.md</a>)。
+      Step1〜4に照らすと、「複数人でのチーム開発」「CI環境での再現性」「組織的なガバナンス」は
+      いずれも現時点では当てはまらない。したがって <strong>Microsoft APM のような package manager 級の
+      ツールを今すぐ導入する必要性は低く</strong>、MCP サーバーを増やす場面が来たとしても、
+      02〜05の発見・インストール系(特に軽量な install-mcp や、Docker前提ならDocker MCP Toolkit)で
+      十分間に合う可能性が高い。将来チーム開発やCI連携が発生した時点で、改めて06〜08を見直すとよい。
+    </p>
+  </div>
+
+  <h2>判断の切り口(その他の軸)</h2>
+  <ul class="points">
+    <li><strong>Skill配布も含めて統一管理したい(単一クライアント前提)</strong> → Claude Code Plugins</li>
+    <li><strong>複数クライアントを横断して使う/チームの標準を揃えたい(MCPのみ)</strong> → Smithery か Docker MCP Toolkit</li>
+    <li><strong>信頼性の低い/出所不明なMCPサーバーも試したい、隔離実行を重視したい</strong> → Docker MCP Toolkit</li>
+    <li><strong>とにかく手早く1つだけ追加したい、余計な依存を増やしたくない</strong> → install-mcp
+        (本プロジェクトの <code>.mcp.json</code> への手動追記も実質これに近い方式)</li>
+    <li><strong>Skill/MCP/Hookをまとめて宣言的に管理し、企業でのガバナンスも見据えたい</strong> → Microsoft APM</li>
+    <li><strong>Skillの流通量・コミュニティの厚みを最優先したい</strong> → Vercel Skills(skills.sh)</li>
+    <li><strong>「Agent Package Manager」的な名前のサービスを見つけたが実態が分からない</strong> →
+        GitHub star数・コミット履歴・ライセンスの有無・開発元の透明性を確認するまで導入を保留する</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>Skillも含めて管理したい場合、8候補のうちどれを選ぶべきですか? 理由も添えてください。</li>
+      <li>セキュリティ(隔離実行)を最優先したい場合、どのツールが適していますか?</li>
+      <li>「package manager まで必要か」を判断するStep1〜4のうち、本プロジェクト(schedule-ui)は
+          どのStepで止まると考えられますか? 理由も説明してください。</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="08-other-alternatives.html">← 前: その他の選択肢と注意点</a>
+    <a href="../index.html">学習インデックスに戻る →</a>
+  </div>
+</div>
+</body>
+</html>

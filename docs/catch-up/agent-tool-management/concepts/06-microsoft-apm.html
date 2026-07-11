@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>06. Microsoft APM</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 06 / 09</div>
+    <h1>Microsoft APM</h1>
+  </header>
+
+  <div class="card">
+    <p style="margin:0">
+      <strong>GitHub</strong>: <a href="https://github.com/microsoft/apm" target="_blank" rel="noopener">github.com/microsoft/apm</a> ·
+      MIT ライセンス · 3,169 stars / 277 forks(2026-07-11時点) · 活発に開発中(直近プッシュも当日)
+    </p>
+  </div>
+
+  <h2>説明</h2>
+  <p>
+    <strong>APM(Agent Package Manager)</strong>は、AI コーディングエージェントの設定を
+    npm や pip がコードの依存関係を扱うのと同じ発想で管理する OSS プロジェクト。
+    Skill・Prompt・Instructions・Plugin・MCP サーバー・Hook といった
+    「エージェントが必要とするあらゆる部品」を <code>apm.yml</code> に宣言し、
+    <code>apm install</code> 一発で誰の環境でも同じ構成を再現する。
+    01で見た「宣言的依存管理・再現性寄り」の代表格にあたる。
+  </p>
+  <p>
+    興味深い点として、このリポジトリは元々個人開発者(Daniel Meppiel)が
+    <code>danielmeppiel/apm</code> として立ち上げた OSS で、<strong>同一のリポジトリのまま
+    Microsoft org に移管</strong>されている(GitHub のリポジトリIDが一致することで確認済み)。
+    企業が単体で開発した公式ツールというより、コミュニティ発のプロジェクトが
+    Microsoft に採用された経緯を持つ。
+  </p>
+
+  <h2>3つのコアプロミス</h2>
+  <table>
+    <thead><tr><th>プロミス</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>ポータビリティ</td>
+        <td><code>apm.yml</code> に全設定を宣言。<code>apm install</code> で同一セットアップを全環境に再現。
+            transitive dependency resolution(npm/pip同様の推移的依存解決)にも対応</td>
+      </tr>
+      <tr>
+        <td>セキュリティ</td>
+        <td>隠れた Unicode ブロック等の脅威検出、<code>apm.lock.yaml</code> による整合性ハッシュ記録、
+            SBOM 出力対応、MCP サーバーの信頼境界管理</td>
+      </tr>
+      <tr>
+        <td>ガバナンス</td>
+        <td><code>apm-policy.yml</code> で組織が許可ソース・スコープを統制。
+            エンタープライズから単一リポまで段階的に適用可能</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2><code>apm.yml</code> / <code>apm.lock.yaml</code> の役割</h2>
+  <ul class="points">
+    <li><code>apm.yml</code>: プロジェクトが必要とする Skill/Prompt/Instructions/Plugin/MCPサーバー等を宣言する、
+        いわば <code>package.json</code> 相当のファイル</li>
+    <li><code>apm.lock.yaml</code>: 解決済みの依存木をフルコミットSHA(40文字)で固定する、
+        <code>package-lock.json</code> 相当のファイル。今日 clone しても半年後に clone しても
+        同じエージェント挙動になることを保証する</li>
+  </ul>
+
+  <h2>対応クライアント</h2>
+  <p>
+    GitHub Copilot・Claude Code・Cursor・OpenCode・Codex・Gemini・Windsurf・Kiro の8クライアントに対応。
+    1つの <code>apm.yml</code> で複数クライアントの設定を横断できる点が特徴。
+  </p>
+
+  <h2>インストール</h2>
+  <pre><code># Unix系
+curl -sSL https://aka.ms/apm-unix | sh
+
+# Homebrew / Scoop / pip 経由のインストールにも対応</code></pre>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li>02〜05の4ツールと違い、「レジストリで探す」より「宣言・ロック・再現・統制」に力点がある</li>
+    <li>Skill だけでなく MCP サーバーや Hook も含めて丸ごと依存管理できる点は、
+        02の Claude Code Plugins & Marketplace に近い発想だが、Claude Code専用ではなく
+        複数クライアント横断が前提</li>
+    <li>組織的なガバナンス(<code>apm-policy.yml</code>)を持つ点が、他の類似ツールとの大きな差別化要因</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>Microsoft APM の <code>apm.lock.yaml</code> は npm の何に相当しますか? また何のために存在しますか?</li>
+      <li>Microsoft APM が他のツールと比べて組織導入に向いていると考えられる根拠は何ですか?</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="05-install-mcp.html">← 前: install-mcp</a>
+    <a href="07-vercel-skills.html">次: Vercel Skills(skills.sh) →</a>
+  </div>
+</div>
+</body>
+</html>

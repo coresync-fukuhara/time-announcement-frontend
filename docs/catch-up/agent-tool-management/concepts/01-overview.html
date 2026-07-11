@@ -9,7 +9,7 @@
 <body>
 <div class="wrap">
   <header class="page-header">
-    <div class="kicker">Concept 01 / 06</div>
+    <div class="kicker">Concept 01 / 09</div>
     <h1>なぜ管理ツールが必要か</h1>
   </header>
 
@@ -19,7 +19,7 @@
     <strong>MCP サーバー</strong>(外部システムと繋がるツール)や
     <strong>Skill</strong>(特定作業の手順書、<code>/name</code>で呼び出せる)を追加することで能力を拡張できる。
     本プロジェクトでもすでに Playwright MCP・Next.js DevTools MCP を追加した
-    ([MCP サーバー導入設計書](../../../mcp-servers-design.md))。
+    (<a href="../../../mcp-servers-design.md">MCP サーバー導入設計書</a>)。
   </p>
   <p>
     追加するパーツが増えると、次のような課題が出てくる。
@@ -29,39 +29,68 @@
     <li><strong>インストール</strong>: クライアント(Claude Code, Cursor, VS Code等)ごとに設定形式が違う</li>
     <li><strong>更新</strong>: バージョンが上がったときに追従する仕組みがあるか</li>
     <li><strong>共有</strong>: チームメンバーに同じ構成を配れるか</li>
-    <li><strong>セキュリティ</strong>: 得体の知れないMCPサーバーを野放しに実行して大丈夫か</li>
+    <li><strong>再現性</strong>: 自分の環境で動いた構成を、他の開発者やCI環境でも寸分違わず再現できるか</li>
+    <li><strong>セキュリティ</strong>: 得体の知れないMCPサーバーや取り込んだSkillを野放しに実行して大丈夫か</li>
+    <li><strong>ガバナンス</strong>: チームや組織で「使ってよいもの」を統制できるか</li>
+  </ul>
+
+  <h2>2つの軸: 「発見・インストール」 vs 「宣言的依存管理・再現性」</h2>
+  <p>
+    これらの課題を解決するツールを調べると、大きく2つの方向性に分かれることが分かる。
+  </p>
+  <ul class="points">
+    <li><strong>発見・インストール寄り</strong>: 「どんなMCP/Skillがあるか探して、設定に追記する」ことに力点。
+        レジストリ・マーケットプレイスの充実度や、隔離実行などのセキュリティ機構が差別化要因になる</li>
+    <li><strong>宣言的依存管理・再現性寄り</strong>: npm/pip のように、必要な構成を1ファイルに宣言し
+        (<code>package.json</code>相当)、lockファイルで固定して(<code>package-lock.json</code>相当)、
+        誰の環境でも寸分違わず再現することに力点。組織的なガバナンス機構を持つものもある</li>
   </ul>
   <p>
-    例えるなら、スマホにアプリを1つずつ apk ファイルで手動インストールするか、
-    App Store のようなストアを使うか、という違い。パーツの数が少なければ手動で十分だが、
-    増えてくると「ストア(管理ツール)」があったほうが楽になる。
+    例えるなら、前者は「App Store から都度アプリを探してインストールする」感覚、
+    後者は「<code>package.json</code> に依存を書いて <code>npm install</code> する」感覚に近い。
+    パーツの数が少なく、個人利用がメインなら前者で十分なことが多いが、
+    複数人・複数環境で「寸分違わず同じ構成」を求められるようになると、後者が効いてくる。
   </p>
 
-  <h2>今回比較する4つの立ち位置</h2>
+  <h2>今回比較する8つの立ち位置</h2>
   <table>
-    <thead><tr><th>ツール</th><th>管理対象</th><th>提供形態</th></tr></thead>
+    <thead><tr><th>ツール</th><th>管理対象</th><th>方向性</th><th>提供形態</th></tr></thead>
     <tbody>
-      <tr><td>Claude Code Plugins &amp; Marketplace</td><td>Skill + Agent + Hook + MCP + LSP をまとめて1パッケージ</td><td>Anthropic公式・Claude Code専用</td></tr>
-      <tr><td>Smithery</td><td>MCP サーバーのみ</td><td>サードパーティのレジストリ+ホスティング</td></tr>
-      <tr><td>Docker MCP Toolkit</td><td>MCP サーバーのみ</td><td>Docker公式・コンテナ実行基盤</td></tr>
-      <tr><td>install-mcp</td><td>MCP サーバーのみ</td><td>OSSの軽量CLI(設定ファイル編集の自動化のみ)</td></tr>
+      <tr><td>Claude Code Plugins &amp; Marketplace</td><td>Skill+Agent+Hook+MCP+LSP</td><td>発見・インストール</td><td>Anthropic公式・Claude Code専用</td></tr>
+      <tr><td>Smithery</td><td>MCPのみ</td><td>発見・インストール</td><td>サードパーティのレジストリ+ホスティング</td></tr>
+      <tr><td>Docker MCP Toolkit</td><td>MCPのみ</td><td>発見・インストール</td><td>Docker公式・コンテナ実行基盤</td></tr>
+      <tr><td>install-mcp</td><td>MCPのみ</td><td>発見・インストール(最軽量)</td><td>OSSの軽量CLI</td></tr>
+      <tr><td>Microsoft APM</td><td>Skill+Prompt+Instructions+Plugin+MCP+Hook</td><td>宣言的依存管理・再現性・ガバナンス</td><td>Microsoft(元は個人OSSの移管)</td></tr>
+      <tr><td>Vercel Skills(skills.sh)</td><td>Skillのみ</td><td>宣言的インストール・大規模流通</td><td>Vercel公式</td></tr>
+      <tr><td>agent-sh/agentsys</td><td>Plugin+Agent+Skill</td><td>宣言的インストール(バンドル配布)</td><td>OSS(コミュニティ)</td></tr>
+      <tr><td>agentget</td><td>Agent/Skill/Instructions</td><td>発見・インストール(最軽量)</td><td>OSS(個人)</td></tr>
     </tbody>
   </table>
 
-  <h2>ポイント</h2>
+  <h2>「package manager まで必要か」を判断する目安</h2>
+  <p>
+    以下のような状況に当てはまるほど、単なる発見・インストールツールでは足りず、
+    宣言的依存管理(Microsoft APM 等)まで踏み込む価値が出てくる。逆にどれも当てはまらないなら、
+    より手軽な発見・インストール系のツールで十分なことが多い。
+  </p>
   <ul class="points">
-    <li>Skill も含めてまとめて管理したいなら、選択肢は実質 Claude Code Plugins のみ
-        (他3つはMCPサーバーのみが対象)</li>
-    <li>「レジストリ(見つける)」「ホスティング(動かす)」「セキュリティ(隔離実行)」
-        「軽量インストール(設定を書くだけ)」で、ツールごとに力点が異なる</li>
-    <li>4つは排他ではなく、Claude Code Plugins ✕ Docker MCP Toolkit のように組み合わせることも可能</li>
+    <li>複数人の開発者が関わり、「私の環境では動くのに」を防ぎたい</li>
+    <li>CI環境やオンボーディング時に、エージェント構成を自動で再現したい</li>
+    <li>半年後にcloneしても同じ挙動を保証したい(lockファイルによるバージョン固定が欲しい)</li>
+    <li>組織として「使ってよいSkill/MCPサーバーの出所」を統制したい(ガバナンス要件がある)</li>
+    <li>複数クライアント(Claude Code・Cursor・Copilot等)を横断して同じ構成を配りたい</li>
   </ul>
+  <p>
+    本教材の後半(06〜09)では、この「宣言的依存管理・再現性」寄りのツールを深掘りする。
+  </p>
 
   <div class="quiz">
     <h3 style="margin-top:0">確認問題</h3>
     <ol>
       <li>MCP/Skillが増えたときに生じる課題を3つ挙げてください。</li>
-      <li>今回の4候補のうち、Skillの管理まで含んでいるのはどれですか?</li>
+      <li>「発見・インストール寄り」のツールと「宣言的依存管理・再現性寄り」のツールの違いを、
+          npmの比喩を使って説明してください。</li>
+      <li>自分のプロジェクトで package manager 級のツールが必要かどうかを判断する目安を2つ挙げてください。</li>
     </ol>
   </div>
 

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>08. その他の選択肢と注意点</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="page-header">
+    <div class="kicker">Concept 08 / 09</div>
+    <h1>その他の選択肢と注意点</h1>
+  </header>
+
+  <h2>agent-sh/agentsys</h2>
+  <div class="card">
+    <p style="margin:0">
+      <strong>GitHub</strong>: <a href="https://github.com/agent-sh/agentsys" target="_blank" rel="noopener">github.com/agent-sh/agentsys</a> ·
+      MIT ライセンス · 890 stars / 108 forks(2026-07-11時点) · 2026年1月作成、直近も活発に更新中
+    </p>
+  </div>
+  <p>
+    24 Plugin・49 Agent・44 Skill を1セットとしてバンドル配布する「フルスタックのエージェント環境」。
+    Claude Code・OpenCode・Codex・Cursor・Kiro に対応。Skillだけでなく Agent や Plugin 一式を
+    まとめて配布する点で Microsoft APM に近い発想だが、<code>apm-policy.yml</code> のような
+    組織ガバナンス機構は今のところ確認できない。star数もAPMの1/3程度で、
+    コミュニティの厚みという点ではまだ発展途上。
+  </p>
+
+  <h2>agentget</h2>
+  <div class="card">
+    <p style="margin:0">
+      <strong>GitHub</strong>: <a href="https://github.com/joeyism/agentget" target="_blank" rel="noopener">github.com/joeyism/agentget</a> ·
+      Apache-2.0 · 33 stars / 3 forks(2026-07-11時点) · 2026年3月作成、直近プッシュは同年3月末で以降停滞気味
+    </p>
+  </div>
+  <p>
+    GitHub リポジトリをそのまま「レジストリ」として扱い、<code>npx agentget add owner/repo --agent name</code>
+    のように任意の GitHub リポジトリから Agent/Skill/Instructions を直接インストールできる軽量CLI。
+    考え方は05で見た install-mcp(設定ファイルへの追記を簡略化するだけの最小構成)に近く、
+    「発見・インストール寄り」に分類される。
+  </p>
+  <ul class="points">
+    <li>個人開発かつ star数がまだ30強と少なく、継続的なメンテナンスが保証されているとは言いにくい</li>
+    <li>導入前に、対象リポジトリの中身(取り込むAgent/Skillのコード)を自分の目で確認することが前提になる
+        (レジストリ側の検証機構がないため)</li>
+  </ul>
+
+  <h2>名前が紛らわしい要注意サービス</h2>
+  <div class="card">
+    <p style="margin:0">
+      <strong>本教材では以下2つを「信頼できるツール」には含めません。</strong>
+      名前だけで判断せず、都度実態を確認してください。
+    </p>
+  </div>
+  <table>
+    <thead><tr><th>サービス</th><th>実態</th><th>注意点</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>agentpackagemanager.com</code>(AgentPM™)</td>
+        <td>商用サービスを謳うが、公開 GitHub リポジトリや第三者レビューが見当たらない</td>
+        <td>開発元・運営実態を検証する材料が乏しい。star数やコミット履歴で信頼性を確認できないため、
+            導入前に運営者情報・利用規約・データの扱いを個別に確認する必要がある</td>
+      </tr>
+      <tr>
+        <td><code>agentpm.dev</code></td>
+        <td>名前は似ているが、実際はコーディングエージェントの作業証跡(プロンプト→PR)を記録・検索する
+            別カテゴリのツール</td>
+        <td>「パッケージマネージャー」ではないため、本教材のテーマとは無関係。検索時に混同しやすいので注意</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>ポイント</h2>
+  <ul class="points">
+    <li>信頼性を測る具体的な物差しとして、本教材では GitHub の star数・fork数・直近のコミット/リリース頻度・
+        ライセンスの明示・開発元(個人/企業/大手OSS org)を確認した</li>
+    <li>「Agent Package Manager」に類する名前のサービスは玉石混交。名前の一致だけで信用せず、
+        OSSであればリポジトリの実態、商用であれば運営元の透明性を必ず確認する</li>
+    <li>agent-sh/agentsys・agentget は将来伸びる可能性はあるが、2026年7月時点では
+        Microsoft APM や Vercel Skills ほどの実績・後ろ盾はまだない</li>
+  </ul>
+
+  <div class="quiz">
+    <h3 style="margin-top:0">確認問題</h3>
+    <ol>
+      <li>agentget を業務プロジェクトに導入する前に、確認すべきことは何ですか?</li>
+      <li>「Agent Package Manager」という名前のサービスを見つけたとき、信頼性をどう確認すべきですか?
+          本文中の物差しを3つ挙げてください。</li>
+    </ol>
+  </div>
+
+  <div class="nav">
+    <a href="07-vercel-skills.html">← 前: Vercel Skills(skills.sh)</a>
+    <a href="09-comparison-summary.html">次: 比較まとめ(判断材料) →</a>
+  </div>
+</div>
+</body>
+</html>
