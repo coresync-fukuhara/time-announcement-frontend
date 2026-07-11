@@ -25,10 +25,16 @@ claude_ownership() {
     sudo chown -R vscode:vscode ~/.claude
 }
 
+# APM (Agent Package Manager, microsoft/apm) を導入する
+setup_apm() {
+    curl -sSL https://aka.ms/apm-unix | sh
+}
+
 main() {
     setup_node
     configure_git
     claude_ownership
+    setup_apm
 }
 
 main "$@"

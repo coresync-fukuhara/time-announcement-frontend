@@ -15,6 +15,9 @@ VS Code Dev Containers での開発環境定義です。
 - `corepack` 経由で `pnpm` を有効化(`package.json` 追加後は `pnpm install` を実行)
 - `git config --global --add safe.directory /app`
 - `~/.claude` の所有者を `vscode` に変更(root でマウントされるため)
+- [APM(Agent Package Manager, microsoft/apm)](https://github.com/microsoft/apm) を
+  公式インストールスクリプト経由(`curl -sSL https://aka.ms/apm-unix | sh`)で導入
+  (選定理由は [agent-tool-management キャッチアップ教材](../docs/catch-up/agent-tool-management/concepts/06-microsoft-apm.html) を参照)
 
 ## MCP サーバー
 
