@@ -19,6 +19,7 @@ dependencies:
     - vercel/next.js/skills/next-dev-loop#canary
     - vercel/next.js/skills/next-cache-components-adoption#canary
     - vercel/next.js/skills/next-cache-components-optimizer#canary
+    - obra/superpowers
   mcp:
     - name: playwright
       registry: false
