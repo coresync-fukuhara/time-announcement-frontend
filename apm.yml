@@ -1,0 +1,24 @@
+name: time-announcement-frontend
+version: 1.0.0
+description: タイムアナウンスメント再生プログラム(src/main.py)向けの schedules.json 編集フロントエンド
+author: macha434
+targets:
+- claude
+dependencies:
+  apm: []
+  mcp:
+  - name: playwright
+    registry: false
+    transport: stdio
+    command: npx
+    args:
+    - '@playwright/mcp@latest'
+  - name: next-devtools
+    registry: false
+    transport: stdio
+    command: npx
+    args:
+    - -y
+    - next-devtools-mcp@latest
+includes: auto
+scripts: {}

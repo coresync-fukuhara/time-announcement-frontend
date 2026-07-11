@@ -30,6 +30,9 @@ setup_apm() {
     curl -sSL https://aka.ms/apm-unix | sh
     # apm.yml がまだ無い段階でも失敗しない (setup_node の package.json チェックと同じパターン)
     if [ -f apm.yml ]; then
+        # .claude/ は空ディレクトリのため git 経由では復元されない。
+        # 無い状態で apm install が Claude Code 向け設定の書き込みをスキップするため先に作る
+        mkdir -p .claude
         if [ -f apm.lock.yaml ]; then
             apm install --frozen
         else

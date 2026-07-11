@@ -18,7 +18,7 @@ VS Code Dev Containers での開発環境定義です。
 - [APM(Agent Package Manager, microsoft/apm)](https://github.com/microsoft/apm) を
   公式インストールスクリプト経由(`curl -sSL https://aka.ms/apm-unix | sh`)で導入
   (選定理由は [agent-tool-management キャッチアップ教材](../docs/catch-up/agent-tool-management/concepts/06-microsoft-apm.html) を参照)。
-  `apm.yml` 追加後は `apm install`(`apm.lock.yaml` があれば `--frozen`)で依存を復元する
+  続けて `apm install --frozen`(`apm.yml`/`apm.lock.yaml` から MCP サーバー等の依存を復元)を実行する
 
 ## APM が管理するファイル
 
@@ -28,7 +28,8 @@ APM 公式の "What to commit" 指針([microsoft/apm の apm-usage スキル](ht
 
 ## MCP サーバー
 
-開発時にエージェント(Claude Code)が接続する MCP サーバーは `.mcp.json` で定義しています。
+開発時にエージェント(Claude Code)が接続する MCP サーバーは `apm.yml` で宣言し、
+`apm install` が生成する `.mcp.json` 経由で読み込まれます(`.mcp.json` は生成物だがコミット対象)。
 選定理由は [MCP サーバー導入設計書](../docs/mcp-servers-design.md) を参照してください。
 
 - Playwright MCP(ブラウザ操作・E2E デバッグ)
