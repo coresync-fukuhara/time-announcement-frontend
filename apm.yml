@@ -3,22 +3,29 @@ version: 1.0.0
 description: タイムアナウンスメント再生プログラム(src/main.py)向けの schedules.json 編集フロントエンド
 author: macha434
 targets:
-- claude
+  - claude
 dependencies:
-  apm: []
+  apm:
+    - anthropics/claude-plugins-official/plugins/claude-md-management
+    - anthropics/claude-plugins-official/plugins/feature-dev
+    - anthropics/claude-plugins-official/plugins/pr-review-toolkit
+    - anthropics/claude-plugins-official/plugins/commit-commands
+    - anthropics/claude-plugins-official/plugins/hookify
+    - anthropics/claude-plugins-official/plugins/security-guidance
+    - anthropics/claude-plugins-official/plugins/frontend-design
   mcp:
-  - name: playwright
-    registry: false
-    transport: stdio
-    command: npx
-    args:
-    - '@playwright/mcp@latest'
-  - name: next-devtools
-    registry: false
-    transport: stdio
-    command: npx
-    args:
-    - -y
-    - next-devtools-mcp@latest
+    - name: playwright
+      registry: false
+      transport: stdio
+      command: npx
+      args:
+        - '@playwright/mcp@latest'
+    - name: next-devtools
+      registry: false
+      transport: stdio
+      command: npx
+      args:
+        - -y
+        - next-devtools-mcp@latest
 includes: auto
 scripts: {}

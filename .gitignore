@@ -2,3 +2,6 @@
 # コミットしない(APM公式の "What to commit" 指針: apm.yml/apm.lock.yaml/.apm/.claude 等はコミットし、
 # apm_modules/ のみ除外する)。
 apm_modules/
+
+# Claude Code の個人用ローカル設定(端末固有、Claude Code公式の慣習でもgitignore対象)
+.claude/settings.local.json

@@ -1,7 +1,171 @@
 lockfile_version: '1'
 generated_at: '2026-07-11T08:00:04.847693+00:00'
 apm_version: 0.24.1
-dependencies: []
+dependencies:
+- repo_url: anthropics/claude-plugins-official
+  name: claude-md-management
+  host: github.com
+  resolved_commit: 2f634a9314e6465d2b6ec1ad9557815293949731
+  version: 1.0.0
+  virtual_path: plugins/claude-md-management
+  is_virtual: true
+  package_type: marketplace_plugin
+  deployed_files:
+  - .claude/commands/revise-claude-md.md
+  - .claude/skills/claude-md-improver
+  - .claude/skills/claude-md-improver/SKILL.md
+  - .claude/skills/claude-md-improver/references/quality-criteria.md
+  - .claude/skills/claude-md-improver/references/templates.md
+  - .claude/skills/claude-md-improver/references/update-guidelines.md
+  deployed_file_hashes:
+    .claude/commands/revise-claude-md.md: sha256:749dc2d70bd14cfad56b424e23205ae3cc81dca9378c869e3c895a78197cdd69
+    .claude/skills/claude-md-improver/SKILL.md: sha256:b06c7420be08ca1c7f6d75f7f4709fdb787624a2d363e2f8052216d8c780f85b
+    .claude/skills/claude-md-improver/references/quality-criteria.md: sha256:383def16b05dca948297dd1acb33f007cb1b1b2c368454d424c5634348a8bab1
+    .claude/skills/claude-md-improver/references/templates.md: sha256:de0aa3ac30120a0c77f9cd82738a75ed8326864f98feb89356a253f2deaf3ab0
+    .claude/skills/claude-md-improver/references/update-guidelines.md: sha256:02a158d6ca41a0ab702a67a213e92205f09c073cea53796633251bc62fd7ec55
+  content_hash: sha256:eef0aa5a71845be937066ef304fbd152d523d2574587474d342def4c3e8514d4
+- repo_url: anthropics/claude-plugins-official
+  name: commit-commands
+  host: github.com
+  resolved_commit: 2f634a9314e6465d2b6ec1ad9557815293949731
+  version: 2f634a9
+  virtual_path: plugins/commit-commands
+  is_virtual: true
+  package_type: marketplace_plugin
+  deployed_files:
+  - .claude/commands/clean_gone.md
+  - .claude/commands/commit-push-pr.md
+  - .claude/commands/commit.md
+  deployed_file_hashes:
+    .claude/commands/clean_gone.md: sha256:24ce5c79da87b481d346d26b297cbe327862f1e4bbee05406589f4b5468c7fa3
+    .claude/commands/commit-push-pr.md: sha256:63ee94bcf2a60101d542ec46bf2afa18b31565105ebfc63f1a38e4d308d3cd2f
+    .claude/commands/commit.md: sha256:366740b9d9f45e05bf7cc5b703156f95fe28180012899ceb90d89d34d4110e47
+  content_hash: sha256:761d18297a4f42bd0ff7edce9b80b1c8a1f244311f1200c4df7499bd292b1d89
+- repo_url: anthropics/claude-plugins-official
+  name: feature-dev
+  host: github.com
+  resolved_commit: 2f634a9314e6465d2b6ec1ad9557815293949731
+  version: 2f634a9
+  virtual_path: plugins/feature-dev
+  is_virtual: true
+  package_type: marketplace_plugin
+  deployed_files:
+  - .claude/agents/code-architect.md
+  - .claude/agents/code-explorer.md
+  - .claude/agents/code-reviewer.md
+  - .claude/commands/feature-dev.md
+  deployed_file_hashes:
+    .claude/agents/code-architect.md: sha256:c50fb08d59a4bbd19660860626a049e44cf1a2b0c1cf782e6c7a99ba7e71b0c3
+    .claude/agents/code-explorer.md: sha256:3b277703de7458988ec3b8021c716f79f642e174950ed332629310f68322029a
+    .claude/agents/code-reviewer.md: sha256:a7df173bf77a00da5584c6401a1061524fdbe477b6fef5dd496d4c7a9113c78c
+    .claude/commands/feature-dev.md: sha256:656a01ce40782ee849c444916362df0e4e4173afcd33313777fa86021d89994b
+  content_hash: sha256:3a9aba70176aae6e86054f43e9735db5dd5421e6a16030f4c0f94c93d9609b6f
+- repo_url: anthropics/claude-plugins-official
+  name: frontend-design
+  host: github.com
+  resolved_commit: 2f634a9314e6465d2b6ec1ad9557815293949731
+  version: 2f634a9
+  virtual_path: plugins/frontend-design
+  is_virtual: true
+  package_type: marketplace_plugin
+  deployed_files:
+  - .claude/skills/frontend-design
+  - .claude/skills/frontend-design/LICENSE.txt
+  - .claude/skills/frontend-design/SKILL.md
+  deployed_file_hashes:
+    .claude/skills/frontend-design/LICENSE.txt: sha256:0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594
+    .claude/skills/frontend-design/SKILL.md: sha256:1608ea77fbb6fc30d13a97d12cfa8ebf31358d40f0dd97beed24829d6b3f45dd
+  content_hash: sha256:b367233d16603e8baaa3d1dc5c7003dc3dd0e43c849fd3c5ae0b00996bcdde84
+- repo_url: anthropics/claude-plugins-official
+  name: hookify
+  host: github.com
+  resolved_commit: 2f634a9314e6465d2b6ec1ad9557815293949731
+  version: 2f634a9
+  virtual_path: plugins/hookify
+  is_virtual: true
+  package_type: marketplace_plugin
+  deployed_files:
+  - .claude/agents/conversation-analyzer.md
+  - .claude/commands/configure.md
+  - .claude/commands/help.md
+  - .claude/commands/hookify.md
+  - .claude/commands/list.md
+  - .claude/hooks/hookify/hooks/__init__.py
+  - .claude/hooks/hookify/hooks/posttooluse.py
+  - .claude/hooks/hookify/hooks/pretooluse.py
+  - .claude/hooks/hookify/hooks/stop.py
+  - .claude/hooks/hookify/hooks/userpromptsubmit.py
+  - .claude/skills/writing-rules
+  - .claude/skills/writing-rules/SKILL.md
+  deployed_file_hashes:
+    .claude/agents/conversation-analyzer.md: sha256:96267342d2d0788763b392b26a322ca44d1b62ee4d65be31c0aaa8031ad85db7
+    .claude/commands/configure.md: sha256:b2d8249cb52e6ea583f74463fb4ddabd131dbe1dec4a64f261dfa9aca8de8731
+    .claude/commands/help.md: sha256:f93dad84b6f141d93f32b27a87a1ca5991092cce7f8cf8248deea9e468d0c08e
+    .claude/commands/hookify.md: sha256:fcaa2c7c061b082bfd67c56d463ecd196fe5afbee1554a4d40f99cd61075efe4
+    .claude/commands/list.md: sha256:db610c1b5893d74e0f96de391d7a7012ced82c39d03a86ab2e50f7afcc732703
+    .claude/hooks/hookify/hooks/__init__.py: sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    .claude/hooks/hookify/hooks/posttooluse.py: sha256:52f3b71247cc376fb4226ab44258e89b02f997840cadbfd0e1ebd06009b76f32
+    .claude/hooks/hookify/hooks/pretooluse.py: sha256:5d28948f576f93caefcb4089959db2066147334c61be3139a1c113593255a8c7
+    .claude/hooks/hookify/hooks/stop.py: sha256:6ebc614e48dd994a4fe2aa1a3f2b5ab413ffd2b3c22f81c66cacd23f9c92919e
+    .claude/hooks/hookify/hooks/userpromptsubmit.py: sha256:577824bc91e4510eb6f299b3485f35892eaf710108213e01f4c86eb350a813cb
+    .claude/skills/writing-rules/SKILL.md: sha256:2994b5d3152243b1a1cbf8358e9d7c18f290f31a23920647f31053c3efdf990d
+  content_hash: sha256:fd481b85547187fd4f4d9beddf3c4f9dcf8bbe3f8d6a68108c91c42cb2afb075
+- repo_url: anthropics/claude-plugins-official
+  name: pr-review-toolkit
+  host: github.com
+  resolved_commit: 2f634a9314e6465d2b6ec1ad9557815293949731
+  version: 2f634a9
+  virtual_path: plugins/pr-review-toolkit
+  is_virtual: true
+  package_type: marketplace_plugin
+  deployed_files:
+  - .claude/agents/code-simplifier.md
+  - .claude/agents/comment-analyzer.md
+  - .claude/agents/pr-test-analyzer.md
+  - .claude/agents/silent-failure-hunter.md
+  - .claude/agents/type-design-analyzer.md
+  - .claude/commands/review-pr.md
+  deployed_file_hashes:
+    .claude/agents/code-simplifier.md: sha256:976ddb22b84bc5a714216531a75db5e73169554add6b953442beeedb49b56891
+    .claude/agents/comment-analyzer.md: sha256:4a9c1f2eb8234a4b9231983e75739663d512e1aed242388964a165a719b84698
+    .claude/agents/pr-test-analyzer.md: sha256:fcb1cde9ba7b21694b508766a8d6a79bc91bed9982f828f816210059934f46b4
+    .claude/agents/silent-failure-hunter.md: sha256:fa9b0daec5a267e7e66435cc48b3328301fc9f70c3af259fe248881327a1babc
+    .claude/agents/type-design-analyzer.md: sha256:c1cf67843d3c4fd27ddf6b24aa92521414b16c01610e7f7e87212c7b8681198d
+    .claude/commands/review-pr.md: sha256:1c3ca6f18f9851ac88ffdc3f98b45e9bd19fb139eb14850f2c22cd18c7a167b2
+  content_hash: sha256:ab7ec67769c19f5d0258175e4828f55ea0ba5f33a6d7160a200fb1bb60e93e3b
+- repo_url: anthropics/claude-plugins-official
+  name: security-guidance
+  host: github.com
+  resolved_commit: 2f634a9314e6465d2b6ec1ad9557815293949731
+  version: 2.0.6
+  virtual_path: plugins/security-guidance
+  is_virtual: true
+  package_type: marketplace_plugin
+  deployed_files:
+  - .claude/hooks/security-guidance/hooks/_base.py
+  - .claude/hooks/security-guidance/hooks/diffstate.py
+  - .claude/hooks/security-guidance/hooks/ensure_agent_sdk.py
+  - .claude/hooks/security-guidance/hooks/extensibility.py
+  - .claude/hooks/security-guidance/hooks/gitutil.py
+  - .claude/hooks/security-guidance/hooks/llm.py
+  - .claude/hooks/security-guidance/hooks/patterns.py
+  - .claude/hooks/security-guidance/hooks/review_api.py
+  - .claude/hooks/security-guidance/hooks/security_reminder_hook.py
+  - .claude/hooks/security-guidance/hooks/session_state.py
+  - .claude/hooks/security-guidance/hooks/sg-python.sh
+  deployed_file_hashes:
+    .claude/hooks/security-guidance/hooks/_base.py: sha256:fe721917c5fc26a0191b6be5ebb41bec556d5a0f8d519bf9e3d9b32ccd5165ba
+    .claude/hooks/security-guidance/hooks/diffstate.py: sha256:b1d48ea2c6becc9397045002a218846568e776a7240d8a464ed6a7b19861d5ab
+    .claude/hooks/security-guidance/hooks/ensure_agent_sdk.py: sha256:6613855440021f35373d33e90a9342da7036a6d95f625021feca522bf7df7cb9
+    .claude/hooks/security-guidance/hooks/extensibility.py: sha256:49dec35c1768d35ef13f7733dc3612c6591cbcedfb3d4bb1849679989e2e2435
+    .claude/hooks/security-guidance/hooks/gitutil.py: sha256:79e910f461ee4e61f4f55b62062c605c4b28f1cc573193e0aa8ab01f69fae37a
+    .claude/hooks/security-guidance/hooks/llm.py: sha256:8489afb6a5dba117ebeba12f76a63dbafd8a7fd94b50c0107a269a3684d229e6
+    .claude/hooks/security-guidance/hooks/patterns.py: sha256:8cd874aa113801f869679045e0b38b669988b6a7d33b611b10ef01f474ca1eef
+    .claude/hooks/security-guidance/hooks/review_api.py: sha256:b5e5ee59787e174998adb70a53e0b06252449c6e96f2d52e735f8ad5cbe4e319
+    .claude/hooks/security-guidance/hooks/security_reminder_hook.py: sha256:587069e967e76e5543f43cf7aa32f655651ad784bff8bb46970d81dacd3da401
+    .claude/hooks/security-guidance/hooks/session_state.py: sha256:c205ee3657577fc2d295a32bda8f1ca1bdccc0e023f9a5e06645cb91ef7e9be2
+    .claude/hooks/security-guidance/hooks/sg-python.sh: sha256:5584fce77fac3063829823cb0acfa70ad8f30252f93a09b01dd849e48597fe6a
+  content_hash: sha256:6e7a96765d20c521cf7c89db4c63c27cbc437fd43e047bfe816b900037b365c2
 mcp_servers:
 - next-devtools
 - playwright
