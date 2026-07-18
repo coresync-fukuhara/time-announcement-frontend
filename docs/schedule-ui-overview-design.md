@@ -215,26 +215,37 @@ volumes:
 ## 9. ディレクトリ構成(案)
 
 Python 側(`src/main.py`・`settings/`)は別リポジトリに分離されているため、
-このリポジトリ内には存在しない。リポジトリ直下に `frontend/` を新設し、
-`frontend/` 配下は Next.js の `src/` ディレクトリ構成を採用する
-(旧版ではリポジトリ分割前に Python 側の `src/` との衝突を避けるため
-`src/` を使わない構成にしていたが、リポジトリが分離された現在はその制約が
-ないため標準構成に戻した)。
+このリポジトリ内には存在しない。**このリポジトリ自体がフロントエンド専用**であり、
+`frontend/` のようなサブディレクトリで区切らず、リポジトリ直下を Next.js の
+`src/` ディレクトリ構成のプロジェクトとする(旧版ではリポジトリ分割前に Python 側の
+`src/` との衝突を避けるため `src/` を使わない構成にしていたが、リポジトリが分離された
+現在はその制約がないため標準構成に戻した)。
 
 ```
 /app
-├── frontend/                  # 新設: Next.js (UI + BFF)
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── page.tsx             # スケジュール設定画面
-│   │   │   └── api/
-│   │   │       └── schedules/route.ts   # GET / PUT(BFF)
-│   │   └── lib/
-│   │       ├── schedule-store.ts    # ファイル読み書き(アトミック書き込み・直列化)
-│   │       └── validator.ts         # Ajv + settings/schema.json
-│   ├── Dockerfile
-│   └── package.json
-└── docs/                      # 本設計書
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx               # ルートレイアウト
+│   │   ├── page.tsx                 # スケジュール設定画面(UI は未実装)
+│   │   └── api/
+│   │       └── schedules/
+│   │           ├── route.ts         # GET / PUT(BFF)
+│   │           └── route.test.ts    # API テスト(NTARH)
+│   ├── lib/
+│   │   ├── paths.ts                 # SETTINGS_DIR 解決(schema/schedules/.bak/.tmp のパス)
+│   │   ├── schedule-store.ts        # ファイル読み書き(アトミック書き込み・直列化・.bak)
+│   │   ├── validator.ts             # Ajv + settings/schema.json
+│   │   └── types.ts                 # スケジュールの型
+│   └── __tests__/                   # ユニットテスト(validator / schedule-store)
+├── e2e/                             # Playwright E2E
+├── mocks/                           # MSW(handlers / server)
+├── settings/                        # dev 用ダミー(schema.json / schedules.json。gitignore 対象)
+├── next.config.ts                   # output: 'standalone'
+├── vitest.config.mts
+├── playwright.config.ts
+├── package.json                     # リポジトリ直下 = アプリ本体
+├── Dockerfile                       # 実装予定(deploy/001)
+└── docs/                            # 本設計書
 ```
 
 ## 10. ベストプラクティス準拠状況の整理

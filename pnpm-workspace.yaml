@@ -1,3 +1,14 @@
+# ビルドスクリプトの明示的な扱い(strictDepBuilds: true のため未承認ビルドはエラーになる)。
+# sharp は next/image の実行時最適化用。本アプリは next/image の最適化を使わないため
+# ネイティブビルドは不要 → false(ビルドしないことを明示的に承認)。
+packages:
+  - "."
+
+allowBuilds:
+  core-js: false
+  msw: false
+  sharp: false
+
 blockExoticSubdeps: true
 engineStrict: true
 minimumReleaseAge: 10080

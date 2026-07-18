@@ -25,6 +25,16 @@ setup_node() {
     fi
 }
 
+# Playwright (E2E) のブラウザと OS 依存を導入する。
+# devcontainer を再構築しても `pnpm test:e2e` がそのまま実行できるようにする。
+# (chromium のみ。libglib-2.0 等の OS ライブラリは apt 経由のため sudo が必要)
+setup_playwright() {
+    if [ -x node_modules/.bin/playwright ]; then
+        node_modules/.bin/playwright install chromium
+        sudo env "PATH=$PATH" node_modules/.bin/playwright install-deps chromium
+    fi
+}
+
 # Git の設定
 configure_git() {
     git config --global --add safe.directory /app
@@ -53,6 +63,7 @@ setup_apm() {
 
 main() {
     setup_node
+    setup_playwright
     configure_git
     claude_ownership
     setup_apm

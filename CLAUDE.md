@@ -5,11 +5,17 @@
 
 ## リポジトリの現状
 
-このリポジトリには現時点で**設計文書とタスク管理のみ**が存在します。
-`package.json` も `frontend/` ディレクトリもアプリケーションコードも
-まだありません。ビルド/lint/テストのコマンドが存在すると仮定せず、
-何かを実行する前に [tasks/TASKS.md](tasks/TASKS.md) で実際に何が
-実装済みかを確認してください。
+**このリポジトリ自体がフロントエンド(Next.js)専用**で、`frontend/` のような
+サブディレクトリでは区切らず、リポジトリ直下が Next.js の `src/` ディレクトリ構成の
+アプリ本体になっている。実装は BFF(`/api/schedules` の Route Handler)まで完了しており、
+UI(曜日タブ・時刻グリッド・初期化ダイアログ)は未実装(implementation/005・006)。
+最新の実装状況は必ず [tasks/TASKS.md](tasks/TASKS.md) で確認すること。
+
+パッケージ管理は **pnpm**(corepack 経由。バージョンは `package.json` の `packageManager`
+で固定)。標準コマンドは `pnpm test`(Vitest: ユニット + API)、`pnpm test:e2e`
+(Playwright)、`pnpm dev`(開発サーバー)、`pnpm exec tsc --noEmit`(型チェック)。
+pnpm のセキュリティ設定は `pnpm-workspace.yaml`(`minimumReleaseAge`・`strictDepBuilds`
+など)にあり、依存のビルドスクリプトは `allowBuilds:` で個別に許可/拒否を明示する。
 
 設計文書は `settings/schedules.json`・`settings/schema.json`・`src/main.py` を
 「既存のもの」として参照していますが、これらは別リポジトリでコンテナ化される
@@ -21,12 +27,17 @@ Python アプリ(実際の「タイムアナウンスメント」再生プログ
 ## このプロジェクトは何か
 
 `settings/schedules.json`(曜日×時×分のスケジュール)をブラウザ UI から
-編集できるようにするフロントエンド(これから実装)です。別リポジトリの
+編集できるようにするフロントエンドです。別リポジトリの
 Python アプリ(`src/main.py`)が cron で毎分このファイルを読み込み、`.wav` を再生します。
 UI が責任を持つのは妥当な `schedules.json` を書き出すことのみで、再生処理自体には関与しません。
 
 ## どこに何があるか
 
+- **[src/](src/)** — アプリ本体。`src/app/`(Next.js App Router: `page.tsx` と
+  `api/schedules/route.ts` = BFF)、`src/lib/`(`validator.ts` = Ajv、
+  `schedule-store.ts` = アトミック書き込み・`.bak`・直列化、`paths.ts`、`types.ts`)、
+  `src/__tests__/`(ユニットテスト)。`mocks/`(MSW)・`e2e/`(Playwright)・
+  `settings/`(dev 用ダミー。gitignore 対象)も直下にある。
 - **[docs/](docs/)** — 設計文書(スコープ・API 設計・ファイル同期の安全規則・
   テスト方針の正)。「何を作るか」はまずここを見る。
 - **[docs/catch-up/](docs/catch-up/)** — `docs/` の技術選定を裏付ける調査・学習教材。
@@ -77,11 +88,12 @@ TDD、3 層のテストピラミッド。最も下のレイヤーから先にテ
 | API | Vitest + next-test-api-route-handler | `/api/schedules` の GET/PUT、エラー系、ファイル I/O(モック) |
 | E2E | Playwright | 画面をまたぐ主要シナリオのみ(初期化ダイアログ、編集→保存→再読み込み、未保存インジケーター)。ユニット/API で担保できる内容は重複させない |
 
-`frontend/` ができたら、標準コマンドは `npm run test`(Vitest)と
-`npm run test:e2e`(Playwright)になる予定。セットアップタスクは
-`tasks/implementation/001-frontend-scaffold.md`、想定ディレクトリ構成は
-`docs/schedule-ui-testing-design.md` 6章を参照(`frontend/` 配下は Next.js の
-`src/` ディレクトリ構成を採用する)。
+標準コマンドは `pnpm test`(Vitest: ユニット + API)と `pnpm test:e2e`(Playwright)。
+ユニット/API テストは既定 jsdom 環境で動き、ファイル I/O や Route Handler を扱う
+テスト(`schedule-store.test.ts`・`validator.test.ts`・`route.test.ts`)はファイル
+先頭の `// @vitest-environment node` で node 環境に切り替える。実際のディレクトリ構成は
+`docs/schedule-ui-testing-design.md` 6章を参照(リポジトリ直下が Next.js の `src/`
+ディレクトリ構成)。
 
 ## ドキュメントは日本語
 

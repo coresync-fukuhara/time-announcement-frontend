@@ -97,14 +97,14 @@ graph TD
 
 ## 6. ディレクトリ構成
 
-`frontend/` 配下は Next.js の `src/` ディレクトリ構成を採用する
+このリポジトリ自体が Next.js の `src/` ディレクトリ構成のプロジェクトである
 ([概要設計書](./schedule-ui-overview-design.md) 9章)。
 
 ```
-frontend/
+/app
 ├── vitest.config.mts
 ├── playwright.config.ts
-├── vitest.setup.ts            # MSWのsetupServer起動など
+├── vitest.setup.ts            # jest-dom マッチャ登録・MSW の setupServer 起動
 ├── mocks/
 │   ├── handlers.ts
 │   └── server.ts
@@ -112,16 +112,25 @@ frontend/
 │   ├── __tests__/             # ユニット/コンポーネントテスト
 │   │   ├── schedule-store.test.ts
 │   │   ├── validator.test.ts
-│   │   └── components/
-│   │       └── schedule-grid.test.tsx
+│   │   └── components/        # UI 実装時に追加(schedule-grid.test.tsx 等)
+│   ├── lib/
+│   │   ├── paths.ts
+│   │   ├── schedule-store.ts
+│   │   ├── validator.ts
+│   │   └── types.ts
 │   └── app/
+│       ├── layout.tsx
 │       ├── page.tsx
 │       └── api/schedules/
 │           ├── route.ts
-│           └── route.test.ts  # NTARHでのAPIテスト
+│           └── route.test.ts  # NTARH での API テスト
 └── e2e/
-    └── schedule-editing.spec.ts
+    └── smoke.spec.ts          # UI 実装後に主要シナリオ(schedule-editing.spec.ts 等)を追加
 ```
+
+> ユニット/API テストは file 冒頭の環境ディレクティブで使い分ける。既定は jsdom
+> (テスト設計 4.1)、ファイル I/O や Route Handler を扱うテスト(`schedule-store.test.ts`・
+> `validator.test.ts`・`route.test.ts`)は先頭に `// @vitest-environment node` を置く。
 
 ## 7. CI 実行方針
 

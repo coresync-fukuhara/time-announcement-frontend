@@ -8,3 +8,23 @@ apm_modules/
 
 # Python バイトコードキャッシュ(devcontainer起動時のフック実行で生成される)
 __pycache__/
+
+# Node.js / pnpm の依存とストア(pnpm-lock.yaml から再構築されるためコミットしない)
+node_modules/
+.pnpm-store/
+
+# Next.js のビルド成果物・生成物
+/.next/
+/out/
+next-env.d.ts
+
+# TypeScript incremental ビルド情報
+*.tsbuildinfo
+
+# テストの成果物(Vitest カバレッジ・Playwright レポート)
+/coverage/
+/playwright-report/
+/test-results/
+
+# dev 用のローカル settings/(本番は named volume。ダミーの schema.json/schedules.json を置く場所)
+/settings/

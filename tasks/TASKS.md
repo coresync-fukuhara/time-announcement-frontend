@@ -13,10 +13,10 @@
 
 ## 実装
 
-- [ ] [implementation/001](./implementation/001-frontend-scaffold.md) frontend/ の Next.js プロジェクト作成 — 未着手
-- [ ] [implementation/002](./implementation/002-validator.md) `lib/validator.ts`(Ajv バリデータ)の実装 — 未着手
-- [ ] [implementation/003](./implementation/003-schedule-store.md) `lib/schedule-store.ts`(読み書き・アトミック書き込み・`.bak`)の実装 — 未着手
-- [ ] [implementation/004](./implementation/004-api-schedules-route.md) `app/api/schedules/route.ts`(GET/PUT)の実装 — 未着手
+- [x] [implementation/001](./implementation/001-frontend-scaffold.md) Next.js プロジェクト作成(リポジトリ直下・`src/` 構成)— 完了
+- [x] [implementation/002](./implementation/002-validator.md) `src/lib/validator.ts`(Ajv バリデータ)の実装 — 完了
+- [x] [implementation/003](./implementation/003-schedule-store.md) `src/lib/schedule-store.ts`(読み書き・アトミック書き込み・`.bak`)の実装 — 完了
+- [x] [implementation/004](./implementation/004-api-schedules-route.md) `src/app/api/schedules/route.ts`(GET/PUT)の実装 — 完了
 - [ ] [implementation/005](./implementation/005-ui-init-dialog.md) 初期化選択ダイアログの実装 — 未着手
 - [ ] [implementation/006](./implementation/006-ui-schedule-grid.md) 曜日タブ・時刻グリッド画面の実装 — 未着手
 - [ ] [implementation/007](./implementation/007-e2e-main-scenarios.md) E2E 主要シナリオ(Playwright)の実装 — 未着手
