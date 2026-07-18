@@ -5,3 +5,6 @@ apm_modules/
 
 # Claude Code の個人用ローカル設定(端末固有、Claude Code公式の慣習でもgitignore対象)
 .claude/settings.local.json
+
+# Python バイトコードキャッシュ(devcontainer起動時のフック実行で生成される)
+__pycache__/

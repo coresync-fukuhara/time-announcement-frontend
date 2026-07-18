@@ -1,6 +1,7 @@
 {
   "PreToolUse": [
     {
+      "matcher": "*",
       "hooks": [
         {
           "type": "command",
@@ -13,6 +14,7 @@
   ],
   "PostToolUse": [
     {
+      "matcher": "*",
       "hooks": [
         {
           "type": "command",
@@ -23,64 +25,65 @@
       "_apm_source": "hookify"
     },
     {
+      "matcher": "Edit|Write|MultiEdit|NotebookEdit",
       "hooks": [
         {
           "type": "command",
           "command": "bash \".claude/hooks/security-guidance/hooks/sg-python.sh\" \".claude/hooks/security-guidance/hooks/security_reminder_hook.py\""
         }
       ],
-      "matcher": "Edit|Write|MultiEdit|NotebookEdit",
       "_apm_source": "security-guidance"
     },
     {
+      "matcher": "Bash",
       "hooks": [
         {
           "type": "command",
-          "command": "bash \".claude/hooks/security-guidance/hooks/sg-python.sh\" \".claude/hooks/security-guidance/hooks/security_reminder_hook.py\"",
           "if": "Bash(git commit:*)",
           "asyncRewake": true,
           "rewakeMessage": "Background security review of commit \u2014 address or acknowledge the findings below, then continue with the user's original request or continue waiting for their reply:",
-          "rewakeSummary": "Commit security review found issues"
+          "rewakeSummary": "Commit security review found issues",
+          "command": "bash \".claude/hooks/security-guidance/hooks/sg-python.sh\" \".claude/hooks/security-guidance/hooks/security_reminder_hook.py\""
         },
         {
           "type": "command",
-          "command": "bash \".claude/hooks/security-guidance/hooks/sg-python.sh\" \".claude/hooks/security-guidance/hooks/security_reminder_hook.py\"",
           "if": "Bash(git push:*)",
           "asyncRewake": true,
           "rewakeMessage": "Background security review of pushed commits not yet reviewed \u2014 address or acknowledge the findings below, then continue with the user's original request or continue waiting for their reply:",
-          "rewakeSummary": "Push security review found issues"
+          "rewakeSummary": "Push security review found issues",
+          "command": "bash \".claude/hooks/security-guidance/hooks/sg-python.sh\" \".claude/hooks/security-guidance/hooks/security_reminder_hook.py\""
         },
         {
           "type": "command",
-          "command": "bash \".claude/hooks/security-guidance/hooks/sg-python.sh\" \".claude/hooks/security-guidance/hooks/security_reminder_hook.py\"",
           "if": "Bash(gt create:*)",
           "asyncRewake": true,
           "rewakeMessage": "Background security review of commit \u2014 address or acknowledge the findings below, then continue with the user's original request or continue waiting for their reply:",
-          "rewakeSummary": "Commit security review found issues"
+          "rewakeSummary": "Commit security review found issues",
+          "command": "bash \".claude/hooks/security-guidance/hooks/sg-python.sh\" \".claude/hooks/security-guidance/hooks/security_reminder_hook.py\""
         },
         {
           "type": "command",
-          "command": "bash \".claude/hooks/security-guidance/hooks/sg-python.sh\" \".claude/hooks/security-guidance/hooks/security_reminder_hook.py\"",
           "if": "Bash(gt modify:*)",
           "asyncRewake": true,
           "rewakeMessage": "Background security review of commit \u2014 address or acknowledge the findings below, then continue with the user's original request or continue waiting for their reply:",
-          "rewakeSummary": "Commit security review found issues"
+          "rewakeSummary": "Commit security review found issues",
+          "command": "bash \".claude/hooks/security-guidance/hooks/sg-python.sh\" \".claude/hooks/security-guidance/hooks/security_reminder_hook.py\""
         },
         {
           "type": "command",
-          "command": "bash \".claude/hooks/security-guidance/hooks/sg-python.sh\" \".claude/hooks/security-guidance/hooks/security_reminder_hook.py\"",
           "if": "Bash(gt submit:*)",
           "asyncRewake": true,
           "rewakeMessage": "Background security review of pushed commits not yet reviewed \u2014 address or acknowledge the findings below, then continue with the user's original request or continue waiting for their reply:",
-          "rewakeSummary": "Push security review found issues"
+          "rewakeSummary": "Push security review found issues",
+          "command": "bash \".claude/hooks/security-guidance/hooks/sg-python.sh\" \".claude/hooks/security-guidance/hooks/security_reminder_hook.py\""
         }
       ],
-      "matcher": "Bash",
       "_apm_source": "security-guidance"
     }
   ],
   "Stop": [
     {
+      "matcher": "*",
       "hooks": [
         {
           "type": "command",
@@ -91,13 +94,14 @@
       "_apm_source": "hookify"
     },
     {
+      "matcher": "*",
       "hooks": [
         {
           "type": "command",
-          "command": "bash \".claude/hooks/security-guidance/hooks/sg-python.sh\" \".claude/hooks/security-guidance/hooks/security_reminder_hook.py\"",
           "asyncRewake": true,
           "rewakeMessage": "Background security review feedback \u2014 address or acknowledge the findings below, then continue with the user's original request or continue waiting for their reply. This is supplementary, not a replacement for your previous response:",
-          "rewakeSummary": "Background security review found issues"
+          "rewakeSummary": "Background security review found issues",
+          "command": "bash \".claude/hooks/security-guidance/hooks/sg-python.sh\" \".claude/hooks/security-guidance/hooks/security_reminder_hook.py\""
         }
       ],
       "_apm_source": "security-guidance"
@@ -105,6 +109,7 @@
   ],
   "UserPromptSubmit": [
     {
+      "matcher": "*",
       "hooks": [
         {
           "type": "command",
@@ -115,6 +120,7 @@
       "_apm_source": "hookify"
     },
     {
+      "matcher": "*",
       "hooks": [
         {
           "type": "command",
@@ -126,6 +132,7 @@
   ],
   "SessionStart": [
     {
+      "matcher": "*",
       "hooks": [
         {
           "type": "command",
@@ -140,8 +147,8 @@
       "hooks": [
         {
           "type": "command",
-          "command": "\".claude/hooks/superpowers/hooks/run-hook.cmd\" session-start",
-          "async": false
+          "async": false,
+          "command": "\".claude/hooks/superpowers/hooks/run-hook.cmd\" session-start"
         }
       ],
       "_apm_source": "superpowers"
