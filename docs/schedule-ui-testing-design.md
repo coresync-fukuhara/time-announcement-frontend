@@ -97,6 +97,9 @@ graph TD
 
 ## 6. ディレクトリ構成
 
+`frontend/` 配下は Next.js の `src/` ディレクトリ構成を採用する
+([概要設計書](./schedule-ui-overview-design.md) 9章)。
+
 ```
 frontend/
 ├── vitest.config.mts
@@ -105,16 +108,17 @@ frontend/
 ├── mocks/
 │   ├── handlers.ts
 │   └── server.ts
-├── __tests__/                 # ユニット/コンポーネントテスト
-│   ├── schedule-store.test.ts
-│   ├── validator.test.ts
-│   └── components/
-│       └── schedule-grid.test.tsx
-├── app/
-│   ├── page.tsx
-│   └── api/schedules/
-│       ├── route.ts
-│       └── route.test.ts      # NTARHでのAPIテスト
+├── src/
+│   ├── __tests__/             # ユニット/コンポーネントテスト
+│   │   ├── schedule-store.test.ts
+│   │   ├── validator.test.ts
+│   │   └── components/
+│   │       └── schedule-grid.test.tsx
+│   └── app/
+│       ├── page.tsx
+│       └── api/schedules/
+│           ├── route.ts
+│           └── route.test.ts  # NTARHでのAPIテスト
 └── e2e/
     └── schedule-editing.spec.ts
 ```

@@ -214,22 +214,26 @@ volumes:
 
 ## 9. ディレクトリ構成(案)
 
-既存の Python プロジェクトと分離し、リポジトリ直下に `frontend/` を新設する。
+Python 側(`src/main.py`・`settings/`)は別リポジトリに分離されているため、
+このリポジトリ内には存在しない。リポジトリ直下に `frontend/` を新設し、
+`frontend/` 配下は Next.js の `src/` ディレクトリ構成を採用する
+(旧版ではリポジトリ分割前に Python 側の `src/` との衝突を避けるため
+`src/` を使わない構成にしていたが、リポジトリが分離された現在はその制約が
+ないため標準構成に戻した)。
 
 ```
 /app
 ├── frontend/                  # 新設: Next.js (UI + BFF)
-│   ├── app/
-│   │   ├── page.tsx           # スケジュール設定画面
-│   │   └── api/
-│   │       └── schedules/route.ts   # GET / PUT(BFF)
-│   ├── lib/
-│   │   ├── schedule-store.ts  # ファイル読み書き(アトミック書き込み・直列化)
-│   │   └── validator.ts       # Ajv + settings/schema.json
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── page.tsx             # スケジュール設定画面
+│   │   │   └── api/
+│   │   │       └── schedules/route.ts   # GET / PUT(BFF)
+│   │   └── lib/
+│   │       ├── schedule-store.ts    # ファイル読み書き(アトミック書き込み・直列化)
+│   │       └── validator.ts         # Ajv + settings/schema.json
 │   ├── Dockerfile
 │   └── package.json
-├── settings/                  # 既存(schema.json はフロントと共用)
-├── src/                       # 既存(変更なし)
 └── docs/                      # 本設計書
 ```
 
