@@ -1,8 +1,8 @@
 # スケジュール設定フロントエンド 概要設計書
 
 作成日: 2026-07-09
-更新日: 2026-07-10
-ステータス: 主要事項確定(残る保留事項は [要件不足事項一覧](./schedule-ui-open-questions.md) の No.8・No.12 のみ)
+更新日: 2026-07-18
+ステータス: 全事項確定([要件不足事項一覧](./schedule-ui-open-questions.md) 参照)
 
 ## 1. 目的・背景
 
@@ -71,18 +71,23 @@ graph LR
         subgraph frontend コンテナ
             UI[React UI] -->|"fetch /api/schedules"| BFF[Next.js Route Handlers<br>= BFF]
         end
-        BFF -->|"読み書き (bind mount)"| FILE[(settings/schedules.json)]
-        CRON[cron 毎分] --> MAIN[src/main.py]
+        subgraph backend コンテナ(別リポジトリで管理)
+            CRON[cron 毎分] --> MAIN[src/main.py]
+        end
+        BFF -->|"読み書き (named volume)"| FILE[(settings/schedules.json)]
         MAIN -->|読み込み| FILE
         MAIN --> SPK((スピーカー))
     end
     BROWSER[ブラウザ] -->|HTTP :3000| UI
 ```
 
-- フロント用コンテナは Ubuntu ホスト上で起動し、ホストの `settings/` ディレクトリを
-  **bind mount** してコンテナ内の BFF から直接ファイルを読み書きする。
-- 再生側(Python)はホスト側で従来どおり動作し、同じファイルを読む。
-  プロセス間の連携はファイルのみで行い、BFF と Python は互いを知らない(疎結合)。
+- フロント用コンテナは Ubuntu ホスト上で起動し、`settings/` を格納する Docker の
+  **named volume** を backend コンテナ(別リポジトリで管理)とマウント共有し、
+  コンテナ内の BFF から直接ファイルを読み書きする(No.8 確定。ホストへの
+  bind mount はしない)。
+- 再生側(Python)も別途コンテナ化され(別リポジトリの責務)、同じ named volume を
+  マウントして同じファイルを読む。プロセス間の連携はファイルのみで行い、
+  BFF と Python は互いを知らない(疎結合)。
 
 ## 5. 画面設計(イメージ)
 
@@ -182,18 +187,30 @@ services:
     ports:
       - "3000:3000"              # 公開ポート(No.7 確定。外部公開しないため HTTPS 化は不要)
     volumes:
-      - ./settings:/data/settings   # ホストの settings/ を bind mount
+      - settings:/data/settings     # backend コンテナ(別リポジトリ)と共有する named volume
     environment:
       - SETTINGS_DIR=/data/settings
-    restart: unless-stopped         # 起動管理方式は保留(要件不足事項一覧 No.12)
+    restart: unless-stopped         # 起動管理方式(No.12 確定。下記参照)
+
+volumes:
+  settings:
+    external: true    # 作成は backend 側リポジトリの compose の責務。ここでは参照のみ
 ```
 
 - Next.js は `output: 'standalone'` でビルドし、実行イメージを最小化する(Next.js 公式のセルフホスト手順)。
 - BFF がファイルパスをハードコードせず `SETTINGS_DIR` 環境変数で受け取ることで、
-  開発時(devcontainer)と本番(bind mount)の差を吸収する。
-- コンテナ内ユーザーとホストの `settings/` の所有権(UID/GID)を合わせる必要があるが、
-  ホスト側で cron を実行しているユーザーの UID/GID が未確認のため保留
-  (要件不足事項一覧 No.8)。
+  開発時(devcontainer)と本番(named volume)の差を吸収する。
+- **ファイル共有方式(No.8 確定)**: ホストの `settings/` を bind mount するのではなく、
+  Docker の named volume を frontend/backend 両コンテナでマウントして共有する。
+  volume の作成・所有権管理は backend 側リポジトリ(別リポジトリ)の責務とし、
+  このリポジトリの `docker-compose.yaml` では `external: true` で参照するのみとする。
+  これにより、ホスト側で cron を実行しているユーザーの UID/GID を事前に確認する
+  必要がなくなった。
+- **起動管理方式(No.12 確定)**: `restart: unless-stopped` のみで運用する。
+  `docker.service` 自体の自動起動(通常デフォルトで有効)により、ホスト再起動時も
+  既存コンテナが自動的に復帰するため、自前の systemd unit は用意しない。
+  ただし `docker compose down` でコンテナを削除した場合は再起動ポリシーの対象外に
+  なる(削除後は改めて `docker compose up -d` が必要)。
 
 ## 9. ディレクトリ構成(案)
 

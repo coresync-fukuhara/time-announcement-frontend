@@ -6,7 +6,7 @@
 
 ## 設計
 
-- [x] [design/001](./design/001-requirements-hearing.md) 要件ヒアリング・要件不足事項の整理 — 進行中(No.8・No.12 保留)
+- [x] [design/001](./design/001-requirements-hearing.md) 要件ヒアリング・要件不足事項の整理 — 完了
 - [x] [design/002](./design/002-overview-design.md) 概要設計書の作成 — 完了
 - [x] [design/003](./design/003-testing-design.md) テスト設計書の作成 — 完了
 - [x] [design/004](./design/004-mcp-servers-design.md) MCP サーバー導入設計書の作成 — 完了
@@ -24,5 +24,5 @@
 ## デプロイ
 
 - [ ] [deploy/001](./deploy/001-docker-deploy.md) Docker 化・docker-compose 構成 — 未着手
-- [ ] [deploy/002](./deploy/002-host-uid-gid.md) ホスト側 `settings/` の UID/GID 確認 — 保留
-- [ ] [deploy/003](./deploy/003-container-startup-policy.md) コンテナ起動管理方式の確定 — 保留
+- [x] [deploy/002](./deploy/002-host-uid-gid.md) `settings/` の共有方式の確定 — 完了(named volume 方式に変更)
+- [x] [deploy/003](./deploy/003-container-startup-policy.md) コンテナ起動管理方式の確定 — 完了(`restart: unless-stopped` のみ)
