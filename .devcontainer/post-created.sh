@@ -6,6 +6,16 @@ setup_node() {
     # corepack 経由で pnpm を有効化する (Node.js 同梱の公式手順)
     corepack enable
     corepack prepare pnpm@latest --activate
+
+    # プロジェクトの pnpm セキュリティ設定 (.npmrc または pnpm-workspace.yaml に書き込まれる。バージョンによって異なる)
+    pnpm config set --location=project trustPolicy no-downgrade
+    pnpm config set --location=project --json minimumReleaseAge 10080
+    pnpm config set --location=project blockExoticSubdeps true
+    pnpm config set --location=project strictDepBuilds true
+    pnpm config set --location=project verifyDepsBeforeRun error
+    pnpm config set --location=project engineStrict true
+    pnpm config set --location=project packageManagerStrictVersion true
+
     if [ -f package.json ]; then
         if [ -f pnpm-lock.yaml ]; then
             pnpm install --frozen-lockfile
