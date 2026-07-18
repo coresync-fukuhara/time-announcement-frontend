@@ -1,0 +1,7 @@
+blockExoticSubdeps: true
+engineStrict: true
+minimumReleaseAge: 10080
+packageManagerStrictVersion: true
+strictDepBuilds: true
+trustPolicy: no-downgrade
+verifyDepsBeforeRun: error
