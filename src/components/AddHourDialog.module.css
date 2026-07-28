@@ -1,0 +1,38 @@
+.hourGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin: 4px 0 4px;
+}
+
+.hourChip {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 9px 0;
+  text-align: center;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.hourChip:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.hourChip[aria-pressed='true'] {
+  background: var(--accent);
+  color: #062a38;
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+.hourChip:disabled {
+  color: var(--ink-faint);
+  background: var(--lamp-off-bg);
+  border-color: var(--lamp-off-border);
+  cursor: default;
+  opacity: 0.55;
+}

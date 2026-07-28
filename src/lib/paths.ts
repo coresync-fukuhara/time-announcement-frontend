@@ -16,6 +16,11 @@ export function getSchedulesPath(): string {
   return path.join(getSettingsDir(), 'schedules.json');
 }
 
+// 初期化ダイアログの「サンプル設定からコピーして始める」用(No.9 確定)。
+export function getSampleSchedulesPath(): string {
+  return path.join(getSettingsDir(), 'sample_schedules.json');
+}
+
 // 保存前に 1 世代だけ残すバックアップ(No.11 確定)。
 export function getBackupPath(): string {
   return path.join(getSettingsDir(), 'schedules.json.bak');

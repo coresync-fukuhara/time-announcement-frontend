@@ -5,6 +5,7 @@ import path from 'node:path';
 import {
   readSchedules,
   writeSchedules,
+  readSampleSchedules,
   ScheduleValidationError,
 } from '@/lib/schedule-store';
 import { resetValidatorCache } from '@/lib/validator';
@@ -88,6 +89,36 @@ describe('readSchedules', () => {
     await writeFile(path.join(tmpDir, 'schedules.json'), JSON.stringify(data), 'utf-8');
     const result = await readSchedules();
     expect(result).toEqual({ initialized: true, schedules: data });
+  });
+});
+
+describe('readSampleSchedules', () => {
+  it('ファイルが無ければ found: false', async () => {
+    const result = await readSampleSchedules();
+    expect(result).toEqual({ found: false });
+  });
+
+  it('JSON として壊れていれば found: false', async () => {
+    await writeFile(path.join(tmpDir, 'sample_schedules.json'), '{ broken', 'utf-8');
+    const result = await readSampleSchedules();
+    expect(result).toEqual({ found: false });
+  });
+
+  it('スキーマ違反なら found: false', async () => {
+    await writeFile(
+      path.join(tmpDir, 'sample_schedules.json'),
+      JSON.stringify(makeSchedules({ monday: [{ hour: '9', minutes: [0] }] })),
+      'utf-8',
+    );
+    const result = await readSampleSchedules();
+    expect(result).toEqual({ found: false });
+  });
+
+  it('妥当なファイルなら found: true で内容を返す', async () => {
+    const data = makeSchedules();
+    await writeFile(path.join(tmpDir, 'sample_schedules.json'), JSON.stringify(data), 'utf-8');
+    const result = await readSampleSchedules();
+    expect(result).toEqual({ found: true, schedules: data });
   });
 });
 

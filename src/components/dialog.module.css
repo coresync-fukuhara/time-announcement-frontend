@@ -1,0 +1,142 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 21, 27, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 20px;
+}
+
+.dialog {
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  max-width: 420px;
+  width: 100%;
+  padding: 24px;
+}
+
+.dialog h2 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  margin: 0 0 4px;
+}
+
+.dialog > p {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0 0 32px;
+}
+
+.choice {
+  width: 100%;
+  text-align: left;
+  display: block;
+  margin-bottom: 10px;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  padding: 13px 15px;
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease;
+}
+
+.choice:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.choice:last-child {
+  margin-bottom: 0;
+}
+
+.choice strong {
+  display: block;
+  font-size: 13.5px;
+  margin-bottom: 2px;
+}
+
+.choice span {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.btn {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    transform 0.08s ease,
+    filter 0.15s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}
+
+.btnPrimary {
+  background: var(--accent);
+  color: #062a38;
+}
+
+.btnPrimary:hover {
+  filter: brightness(1.06);
+}
+
+.btnGhost {
+  background: transparent;
+  color: var(--ink-soft);
+  border-color: var(--panel-border);
+}
+
+.btnGhost:hover {
+  color: var(--ink);
+  border-color: var(--ink-faint);
+}
+
+.btnDanger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btnDanger:hover {
+  filter: brightness(1.08);
+}
+
+.detail {
+  max-height: 240px;
+  overflow-y: auto;
+  margin: -14px 0 4px;
+  background: var(--bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+  white-space: pre-wrap;
+}

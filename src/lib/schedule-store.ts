@@ -1,8 +1,14 @@
 import { open, rename, copyFile, readFile } from 'node:fs/promises';
 import type { ErrorObject } from 'ajv';
-import { getSchedulesPath, getBackupPath, getTmpPath, getSettingsDir } from './paths';
+import {
+  getSchedulesPath,
+  getSampleSchedulesPath,
+  getBackupPath,
+  getTmpPath,
+  getSettingsDir,
+} from './paths';
 import { validateSchedules } from './validator';
-import type { ReadResult, Schedules } from './types';
+import type { ReadResult, ReadSampleResult, Schedules } from './types';
 
 // スキーマ違反を表すエラー。Route Handler 側で 400 + details に変換する。
 export class ScheduleValidationError extends Error {
@@ -40,6 +46,31 @@ export async function readSchedules(): Promise<ReadResult> {
     return { initialized: false, reason: 'validation_failed' };
   }
   return { initialized: true, schedules: parsed as Schedules };
+}
+
+// sample_schedules.json を読み込む。初期化ダイアログの「サンプル設定からコピーして始める」用。
+// 読み取り専用の参照データのため、schedules.json のような .bak・アトミック書き込みは不要。
+// 存在しない/壊れている/スキーマ違反はすべて found: false にまとめる(呼び出し側は選択肢を出さない程度の扱いでよい)。
+export async function readSampleSchedules(): Promise<ReadSampleResult> {
+  let raw: string;
+  try {
+    raw = await readFile(getSampleSchedulesPath(), 'utf-8');
+  } catch {
+    return { found: false };
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return { found: false };
+  }
+
+  const result = validateSchedules(parsed);
+  if (!result.valid) {
+    return { found: false };
+  }
+  return { found: true, schedules: parsed as Schedules };
 }
 
 // 書き込みは 1 本の Promise チェーンに直列化する(概要設計 7.3。Node は単一プロセスのためこれで十分)。

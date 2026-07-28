@@ -1,0 +1,53 @@
+.dayTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--ink);
+  margin: 10px 0 2px;
+}
+
+.dayTitle:first-child {
+  margin-top: 0;
+}
+
+.empty {
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  padding: 2px 0 8px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+.table td {
+  padding: 3px 4px;
+  border-top: 1px solid var(--grid-line);
+}
+
+.hour {
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.arrow {
+  color: var(--ink-faint);
+  padding: 3px 6px;
+}
+
+.added {
+  color: var(--added);
+  font-weight: 700;
+}
+
+.removed {
+  color: var(--danger);
+  text-decoration: line-through;
+}
+
+.same {
+  color: var(--ink-faint);
+}

@@ -1,0 +1,79 @@
+:root {
+  --bg: #eef1f3;
+  --panel: #ffffff;
+  --panel-border: #d7dce1;
+  --ink: #1f2a37;
+  --ink-soft: #5b6672;
+  --ink-faint: #8a939c;
+  --accent: #7dd3f0;
+  --accent-ink: #0c5d82;
+  --accent-soft: #e9f8fd;
+  --accent-glow: rgba(125, 211, 240, 0.5);
+  --grid-line: #dfe4e8;
+  --lamp-off-bg: #e7eaed;
+  --lamp-off-border: #c7cdd2;
+  --danger: #b14330;
+  --danger-soft: #f5dad3;
+  --added: #1b8a5a;
+  --shadow:
+    0 1px 2px rgba(31, 42, 55, 0.06),
+    0 8px 24px rgba(31, 42, 55, 0.06);
+  --radius: 20px;
+  --font-display:
+    'Hiragino Maru Gothic ProN', 'BIZ UDGothic', 'Yu Gothic', 'Noto Sans JP', system-ui,
+    sans-serif;
+  --font-body: 'Hiragino Sans', 'Yu Gothic', 'Noto Sans JP', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Consolas', monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #11151b;
+    --panel: #1a2129;
+    --panel-border: #3d4856;
+    --ink: #edeff2;
+    --ink-soft: #9aa5b1;
+    --ink-faint: #8891a0;
+    --accent: #38bdf8;
+    --accent-ink: #d6f0fc;
+    --accent-soft: rgba(56, 189, 248, 0.16);
+    --accent-glow: rgba(56, 189, 248, 0.55);
+    --grid-line: #3d4856;
+    --lamp-off-bg: #232b33;
+    --lamp-off-border: #333e48;
+    --danger: #e2695a;
+    --danger-soft: rgba(226, 105, 90, 0.16);
+    --added: #4ade80;
+    --shadow:
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

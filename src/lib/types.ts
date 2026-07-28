@@ -39,3 +39,6 @@ export type Schedules = {
 export type ReadResult =
   | { initialized: true; schedules: Schedules }
   | { initialized: false; reason: 'missing' | 'invalid_json' | 'validation_failed' };
+
+// GET /api/sample-schedules・readSampleSchedules の結果。
+export type ReadSampleResult = { found: true; schedules: Schedules } | { found: false };
