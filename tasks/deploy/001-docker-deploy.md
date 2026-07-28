@@ -5,12 +5,12 @@
 
 ## 概要
 
-`frontend/` を `output: 'standalone'` でビルドし、Ubuntu ホスト上で
+リポジトリ直下のアプリ本体を `output: 'standalone'` でビルドし、Ubuntu ホスト上で
 Docker コンテナとして起動できるようにする。
 
 ## 完了条件
 
-- [ ] `frontend/Dockerfile`(マルチステージビルド, `node:22-slim` ベース)を作成する
+- [ ] `Dockerfile`(リポジトリ直下、マルチステージビルド, `node:22-slim` ベース)を作成する
 - [ ] `docker-compose.yaml` で `ports: 3000:3000`、`volumes: settings:/data/settings`(named volume、`external: true`)を設定する
 - [ ] `SETTINGS_DIR` 環境変数でファイルパスを受け取れるようにする(ハードコードしない)
 - [ ] `restart: unless-stopped` を設定する([003](./003-container-startup-policy.md) で確定済み)

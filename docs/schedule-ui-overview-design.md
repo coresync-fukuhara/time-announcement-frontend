@@ -189,7 +189,7 @@ Ubuntu ホスト上に Docker でフロント用コンテナを 1 つ起動す�
 # docker-compose.yaml(イメージ)
 services:
   schedule-ui:
-    build: ./frontend            # Next.js アプリ(マルチステージビルド, node:22-slim)
+    build: .                     # Next.js アプリ(マルチステージビルド, node:22-slim。リポジトリ直下 = アプリ本体)
     ports:
       - "3000:3000"              # 公開ポート(No.7 確定。外部公開しないため HTTPS 化は不要)
     volumes:
