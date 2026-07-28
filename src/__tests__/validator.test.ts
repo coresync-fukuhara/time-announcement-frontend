@@ -2,7 +2,14 @@
 import { validateSchedules, resetValidatorCache } from '@/lib/validator';
 
 const validData = {
-  monday: [{ hour: 9, minutes: [0, 30] }],
+  monday: [
+    {
+      hour: 9,
+      minutes: [0, 30],
+      // minute_settings は各 hour エントリにネストする(トップレベルには置けない)。
+      minute_settings: { '0': { sound_file_name: 'chime.wav', sound_types: ['DEFAULT'] } },
+    },
+  ],
   tuesday: [],
   wednesday: [],
   thursday: [],
@@ -10,7 +17,6 @@ const validData = {
   saturday: [],
   sunday: [],
   holiday: [],
-  minute_settings: { default: { sound: 'chime.wav' } },
 };
 
 describe('validateSchedules(settings/schema.json を Ajv でコンパイル)', () => {
@@ -22,10 +28,12 @@ describe('validateSchedules(settings/schema.json を Ajv でコンパイル)', (
     expect(result.errors).toBeNull();
   });
 
-  it('hour が範囲外(25)なら valid: false でエラー配列を返す', () => {
+  // 実スキーマは hour に minimum/maximum を持たず type: number のみのため、
+  // 範囲外(例: 25)は valid 判定になる。型不一致(文字列)を違反ケースとして検証する。
+  it('hour が数値でなければ valid: false でエラー配列を返す', () => {
     const result = validateSchedules({
       ...validData,
-      monday: [{ hour: 25, minutes: [0] }],
+      monday: [{ hour: '9', minutes: [0] }],
     });
     expect(result.valid).toBe(false);
     expect(result.errors).not.toBeNull();

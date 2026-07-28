@@ -13,7 +13,14 @@ type Schedules = Record<string, unknown>;
 
 function makeSchedules(overrides: Partial<Schedules> = {}): Schedules {
   return {
-    monday: [{ hour: 9, minutes: [0, 30] }],
+    monday: [
+      {
+        hour: 9,
+        minutes: [0, 30],
+        // minute_settings は各 hour エントリにネストする(トップレベルには置けない)。
+        minute_settings: { '0': { sound_file_name: 'chime.wav' } },
+      },
+    ],
     tuesday: [],
     wednesday: [],
     thursday: [],
@@ -21,7 +28,6 @@ function makeSchedules(overrides: Partial<Schedules> = {}): Schedules {
     saturday: [],
     sunday: [],
     holiday: [],
-    minute_settings: { default: { sound: 'chime.wav' } },
     ...overrides,
   };
 }
@@ -67,9 +73,10 @@ describe('readSchedules', () => {
   });
 
   it('スキーマ違反なら initialized: false / reason: validation_failed', async () => {
+    // 実スキーマは hour に範囲制約が無いため、型不一致(文字列)を違反ケースにする。
     await writeFile(
       path.join(tmpDir, 'schedules.json'),
-      JSON.stringify(makeSchedules({ monday: [{ hour: 99, minutes: [0] }] })),
+      JSON.stringify(makeSchedules({ monday: [{ hour: '9', minutes: [0] }] })),
       'utf-8',
     );
     const result = await readSchedules();
@@ -86,15 +93,20 @@ describe('readSchedules', () => {
 
 describe('writeSchedules', () => {
   it('妥当なデータを書き込み、読み戻せる(minute_settings も温存)', async () => {
-    const data = makeSchedules({ minute_settings: { keep: { sound: 'a.wav' } } });
+    const data = makeSchedules({
+      monday: [
+        { hour: 9, minutes: [0, 30], minute_settings: { '0': { sound_file_name: 'a.wav' } } },
+      ],
+    });
     const saved = await writeSchedules(data);
     expect(saved).toEqual(data);
 
     const result = await readSchedules();
     expect(result).toEqual({ initialized: true, schedules: data });
     // minute_settings が消えていないこと
-    expect((result as { schedules: Schedules }).schedules.minute_settings).toEqual({
-      keep: { sound: 'a.wav' },
+    type WithMonday = { schedules: { monday: Array<{ minute_settings?: unknown }> } };
+    expect((result as unknown as WithMonday).schedules.monday[0].minute_settings).toEqual({
+      '0': { sound_file_name: 'a.wav' },
     });
   });
 
@@ -108,7 +120,7 @@ describe('writeSchedules', () => {
 
   it('スキーマ違反はファイルに触れず ScheduleValidationError を投げる', async () => {
     await expect(
-      writeSchedules(makeSchedules({ monday: [{ hour: 25, minutes: [0] }] })),
+      writeSchedules(makeSchedules({ monday: [{ hour: '9', minutes: [0] }] })),
     ).rejects.toBeInstanceOf(ScheduleValidationError);
     // ファイルは作られていない
     expect(await fileExists(path.join(tmpDir, 'schedules.json'))).toBe(false);

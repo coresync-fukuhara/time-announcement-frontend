@@ -31,7 +31,6 @@ const sampleSchedules = {
   saturday: [],
   sunday: [],
   holiday: [],
-  minute_settings: {},
 };
 
 beforeEach(() => {
