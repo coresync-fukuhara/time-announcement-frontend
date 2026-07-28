@@ -1,6 +1,6 @@
 lockfile_version: '1'
-generated_at: '2026-07-18T00:59:21.626121+00:00'
-apm_version: 0.25.0
+generated_at: '2026-07-28T09:19:41.812281+00:00'
+apm_version: 0.26.0
 dependencies:
 - repo_url: anthropics/claude-plugins-official
   name: claude-md-management
@@ -291,7 +291,7 @@ dependencies:
   content_hash: sha256:fcec2b6832dc4a4ce8fd0b7883fc72531fb402dd76537b62e495ab5c09742cf4
   declared_license: MIT
 - repo_url: vercel-labs/agent-skills
-  name: agent-skills
+  name: vercel-composition-patterns
   host: github.com
   resolved_commit: f8a72b9603728bb92a217a879b7e62e43ad76c81
   version: unknown
@@ -331,7 +331,7 @@ dependencies:
     .claude/skills/composition-patterns/rules/state-lift-state.md: sha256:74c54038a6c554c748fe31cec673b80861b5d920b7553cf78cdf10d18b4b759b
   content_hash: sha256:5b3564ca435f4714d5e65023351e1999e4744818603a9cfb6a6f6a61b7d84918
 - repo_url: vercel-labs/agent-skills
-  name: agent-skills
+  name: vercel-react-best-practices
   host: github.com
   resolved_commit: f8a72b9603728bb92a217a879b7e62e43ad76c81
   version: unknown
@@ -495,7 +495,7 @@ dependencies:
     .claude/skills/react-best-practices/rules/server-serialization.md: sha256:f4c7d68b29c82381baad059c4a7f09e868e71ec9c3115a26ad3ae7d24c0dfe1f
   content_hash: sha256:74f142d28d360d78e8bac4f239a84c87f0ced9015729bc72b5458d82ff45b015
 - repo_url: vercel-labs/agent-skills
-  name: agent-skills
+  name: web-design-guidelines
   host: github.com
   resolved_commit: f8a72b9603728bb92a217a879b7e62e43ad76c81
   version: unknown
@@ -509,7 +509,7 @@ dependencies:
     .claude/skills/web-design-guidelines/SKILL.md: sha256:f4647ca866a3accf763777f83e7682954f0187cd6bea7eea0399796652414e8f
   content_hash: sha256:a6a44d5498f7e8f68289902f3dedfc6f38ae0cee1e96527c80724cf27f727c2a
 - repo_url: vercel/next.js
-  name: next.js
+  name: next-cache-components-adoption
   host: github.com
   resolved_commit: 1bd2fd585aac793ca2589e6f18f17a412fd11005
   resolved_ref: canary
@@ -526,7 +526,7 @@ dependencies:
     .claude/skills/next-cache-components-adoption/references/per-page-decisions.md: sha256:fb60f8b092c4eddaf6f54b285d791e52a5336792ad73febd8825ded24ce7356f
   content_hash: sha256:04e5265399a4c2729b919b8b422c6b904f6df89991a3f97e780603c6446dfa4f
 - repo_url: vercel/next.js
-  name: next.js
+  name: next-cache-components-optimizer
   host: github.com
   resolved_commit: 1bd2fd585aac793ca2589e6f18f17a412fd11005
   resolved_ref: canary
@@ -545,7 +545,7 @@ dependencies:
     .claude/skills/next-cache-components-optimizer/ppr-loop.md: sha256:bc084636f8811a398be7b99fd734b9f96f3f820bf43fdf4350e2ebe7ceb0e577
   content_hash: sha256:6e146af5f8c2ed563b6f05bbfa5c443401640782859f341a64e8e515da840517
 - repo_url: vercel/next.js
-  name: next.js
+  name: next-dev-loop
   host: github.com
   resolved_commit: 1bd2fd585aac793ca2589e6f18f17a412fd11005
   resolved_ref: canary
