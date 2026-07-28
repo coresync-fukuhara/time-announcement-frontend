@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-07-28T09:19:41.812281+00:00'
+generated_at: '2026-07-28T12:29:14.077630+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: anthropics/claude-plugins-official
@@ -2468,6 +2468,15 @@ deployments:
   - obra/superpowers
   active_owner: obra/superpowers
   content_hash: sha256:c711346852c911b24a84aa161e0cff06a4cd7f4e2fa9e9c0a266cead5afcbade
+- kind: uri
+  target: mcp
+  value: playwright
+  runtime: claude
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
 mcp_servers:
 - next-devtools
 - playwright
@@ -2485,5 +2494,10 @@ mcp_configs:
     transport: stdio
     args:
     - '@playwright/mcp@latest'
+    - --browser
+    - chromium
     registry: false
     command: npx
+mcp_target_servers:
+  claude:
+  - playwright

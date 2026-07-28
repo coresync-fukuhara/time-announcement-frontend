@@ -27,6 +27,8 @@ dependencies:
       command: npx
       args:
         - '@playwright/mcp@latest'
+        - '--browser'
+        - 'chromium'
     - name: next-devtools
       registry: false
       transport: stdio
