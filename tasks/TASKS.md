@@ -23,6 +23,6 @@
 
 ## デプロイ
 
-- [ ] [deploy/001](./deploy/001-docker-deploy.md) Docker 化・docker-compose 構成 — 未着手
+- [x] [deploy/001](./deploy/001-docker-deploy.md) Docker 化・docker-compose 構成 — 完了
 - [x] [deploy/002](./deploy/002-host-uid-gid.md) `settings/` の共有方式の確定 — 完了(named volume 方式に変更)
 - [x] [deploy/003](./deploy/003-container-startup-policy.md) コンテナ起動管理方式の確定 — 完了(`restart: unless-stopped` のみ)

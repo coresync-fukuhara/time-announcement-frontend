@@ -186,10 +186,12 @@ BFF は `schedules.json` を直接読み書きする。壊れたファイルを�
 Ubuntu ホスト上に Docker でフロント用コンテナを 1 つ起動する。
 
 ```yaml
-# docker-compose.yaml(イメージ)
+# deploy/docker-compose.yaml(イメージ)
 services:
   schedule-ui:
-    build: .                     # Next.js アプリ(マルチステージビルド, node:22-slim。リポジトリ直下 = アプリ本体)
+    build:
+      context: ..                 # ビルドコンテキストはリポジトリ直下(src/・package.json 等一式が必要なため)
+      dockerfile: deploy/Dockerfile   # Next.js アプリ(マルチステージビルド, node:22-slim)
     ports:
       - "3000:3000"              # 公開ポート(No.7 確定。外部公開しないため HTTPS 化は不要)
     volumes:
@@ -203,6 +205,11 @@ volumes:
     external: true    # 作成は backend 側リポジトリの compose の責務。ここでは参照のみ
 ```
 
+起動は `docker compose -f deploy/docker-compose.yaml up -d`(リポジトリ直下で実行)。
+
+- `Dockerfile`・`docker-compose.yaml` は `deploy/` にまとめる。ビルドコンテキストは
+  リポジトリ直下を指すため、`.dockerignore`(`node_modules`・`.next` 等を除外)は
+  コンテキストの起点であるリポジトリ直下に置く(`deploy/` ではない)。
 - Next.js は `output: 'standalone'` でビルドし、実行イメージを最小化する(Next.js 公式のセルフホスト手順)。
 - BFF がファイルパスをハードコードせず `SETTINGS_DIR` 環境変数で受け取ることで、
   開発時(devcontainer)と本番(named volume)の差を吸収する。
@@ -211,7 +218,10 @@ volumes:
   volume の作成・所有権管理は backend 側リポジトリ(別リポジトリ)の責務とし、
   このリポジトリの `docker-compose.yaml` では `external: true` で参照するのみとする。
   これにより、ホスト側で cron を実行しているユーザーの UID/GID を事前に確認する
-  必要がなくなった。
+  必要がなくなった。ただし、frontend コンテナ自身が非 root ユーザーで動く場合、
+  backend が作成した volume の所有者(通常 root)と UID が一致せず書き込みに失敗する
+  (実機検証で確認済み)。UID を調整する運用コストをかけないため、frontend コンテナは
+  root で実行する(家庭内 LAN・認証なし運用のため許容)。
 - **起動管理方式(No.12 確定)**: `restart: unless-stopped` のみで運用する。
   `docker.service` 自体の自動起動(通常デフォルトで有効)により、ホスト再起動時も
   既存コンテナが自動的に復帰するため、自前の systemd unit は用意しない。
@@ -250,7 +260,10 @@ Python 側(`src/main.py`・`settings/`)は別リポジトリに分離されて�
 ├── vitest.config.mts
 ├── playwright.config.ts
 ├── package.json                     # リポジトリ直下 = アプリ本体
-├── Dockerfile                       # 実装予定(deploy/001)
+├── .dockerignore                    # 実装予定(deploy/001)。ビルドコンテキスト(リポジトリ直下)の起点に配置
+├── deploy/                          # 実装予定(deploy/001)
+│   ├── Dockerfile                   # マルチステージビルド(node:22-slim)
+│   └── docker-compose.yaml          # build.context はリポジトリ直下
 └── docs/                            # 本設計書
 ```
 

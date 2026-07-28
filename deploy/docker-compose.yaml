@@ -1,0 +1,16 @@
+services:
+  schedule-ui:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - settings:/data/settings
+    environment:
+      - SETTINGS_DIR=/data/settings
+    restart: unless-stopped
+
+volumes:
+  settings:
+    external: true

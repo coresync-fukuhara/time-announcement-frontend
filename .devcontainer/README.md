@@ -4,7 +4,14 @@ VS Code Dev Containers での開発環境定義です。
 
 - ベースイメージ: `mcr.microsoft.com/devcontainers/base:debian`(Debianの最新安定版を指すfloatingタグ。
   2026-07時点ではDebian 13 trixieを指す。特定バージョンに固定する理由がないため`bookworm`(12)から変更)
-- 含まれるもの: Node.js 22、GitHub CLI、Claude Code
+- 含まれるもの: Node.js 22、GitHub CLI、Claude Code、Docker(docker-in-docker feature。
+  `deploy/Dockerfile`・`deploy/docker-compose.yaml` のビルド検証用。ホストの Docker とは
+  隔離されたネストした daemon で、`privileged: true` はこの feature が自動で付与する)
+  - **`"moby": false` が必須**。この feature は既定で Microsoft ビルドの Moby
+    (`moby-engine`/`moby-cli`)を入れようとするが、これらの apt パッケージは
+    Debian 13 trixie 向けに提供されておらず、ベースイメージが trixie の本構成では
+    feature のインストールが失敗する。`false` にすると代わりに Docker 公式の
+    Docker CE(`docker-ce`/`docker-ce-cli`、docker.com の apt リポジトリ)が入る
 - ワークスペース: ホストの `.` を `/app` に bind mount
 - Claude Code の設定(`~/.claude`)は volume `claude-code-config` に永続化
 - **前提: `time-announcement-backend` リポジトリが、このリポジトリと同じ階層
