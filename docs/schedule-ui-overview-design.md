@@ -239,7 +239,7 @@ Python 側(`src/main.py`・`settings/`)は別リポジトリに分離されて�
 │   └── __tests__/                   # ユニットテスト(validator / schedule-store)
 ├── e2e/                             # Playwright E2E
 ├── mocks/                           # MSW(handlers / server)
-├── settings/                        # dev 用ダミー(schema.json / schedules.json。gitignore 対象)
+├── settings/                        # devcontainer では backend リポジトリの settings/ を bind mount(gitignore 対象)
 ├── next.config.ts                   # output: 'standalone'
 ├── vitest.config.mts
 ├── playwright.config.ts

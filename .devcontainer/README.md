@@ -7,6 +7,22 @@ VS Code Dev Containers での開発環境定義です。
 - 含まれるもの: Node.js 22、GitHub CLI、Claude Code
 - ワークスペース: ホストの `.` を `/app` に bind mount
 - Claude Code の設定(`~/.claude`)は volume `claude-code-config` に永続化
+- **前提: `time-announcement-backend` リポジトリが、このリポジトリと同じ階層
+  (`../time-announcement-backend`)に clone されていること。** 本番は Docker の
+  named volume で backend と `settings/` を共有する(deploy/002 確定)が、
+  devcontainer 単体では named volume を組み立てられないため、開発時は backend
+  リポジトリの `settings/`・`sounds/`・`db/` を直接 bind mount する
+  (`schema.json` 等を dev 用ダミーとして手元で二重管理しないための対応)。
+  - `settings/` → `/app/settings`(`SETTINGS_DIR` 未設定時のデフォルト解決先。
+    [paths.ts](../src/lib/paths.ts) 参照)
+  - `sounds/`・`db/` → `/app/sounds`・`/app/db`。このフロントエンドのコード上は
+    未使用(音声再生・DB はスコープ外)だが、実データを参照できるように同様に
+    mount する。`/app` 配下以外にマウントすると VS Code のエクスプローラー
+    (ワークスペースは `/app` のみ表示)から見えなくなるため、必ず `/app` 配下に
+    マウントすること
+
+`COREPACK_ENABLE_DOWNLOAD_PROMPT=0` を `containerEnv` に設定し、`corepack prepare`
+実行時のダウンロード確認プロンプトを抑制している。
 
 ## セットアップ処理(`post-created.sh`)
 

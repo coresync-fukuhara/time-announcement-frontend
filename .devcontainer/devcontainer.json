@@ -3,8 +3,14 @@
     "image": "mcr.microsoft.com/devcontainers/base:debian",
     "workspaceFolder": "/app",
     "workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind,consistency=cached",
+    "containerEnv": {
+        "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0"
+    },
     "mounts": [
-        "source=claude-code-config,target=/home/vscode/.claude,type=volume"
+        "source=claude-code-config,target=/home/vscode/.claude,type=volume",
+        "source=${localWorkspaceFolder}/../time-announcement-backend/settings,target=/app/settings,type=bind,consistency=cached",
+        "source=${localWorkspaceFolder}/../time-announcement-backend/sounds,target=/app/sounds,type=bind,consistency=cached",
+        "source=${localWorkspaceFolder}/../time-announcement-backend/db,target=/app/db,type=bind,consistency=cached"
     ],
     "features": {
         "ghcr.io/devcontainers/features/node:2.1.0": {

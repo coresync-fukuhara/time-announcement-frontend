@@ -26,5 +26,9 @@ next-env.d.ts
 /playwright-report/
 /test-results/
 
-# dev 用のローカル settings/(本番は named volume。ダミーの schema.json/schedules.json を置く場所)
+# devcontainer では time-announcement-backend の settings/・sounds/・db/ を bind mount する場所
+# (本番の settings/ は named volume)。settings/ は手元で用意する場合もダミーの
+# schema.json/schedules.json を置く場所として使う
 /settings/
+/sounds/
+/db/
