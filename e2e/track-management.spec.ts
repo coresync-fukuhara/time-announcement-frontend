@@ -46,8 +46,8 @@ test.describe('楽曲管理画面 主要シナリオ', () => {
         try {
           const deleteResponse = await page.request.delete(`/api/tracks/${trackId}`);
           // 204 (削除成功) または 404 (既に削除済み) どちらでもクリーンアップ成功
-          if (deleteResponse.status !== 204 && deleteResponse.status !== 404) {
-            console.warn(`Track cleanup failed with status ${deleteResponse.status}`);
+          if (deleteResponse.status() !== 204 && deleteResponse.status() !== 404) {
+            console.warn(`Track cleanup failed with status ${deleteResponse.status()}`);
           }
         } catch {
           // クリーンアップ API 呼び出し失敗は元のテスト失敗を隠さないようにする

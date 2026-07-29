@@ -1,6 +1,7 @@
-// 楽曲管理画面のクライアント側ユーティリティ(純粋関数のみ)。
+// 楽曲管理画面のユーティリティ(純粋関数のみ)。
 // schedule-ui.ts と同じ役割: 画面固有のロジックをコンポーネントから切り離し、
-// 単体でテストできるようにする。
+// 単体でテストできるようにする。ブラウザ専用APIには依存しないため、
+// MAX_UPLOAD_BYTES は src/app/api/tracks/route.ts(サーバー側)からも参照される。
 
 import type { Track, TrackOrigin } from './types';
 

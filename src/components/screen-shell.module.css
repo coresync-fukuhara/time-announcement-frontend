@@ -1,0 +1,43 @@
+/* / と /tracks で共通の画面シェル(ヘッダー・main・ローディング表示)。
+   dialog.module.css と同様、複数コンポーネント(ここでは複数ページ)で共有する
+   CSS Module のため、対応する単一の .tsx を持たない。 */
+
+.shell {
+  min-height: 100vh;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.topbar h1 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  margin: 0;
+}
+
+.main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.loadingPanel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 70px 20px;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 13px;
+}

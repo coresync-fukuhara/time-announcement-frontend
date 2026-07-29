@@ -8,6 +8,7 @@ import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { ErrorDialog } from '@/components/ErrorDialog';
 import { describeTrackError, isEditableOrigin, sortTracksByName, toggleAudioTypeId } from '@/lib/track-ui';
 import type { Track, TrackAudioType } from '@/lib/types';
+import shellStyles from '@/components/screen-shell.module.css';
 
 type Phase = 'loading' | 'ready' | 'load-error';
 
@@ -167,13 +168,13 @@ export default function TracksPage() {
 
   if (phase === 'loading') {
     return (
-      <div className="screen-shell">
-        <header className="screen-topbar">
+      <div className={shellStyles.shell}>
+        <header className={shellStyles.topbar}>
           <h1>時報 設定</h1>
           <NavSwitcher current="tracks" />
         </header>
-        <main className="screen-main">
-          <div className="screen-loading-panel">読み込み中...</div>
+        <main className={shellStyles.main}>
+          <div className={shellStyles.loadingPanel}>読み込み中...</div>
         </main>
       </div>
     );
@@ -181,13 +182,13 @@ export default function TracksPage() {
 
   if (phase === 'load-error') {
     return (
-      <div className="screen-shell">
-        <header className="screen-topbar">
+      <div className={shellStyles.shell}>
+        <header className={shellStyles.topbar}>
           <h1>時報 設定</h1>
           <NavSwitcher current="tracks" />
         </header>
-        <main className="screen-main">
-          <div className="screen-loading-panel">
+        <main className={shellStyles.main}>
+          <div className={shellStyles.loadingPanel}>
             読み込みに失敗しました。ページを再読み込みしてください。
           </div>
         </main>
@@ -199,12 +200,12 @@ export default function TracksPage() {
   const otherTracks = sortTracksByName(tracks.filter((t) => !isEditableOrigin(t.origin)));
 
   return (
-    <div className="screen-shell">
-      <header className="screen-topbar">
+    <div className={shellStyles.shell}>
+      <header className={shellStyles.topbar}>
         <h1>時報 設定</h1>
         <NavSwitcher current="tracks" />
       </header>
-      <main className="screen-main">
+      <main className={shellStyles.main}>
         <UploadDropzone
           uploading={uploading}
           onUpload={handleUpload}

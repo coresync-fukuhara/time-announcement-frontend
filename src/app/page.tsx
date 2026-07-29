@@ -24,6 +24,7 @@ import {
 } from '@/lib/schedule-ui';
 import type { Weekday, Schedules } from '@/lib/types';
 import styles from './page.module.css';
+import shellStyles from '@/components/screen-shell.module.css';
 
 type Phase = 'loading' | 'needs-init' | 'ready' | 'load-error';
 
@@ -98,13 +99,13 @@ export default function Home() {
 
   if (phase === 'loading') {
     return (
-      <div className="screen-shell">
-        <header className="screen-topbar">
+      <div className={shellStyles.shell}>
+        <header className={shellStyles.topbar}>
           <h1>時報 設定</h1>
           <NavSwitcher current="schedule" />
         </header>
-        <main className="screen-main">
-          <div className="screen-loading-panel">読み込み中...</div>
+        <main className={shellStyles.main}>
+          <div className={shellStyles.loadingPanel}>読み込み中...</div>
         </main>
       </div>
     );
@@ -112,13 +113,13 @@ export default function Home() {
 
   if (phase === 'load-error') {
     return (
-      <div className="screen-shell">
-        <header className="screen-topbar">
+      <div className={shellStyles.shell}>
+        <header className={shellStyles.topbar}>
           <h1>時報 設定</h1>
           <NavSwitcher current="schedule" />
         </header>
-        <main className="screen-main">
-          <div className="screen-loading-panel">
+        <main className={shellStyles.main}>
+          <div className={shellStyles.loadingPanel}>
             読み込みに失敗しました。ページを再読み込みしてください。
           </div>
         </main>
@@ -231,8 +232,8 @@ export default function Home() {
   }));
 
   return (
-    <div className="screen-shell">
-      <header className="screen-topbar">
+    <div className={shellStyles.shell}>
+      <header className={shellStyles.topbar}>
         <h1>時報 設定</h1>
         <div className={styles.actions}>
           <NavSwitcher current="schedule" />
@@ -242,7 +243,7 @@ export default function Home() {
           </button>
         </div>
       </header>
-      <main className="screen-main">
+      <main className={shellStyles.main}>
         <DayTabs current={currentDay} onSelect={setCurrentDay} />
         <TimeGrid
           dayLabel={dayLabel(currentDay)}
