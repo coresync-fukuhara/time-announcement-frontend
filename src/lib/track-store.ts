@@ -14,19 +14,25 @@ export interface TrackRecord {
   id: number;
   name: string;
   filePath: string;
-  origin: 'default' | 'user';
+  origin: 'default' | 'user' | 'unknown';
   audioTypes: TrackAudioTypeSummary[];
 }
 
 // file_path は Python 側で相対パスの可能性があるため、比較前に必ず絶対パス化する
 // (楽曲管理機能 概要設計 2章の既知の注意点)。
-function resolveOrigin(filePath: string): 'default' | 'user' {
+//
+// このDBはPython側リポジトリが所有しており、このフロントエンドが想定していない
+// file_path を持つ行が既に/将来入ってくる可能性がある。そのため sounds/default・
+// sounds/user のいずれの配下でもないパスは例外を投げず 'unknown' として扱う
+// (1行の異常データで一覧全体を落とさないため)。'unknown' は default と同様に
+// 変更・削除不可(保守的に読み取り専用)として扱う。
+function resolveOrigin(filePath: string): 'default' | 'user' | 'unknown' {
   const resolved = path.resolve(filePath);
   const defaultDir = path.resolve(getSoundsDefaultDir());
   const userDir = path.resolve(getSoundsUserDir());
   if (resolved === defaultDir || resolved.startsWith(defaultDir + path.sep)) return 'default';
   if (resolved === userDir || resolved.startsWith(userDir + path.sep)) return 'user';
-  throw new Error(`file_path が sounds/default・sounds/user のいずれの配下でもない: ${filePath}`);
+  return 'unknown';
 }
 
 interface JoinedRow {
@@ -197,7 +203,11 @@ export async function createTrackFromUpload(input: CreateTrackInput): Promise<Tr
         .values({ name: displayName, filePath: targetPath, createdAt: now, updatedAt: now })
         .returning({ id: wavTracks.id })
         .get();
-      for (const audioTypeId of input.audioTypeIds) {
+      // 重複した audioTypeId は同じ割り当てを二重に述べているだけ(意味的にno-op)なので、
+      // エラーにせず黙って重複排除する(track_audio_types は複合PKのため、そのまま
+      // INSERTするとUNIQUE制約違反になってしまう)。
+      const uniqueAudioTypeIds = [...new Set(input.audioTypeIds)];
+      for (const audioTypeId of uniqueAudioTypeIds) {
         tx.insert(trackAudioTypes).values({ trackId: row.id, audioTypeId, createdAt: now }).run();
       }
       return row.id;
@@ -216,18 +226,26 @@ export interface UpdateTrackInput {
 }
 
 // name変更とtrack_audio_typesの全置換を1トランザクションで行う(全体置換の方針。
-// 楽曲管理機能 概要設計 2章)。origin: default の楽曲はここで拒否する。
+// 楽曲管理機能 概要設計 2章)。origin: default・unknown の楽曲はリネーム・削除は不可だが、
+// audioTypeIds(鳴動タイプ割り当て)のみの変更は許可する(設計・実装計画で確定済み)。
+// そのため「実際に name が変わる場合」のみ拒否し、audioTypeIds だけの更新は通す。
 export function updateTrack(id: number, input: UpdateTrackInput): TrackRecord {
   const current = getDb().select().from(wavTracks).where(eq(wavTracks.id, id)).get();
   if (!current) throw new TrackNotFoundError(id);
-  if (resolveOrigin(current.filePath) === 'default') throw new DefaultTrackForbiddenError(id);
+  const origin = resolveOrigin(current.filePath);
+  const isImmutableOrigin = origin === 'default' || origin === 'unknown';
+  if (isImmutableOrigin && input.name !== current.name) throw new DefaultTrackForbiddenError(id);
 
   try {
     const now = nowSqliteTimestamp();
+    // 重複した audioTypeId は同じ割り当てを二重に述べているだけ(意味的にno-op)なので、
+    // エラーにせず黙って重複排除する(track_audio_types は複合PKのため、そのまま
+    // INSERTするとUNIQUE制約違反になってしまう)。
+    const uniqueAudioTypeIds = [...new Set(input.audioTypeIds)];
     getDb().transaction((tx) => {
       tx.update(wavTracks).set({ name: input.name, updatedAt: now }).where(eq(wavTracks.id, id)).run();
       tx.delete(trackAudioTypes).where(eq(trackAudioTypes.trackId, id)).run();
-      for (const audioTypeId of input.audioTypeIds) {
+      for (const audioTypeId of uniqueAudioTypeIds) {
         tx.insert(trackAudioTypes).values({ trackId: id, audioTypeId, createdAt: now }).run();
       }
     });
@@ -244,7 +262,8 @@ export function updateTrack(id: number, input: UpdateTrackInput): TrackRecord {
 export async function deleteTrack(id: number): Promise<void> {
   const current = getDb().select().from(wavTracks).where(eq(wavTracks.id, id)).get();
   if (!current) throw new TrackNotFoundError(id);
-  if (resolveOrigin(current.filePath) === 'default') throw new DefaultTrackForbiddenError(id);
+  const origin = resolveOrigin(current.filePath);
+  if (origin === 'default' || origin === 'unknown') throw new DefaultTrackForbiddenError(id);
 
   getDb().transaction((tx) => {
     tx.delete(wavTracks).where(eq(wavTracks.id, id)).run();

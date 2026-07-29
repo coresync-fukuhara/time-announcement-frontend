@@ -88,6 +88,26 @@ function seed(): void {
 }
 
 describe('listTracks', () => {
+  it('sounds/default・sounds/user のいずれの配下でもない file_path は origin: unknown を返し、一覧全体は落ちない', () => {
+    seed();
+    const now = new Date().toISOString();
+    getDb().transaction((tx) => {
+      tx.insert(wavTracks)
+        .values({
+          name: 'mystery',
+          filePath: path.join(tmpDir, 'elsewhere', 'mystery.wav'),
+          createdAt: now,
+          updatedAt: now,
+        })
+        .run();
+    });
+
+    const tracks = listTracks();
+    expect(tracks).toHaveLength(3);
+    const mystery = tracks.find((t) => t.name === 'mystery')!;
+    expect(mystery.origin).toBe('unknown');
+  });
+
   it('origin と割り当て済み音声タイプを含めて返す', () => {
     seed();
     const tracks = listTracks();
@@ -211,6 +231,17 @@ describe('createTrackFromUpload', () => {
     await expect(access(conflictPath)).rejects.toThrow();
   });
 
+  it('audioTypeIds に重複したidを渡しても成功し、1回だけ割り当てられる', async () => {
+    seed();
+    const track = await createTrackFromUpload({
+      fileName: 'dup_type.wav',
+      fileBuffer: Buffer.from('x'),
+      audioTypeIds: [2, 2],
+    });
+
+    expect(track.audioTypes).toEqual([{ id: 2, name: 'NOTIFICATION' }]);
+  });
+
   it('存在しない audioTypeId を指定すると400相当のエラーを投げ、書き込み済みファイルを削除する', async () => {
     seed();
     await expect(
@@ -242,12 +273,57 @@ describe('updateTrack', () => {
     expect(() => updateTrack(9999, { name: 'x', audioTypeIds: [] })).toThrow(TrackNotFoundError);
   });
 
-  it('origin: default の楽曲はDefaultTrackForbiddenErrorを投げる', () => {
+  it('origin: default の楽曲はnameを変更しようとするとDefaultTrackForbiddenErrorを投げる', () => {
     seed();
     const sample = listTracks().find((t) => t.name === 'sample')!;
     expect(() => updateTrack(sample.id, { name: 'renamed', audioTypeIds: [] })).toThrow(
       DefaultTrackForbiddenError,
     );
+  });
+
+  it('origin: default の楽曲でもnameを変更しなければaudioTypeIdsのみの更新は成功する', () => {
+    seed();
+    const sample = listTracks().find((t) => t.name === 'sample')!;
+    expect(sample.audioTypes).toEqual([{ id: 1, name: 'DEFAULT' }]);
+
+    const updated = updateTrack(sample.id, { name: sample.name, audioTypeIds: [2] });
+
+    expect(updated.name).toBe('sample');
+    expect(updated.audioTypes).toEqual([{ id: 2, name: 'NOTIFICATION' }]);
+
+    const refetched = listTracks().find((t) => t.id === sample.id)!;
+    expect(refetched.audioTypes).toEqual([{ id: 2, name: 'NOTIFICATION' }]);
+  });
+
+  it('origin: unknown の楽曲はnameを変更しようとするとDefaultTrackForbiddenErrorを投げる', () => {
+    seed();
+    const now = new Date().toISOString();
+    const mysteryId = getDb().transaction((tx) => {
+      const row = tx
+        .insert(wavTracks)
+        .values({
+          name: 'mystery',
+          filePath: path.join(tmpDir, 'elsewhere', 'mystery.wav'),
+          createdAt: now,
+          updatedAt: now,
+        })
+        .returning({ id: wavTracks.id })
+        .get();
+      return row.id;
+    });
+
+    expect(() => updateTrack(mysteryId, { name: 'renamed', audioTypeIds: [] })).toThrow(
+      DefaultTrackForbiddenError,
+    );
+  });
+
+  it('audioTypeIds に重複したidを渡しても成功し、1回だけ割り当てられる', () => {
+    seed();
+    const chime = listTracks().find((t) => t.name === 'my_chime')!;
+
+    const updated = updateTrack(chime.id, { name: chime.name, audioTypeIds: [2, 2] });
+
+    expect(updated.audioTypes).toEqual([{ id: 2, name: 'NOTIFICATION' }]);
   });
 
   it('他レコードと同名にするとTrackConflictErrorを投げ、対象レコードは変更されない', () => {
@@ -285,5 +361,59 @@ describe('deleteTrack', () => {
     const sample = listTracks().find((t) => t.name === 'sample')!;
     await expect(deleteTrack(sample.id)).rejects.toThrow(DefaultTrackForbiddenError);
     expect(listTracks().find((t) => t.id === sample.id)).toBeDefined();
+  });
+
+  it('origin: unknown の楽曲もDefaultTrackForbiddenErrorを投げ、削除されない', async () => {
+    seed();
+    const now = new Date().toISOString();
+    const mysteryId = getDb().transaction((tx) => {
+      const row = tx
+        .insert(wavTracks)
+        .values({
+          name: 'mystery',
+          filePath: path.join(tmpDir, 'elsewhere', 'mystery.wav'),
+          createdAt: now,
+          updatedAt: now,
+        })
+        .returning({ id: wavTracks.id })
+        .get();
+      return row.id;
+    });
+
+    await expect(deleteTrack(mysteryId)).rejects.toThrow(DefaultTrackForbiddenError);
+    expect(listTracks().find((t) => t.id === mysteryId)).toBeDefined();
+  });
+});
+
+describe('file_path のDB制約(テストDBが本番と同じUNIQUE制約を持つことの回帰テスト)', () => {
+  it('createTestDb で作成したテストDBは wav_tracks.file_path に対するUNIQUE制約を強制する', () => {
+    // drizzle-kit pull は SQLite の暗黙インデックス(inline な UNIQUE (file_path) 由来の
+    // sqlite_autoindex_wav_tracks_1)を migration.sql に出力しないため、createTestDb() が
+    // 明示的に追加している(src/lib/db/create-test-db.ts 参照)。この制約が将来
+    // 静かに失われていないかを直接確認する。
+    const now = new Date().toISOString();
+    const dup = path.join(process.env.SOUNDS_DIR!, 'user', 'same_path.wav');
+    getDb().transaction((tx) => {
+      tx.insert(wavTracks)
+        .values({ name: 'first', filePath: dup, createdAt: now, updatedAt: now })
+        .run();
+    });
+
+    // drizzle は node:sqlite が投げる元エラーを DrizzleQueryError でラップし、
+    // 元のSQLiteメッセージは .cause に入る(mapDbError が読んでいるのと同じ形。
+    // track-store.ts 参照)。
+    let caught: unknown;
+    try {
+      getDb().transaction((tx) => {
+        tx.insert(wavTracks)
+          .values({ name: 'second', filePath: dup, createdAt: now, updatedAt: now })
+          .run();
+      });
+    } catch (err) {
+      caught = err;
+    }
+    expect(caught).toBeDefined();
+    const cause = (caught as { cause?: { message?: string } }).cause;
+    expect(cause?.message).toMatch(/UNIQUE constraint failed: wav_tracks\.file_path/);
   });
 });
