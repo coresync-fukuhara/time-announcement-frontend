@@ -42,3 +42,25 @@ export type ReadResult =
 
 // GET /api/sample-schedules・readSampleSchedules の結果。
 export type ReadSampleResult = { found: true; schedules: Schedules } | { found: false };
+
+// 楽曲管理機能の型。実際の妥当性検証は DB 側(wav_tracks・audio_types・
+// track_audio_types)が真であり、これは API レスポンス(GET/POST/PATCH
+// /api/tracks・/api/audio-types)の形に対応する TypeScript 上の表現
+// (画面詳細設計 8章)。src/lib/track-store.ts と型を分離するのは、
+// track-store.ts が node:sqlite 等サーバー専用の依存を持つため、
+// クライアントコンポーネントから直接 import しないようにするため。
+
+export type TrackOrigin = 'default' | 'user' | 'unknown';
+
+export interface TrackAudioType {
+  id: number;
+  name: string;
+}
+
+export interface Track {
+  id: number;
+  name: string;
+  filePath: string;
+  origin: TrackOrigin;
+  audioTypes: TrackAudioType[];
+}
