@@ -32,3 +32,6 @@ next-env.d.ts
 /settings/
 /sounds/
 /db/
+
+# brainstorming スキルのビジュアル・コンパニオンが生成するモックアップ一式(一時的な検討資料)
+/.superpowers/
