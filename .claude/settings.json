@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"/app/.claude/hooks/hookify/hooks/pretooluse.py\"",
+            "command": "python3 \".claude/hooks/hookify/hooks/pretooluse.py\"",
             "timeout": 10
           }
         ]
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"/app/.claude/hooks/hookify/hooks/posttooluse.py\"",
+            "command": "python3 \".claude/hooks/hookify/hooks/posttooluse.py\"",
             "timeout": 10
           }
         ]
@@ -84,7 +84,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"/app/.claude/hooks/hookify/hooks/stop.py\"",
+            "command": "python3 \".claude/hooks/hookify/hooks/stop.py\"",
             "timeout": 10
           }
         ]
@@ -108,7 +108,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"/app/.claude/hooks/hookify/hooks/userpromptsubmit.py\"",
+            "command": "python3 \".claude/hooks/hookify/hooks/userpromptsubmit.py\"",
             "timeout": 10
           }
         ]
