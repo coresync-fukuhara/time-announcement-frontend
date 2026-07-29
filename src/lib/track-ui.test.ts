@@ -75,5 +75,29 @@ describe('track-ui', () => {
       expect(describeTrackError(null)).toBe('サーバーとの通信でエラーが発生しました。');
       expect(describeTrackError({ error: 'io_error' })).toBe('サーバーとの通信でエラーが発生しました。');
     });
+
+    it('invalid_form_data のときリクエスト形式が不正というメッセージを返す', () => {
+      expect(describeTrackError({ error: 'invalid_form_data' })).toBe('リクエストの形式が不正です。');
+    });
+
+    it('invalid_id のときIDが不正というメッセージを返す', () => {
+      expect(describeTrackError({ error: 'invalid_id' })).toBe(
+        '楽曲の指定が不正です。一覧を更新してください。',
+      );
+    });
+
+    it('invalid_json のときリクエスト形式が不正というメッセージを返す', () => {
+      expect(describeTrackError({ error: 'invalid_json' })).toBe('リクエストの形式が不正です。');
+    });
+
+    it('conflict + field なし のとき汎用の重複メッセージを返す', () => {
+      expect(describeTrackError({ error: 'conflict' })).toBe('入力内容が既存のデータと重複しています。');
+    });
+
+    it('conflict + field が不正な値 のとき汎用の重複メッセージを返す', () => {
+      expect(describeTrackError({ error: 'conflict', field: 'unknown' as any })).toBe(
+        '入力内容が既存のデータと重複しています。',
+      );
+    });
   });
 });

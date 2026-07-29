@@ -38,10 +38,16 @@ export function describeTrackError(body: unknown): string {
       return 'ファイル名に使用できない文字が含まれています。';
     case 'file_missing':
       return 'ファイルが選択されていません。';
+    case 'invalid_form_data':
+      return 'リクエストの形式が不正です。';
+    case 'invalid_json':
+      return 'リクエストの形式が不正です。';
+    case 'invalid_id':
+      return '楽曲の指定が不正です。一覧を更新してください。';
     case 'conflict':
-      return field === 'name'
-        ? '同じ表示名の楽曲が既に存在します。'
-        : '同名のファイルが既に存在します。';
+      if (field === 'name') return '同じ表示名の楽曲が既に存在します。';
+      if (field === 'file_path') return '同名のファイルが既に存在します。';
+      return '入力内容が既存のデータと重複しています。';
     case 'invalid_audio_type_ids':
       return '音声タイプの指定が不正です。';
     case 'invalid_name':
