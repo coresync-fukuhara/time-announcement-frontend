@@ -7,6 +7,13 @@ import { createTestDb } from './db/create-test-db';
 import { getDb, resetDbForTests } from './db/client';
 import { audioTypes, wavTracks, trackAudioTypes } from './db/generated/schema';
 import { listTracks, listAudioTypes } from './track-store';
+import { readFile } from 'node:fs/promises';
+import {
+  createTrackFromUpload,
+  InvalidFileNameError,
+  TrackConflictError,
+  InvalidAudioTypeError,
+} from './track-store';
 
 let tmpDir: string;
 let prevDbDir: string | undefined;
@@ -124,5 +131,95 @@ describe('listAudioTypes', () => {
         { id: 2, name: 'NOTIFICATION' },
       ]),
     );
+  });
+});
+
+describe('createTrackFromUpload', () => {
+  it('sounds/user/ にファイルを書き込み、DBに登録する', async () => {
+    seed();
+    const track = await createTrackFromUpload({
+      fileName: 'new_chime.wav',
+      fileBuffer: Buffer.from('dummy wav bytes'),
+      audioTypeIds: [2],
+    });
+
+    expect(track.name).toBe('new_chime');
+    expect(track.origin).toBe('user');
+    expect(track.audioTypes).toEqual([{ id: 2, name: 'NOTIFICATION' }]);
+
+    const written = await readFile(track.filePath, 'utf-8');
+    expect(written).toBe('dummy wav bytes');
+  });
+
+  it('ディレクトリトラバーサルを含むファイル名は拒否する', async () => {
+    await expect(
+      createTrackFromUpload({
+        fileName: '../../etc/passwd.wav',
+        fileBuffer: Buffer.from('x'),
+        audioTypeIds: [],
+      }),
+    ).rejects.toThrow(InvalidFileNameError);
+  });
+
+  it('許可文字以外を含むファイル名は拒否する', async () => {
+    await expect(
+      createTrackFromUpload({
+        fileName: 'あいうえお.wav',
+        fileBuffer: Buffer.from('x'),
+        audioTypeIds: [],
+      }),
+    ).rejects.toThrow(InvalidFileNameError);
+  });
+
+  it('sounds/user/ に同名ファイルが既に存在する場合は409相当のエラーを投げ、ファイルを上書きしない', async () => {
+    seed();
+    await createTrackFromUpload({
+      fileName: 'dup.wav',
+      fileBuffer: Buffer.from('first'),
+      audioTypeIds: [],
+    });
+
+    await expect(
+      createTrackFromUpload({
+        fileName: 'dup.wav',
+        fileBuffer: Buffer.from('second'),
+        audioTypeIds: [],
+      }),
+    ).rejects.toThrow(TrackConflictError);
+
+    const tracks = listTracks();
+    const dup = tracks.find((t) => t.name === 'dup')!;
+    const written = await readFile(dup.filePath, 'utf-8');
+    expect(written).toBe('first');
+  });
+
+  it('表示名(name)が既存レコードと重複する場合は409相当のエラーを投げ、書き込み済みファイルを削除する', async () => {
+    seed();
+    await expect(
+      createTrackFromUpload({
+        fileName: 'sample.wav', // seed() の default 楽曲 "sample" と name が衝突
+        fileBuffer: Buffer.from('x'),
+        audioTypeIds: [],
+      }),
+    ).rejects.toThrow(TrackConflictError);
+
+    const { access } = await import('node:fs/promises');
+    const conflictPath = path.join(process.env.SOUNDS_DIR!, 'user', 'sample.wav');
+    await expect(access(conflictPath)).rejects.toThrow();
+  });
+
+  it('存在しない audioTypeId を指定すると400相当のエラーを投げ、書き込み済みファイルを削除する', async () => {
+    seed();
+    await expect(
+      createTrackFromUpload({
+        fileName: 'bad_type.wav',
+        fileBuffer: Buffer.from('x'),
+        audioTypeIds: [999],
+      }),
+    ).rejects.toThrow(InvalidAudioTypeError);
+
+    const { access } = await import('node:fs/promises');
+    const p = path.join(process.env.SOUNDS_DIR!, 'user', 'bad_type.wav');
+    await expect(access(p)).rejects.toThrow();
   });
 });
