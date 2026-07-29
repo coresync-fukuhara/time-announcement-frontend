@@ -98,16 +98,16 @@ export default function Home() {
 
   if (phase === 'loading') {
     return (
-      <main className={styles.main}>
-        <div className={styles.loadingPanel}>読み込み中...</div>
+      <main className="screen-main">
+        <div className="screen-loading-panel">読み込み中...</div>
       </main>
     );
   }
 
   if (phase === 'load-error') {
     return (
-      <main className={styles.main}>
-        <div className={styles.loadingPanel}>
+      <main className="screen-main">
+        <div className="screen-loading-panel">
           読み込みに失敗しました。ページを再読み込みしてください。
         </div>
       </main>
@@ -219,8 +219,8 @@ export default function Home() {
   }));
 
   return (
-    <div className={styles.app}>
-      <header className={styles.topbar}>
+    <div className="screen-shell">
+      <header className="screen-topbar">
         <h1>時報 設定</h1>
         <div className={styles.actions}>
           <NavSwitcher current="schedule" />
@@ -230,7 +230,7 @@ export default function Home() {
           </button>
         </div>
       </header>
-      <main className={styles.main}>
+      <main className="screen-main">
         <DayTabs current={currentDay} onSelect={setCurrentDay} />
         <TimeGrid
           dayLabel={dayLabel(currentDay)}

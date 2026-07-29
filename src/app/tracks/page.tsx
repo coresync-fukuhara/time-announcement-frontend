@@ -8,7 +8,6 @@ import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { ErrorDialog } from '@/components/ErrorDialog';
 import { describeTrackError, isEditableOrigin, sortTracksByName, toggleAudioTypeId } from '@/lib/track-ui';
 import type { Track, TrackAudioType } from '@/lib/types';
-import styles from './page.module.css';
 
 type Phase = 'loading' | 'ready' | 'load-error';
 
@@ -162,16 +161,16 @@ export default function TracksPage() {
 
   if (phase === 'loading') {
     return (
-      <main className={styles.main}>
-        <div className={styles.loadingPanel}>読み込み中...</div>
+      <main className="screen-main">
+        <div className="screen-loading-panel">読み込み中...</div>
       </main>
     );
   }
 
   if (phase === 'load-error') {
     return (
-      <main className={styles.main}>
-        <div className={styles.loadingPanel}>
+      <main className="screen-main">
+        <div className="screen-loading-panel">
           読み込みに失敗しました。ページを再読み込みしてください。
         </div>
       </main>
@@ -182,12 +181,12 @@ export default function TracksPage() {
   const otherTracks = sortTracksByName(tracks.filter((t) => !isEditableOrigin(t.origin)));
 
   return (
-    <div className={styles.app}>
-      <header className={styles.topbar}>
+    <div className="screen-shell">
+      <header className="screen-topbar">
         <h1>時報 設定</h1>
         <NavSwitcher current="tracks" />
       </header>
-      <main className={styles.main}>
+      <main className="screen-main">
         <UploadDropzone
           uploading={uploading}
           onUpload={handleUpload}
