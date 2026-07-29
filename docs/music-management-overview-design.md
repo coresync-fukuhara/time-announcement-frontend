@@ -34,6 +34,13 @@ DB のスキーマ作成・マイグレーションは Python 側(`src/music_db.
 
 - ドライバは `node:sqlite`(Node.js 22 組み込み、追加のネイティブ依存なし)。
   `drizzle-orm/node-sqlite` 経由で利用する。
+  **バージョンに関する注意(実機検証済み)**: `drizzle-orm/node-sqlite` は
+  安定版(`latest` タグ、執筆時点 0.45.2)にはまだ存在せず、次期メジャー
+  (1.0)の release candidate(`drizzle-orm@rc`、執筆時点 `1.0.0-rc.4`。
+  `drizzle-kit@rc` も同様)にのみ含まれる。両バージョンを実際にインストールし
+  export 一覧を比較して確認済み。RC を採用する方針としたため、
+  `package.json` には `drizzle-orm`/`drizzle-kit` とも `rc` タグのバージョンを
+  明記する。1.0 正式リリース後、stable への切り戻しを検討する。
 - DB パスはハードコードせず、既存の `SETTINGS_DIR` と同じパターンで
   環境変数 `DB_DIR` から解決する(`src/lib/paths.ts` に `getDbPath()` を追加)。
   開発時(devcontainer)は未設定なら `cwd` 直下の `db/music.sqlite3` を使う。
@@ -194,6 +201,7 @@ Python 側スキーマ変更時も `drizzle-kit pull` を再実行するだけ�
 | 設計判断 | 位置づけ |
 | --- | --- |
 | Drizzle ORM + `node:sqlite` | 決定事項(ユーザー指定)。Node.js 22 組み込みでネイティブ依存が増えない |
+| `drizzle-orm@rc`/`drizzle-kit@rc`(1.0 release candidate)の採用 | 確定。ユーザー判断(RCのAPI変更リスクを許容し、node:sqlite対応を優先。実機検証で安定版に該当exportが無いことを確認済み) |
 | `drizzle-kit pull` でスキーマ取り込み(手書き禁止) | 決定事項。スキーマは Python 側が真実の源(source of truth) |
 | `PRAGMA journal_mode = WAL` | 決定事項(ユーザー指定)。複数プロセス(cron + Node)同時アクセス対策 |
 | `PRAGMA foreign_keys = ON` | ⭐私のオススメ。SQLite はデフォルト無効のため明示しないと CASCADE が効かない |
