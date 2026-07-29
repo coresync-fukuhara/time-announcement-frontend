@@ -9,6 +9,7 @@
     "node": ">=22"
   },
   "scripts": {
+    "db:pull": "drizzle-kit pull",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -19,6 +20,7 @@
   },
   "dependencies": {
     "ajv": "^8.20.0",
+    "drizzle-orm": "1.0.0-rc.4",
     "next": "^16.2.10",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
@@ -33,6 +35,8 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.3",
+    "better-sqlite3": "^12.11.1",
+    "drizzle-kit": "1.0.0-rc.4",
     "jsdom": "^29.1.1",
     "msw": "^2.15.0",
     "next-test-api-route-handler": "^5.0.5",

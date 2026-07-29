@@ -8,6 +8,13 @@ allowBuilds:
   core-js: false
   msw: false
   sharp: false
+  # better-sqlite3: drizzle-kit pull のスキーマ取り込み専用(実行時は node:sqlite を使うため
+  # アプリには含まれない)。prebuild-install でプリビルドバイナリを取得するだけで
+  # コンパイラは不要(node:22-slim での Docker ビルドで確認済み)。
+  better-sqlite3: true
+  # esbuild: drizzle-kit の transitive dependency。postinstall はプラットフォーム別バイナリの
+  # ダウンロードのみ(コンパイル不要)。
+  esbuild: true
 
 blockExoticSubdeps: true
 engineStrict: true

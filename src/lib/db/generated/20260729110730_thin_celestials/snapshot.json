@@ -1,0 +1,237 @@
+{
+  "dialect": "sqlite",
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevIds": [],
+  "version": "7",
+  "ddl": [
+    {
+      "name": "wav_tracks",
+      "entityType": "tables"
+    },
+    {
+      "name": "audio_types",
+      "entityType": "tables"
+    },
+    {
+      "name": "track_audio_types",
+      "entityType": "tables"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "wav_tracks"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "audio_types"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "track_id",
+      "entityType": "columns",
+      "table": "track_audio_types"
+    },
+    {
+      "type": "text(255)",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "name",
+      "entityType": "columns",
+      "table": "wav_tracks"
+    },
+    {
+      "type": "text(255)",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "name",
+      "entityType": "columns",
+      "table": "audio_types"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "audio_type_id",
+      "entityType": "columns",
+      "table": "track_audio_types"
+    },
+    {
+      "type": "text(1024)",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "file_path",
+      "entityType": "columns",
+      "table": "wav_tracks"
+    },
+    {
+      "type": "text(1024)",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "description",
+      "entityType": "columns",
+      "table": "audio_types"
+    },
+    {
+      "type": "numeric",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "track_audio_types"
+    },
+    {
+      "type": "numeric",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "wav_tracks"
+    },
+    {
+      "type": "numeric",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "audio_types"
+    },
+    {
+      "type": "numeric",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "table": "wav_tracks"
+    },
+    {
+      "columns": [
+        "audio_type_id"
+      ],
+      "tableTo": "audio_types",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "nameExplicit": true,
+      "name": "fk_track_audio_types_audio_type_id_audio_types_id_fk",
+      "entityType": "fks",
+      "table": "track_audio_types"
+    },
+    {
+      "columns": [
+        "track_id"
+      ],
+      "tableTo": "wav_tracks",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "nameExplicit": true,
+      "name": "fk_track_audio_types_track_id_wav_tracks_id_fk",
+      "entityType": "fks",
+      "table": "track_audio_types"
+    },
+    {
+      "columns": [
+        "track_id",
+        "audio_type_id"
+      ],
+      "nameExplicit": false,
+      "name": "track_audio_types_pk",
+      "entityType": "pks",
+      "table": "track_audio_types"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": true,
+      "name": "wav_tracks_pk",
+      "table": "wav_tracks",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": true,
+      "name": "audio_types_pk",
+      "table": "audio_types",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        {
+          "value": "name",
+          "isExpression": false
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "origin": "manual",
+      "name": "ix_audio_types_name",
+      "entityType": "indexes",
+      "table": "audio_types"
+    },
+    {
+      "columns": [
+        {
+          "value": "name",
+          "isExpression": false
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "origin": "manual",
+      "name": "ix_wav_tracks_name",
+      "entityType": "indexes",
+      "table": "wav_tracks"
+    },
+    {
+      "columns": [
+        "track_id",
+        "audio_type_id"
+      ],
+      "nameExplicit": true,
+      "name": "uq_track_audio_type",
+      "entityType": "uniques",
+      "table": "track_audio_types"
+    }
+  ],
+  "renames": []
+}
