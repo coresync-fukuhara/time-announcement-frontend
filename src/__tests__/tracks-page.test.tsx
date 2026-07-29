@@ -97,7 +97,9 @@ describe('楽曲管理画面', () => {
     const fetchMock = vi.fn();
     stubInitialLoad(fetchMock, [userTrack]);
     vi.stubGlobal('fetch', fetchMock);
-    const user = userEvent.setup();
+    // accept=".wav" によるブラウザ/testing-library側のファイルフィルタを無効化し、
+    // コンポーネント自身の拡張子検証ロジックを実際に通過させる。
+    const user = userEvent.setup({ applyAccept: false });
 
     render(<TracksPage />);
     await screen.findByText('chime_intro');

@@ -32,7 +32,9 @@ describe('UploadDropzone', () => {
   });
 
   it('.wav 以外の拡張子は onValidationError を呼び、onUpload は呼ばない', async () => {
-    const user = userEvent.setup();
+    // accept=".wav" によるブラウザ/testing-library側のファイルフィルタを無効化し、
+    // コンポーネント自身の拡張子検証ロジックを実際に通過させる。
+    const user = userEvent.setup({ applyAccept: false });
     const onUpload = vi.fn();
     const onValidationError = vi.fn();
     render(

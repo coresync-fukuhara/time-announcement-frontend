@@ -61,10 +61,10 @@ export function UploadDropzone({ uploading, onUpload, onValidationError }: Uploa
       }}
     >
       {uploading ? 'アップロード中...' : '📁 .wav をドラッグ&ドロップ、またはクリックして追加'}
-      {/* accept属性は意図的に省略。@testing-library/user-eventのapplyAccept: trueがmp3ファイルをフィルタするため、拡張子検証はhandleFilesのみで実施。 */}
       <input
         ref={inputRef}
         type="file"
+        accept=".wav"
         aria-label="ファイルを選択"
         className={styles.hiddenInput}
         onChange={(e) => {

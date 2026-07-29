@@ -6,12 +6,11 @@ import {
   TrackConflictError,
   InvalidAudioTypeError,
 } from '@/lib/track-store';
+import { MAX_UPLOAD_BYTES } from '@/lib/track-ui';
 
 // ファイル I/O・DB I/O を行うため Node.js ランタイムで動かす。
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10MB(楽曲管理機能 概要設計 3章)
 
 // GET /api/tracks
 export async function GET(): Promise<NextResponse> {
