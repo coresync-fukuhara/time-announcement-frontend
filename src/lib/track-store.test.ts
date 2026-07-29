@@ -317,6 +317,29 @@ describe('updateTrack', () => {
     );
   });
 
+  it('origin: unknown の楽曲でもnameを変更しなければaudioTypeIdsのみの更新は成功する', () => {
+    seed();
+    const now = new Date().toISOString();
+    const mysteryId = getDb().transaction((tx) => {
+      const row = tx
+        .insert(wavTracks)
+        .values({
+          name: 'mystery2',
+          filePath: path.join(tmpDir, 'elsewhere', 'mystery2.wav'),
+          createdAt: now,
+          updatedAt: now,
+        })
+        .returning({ id: wavTracks.id })
+        .get();
+      return row.id;
+    });
+
+    const updated = updateTrack(mysteryId, { name: 'mystery2', audioTypeIds: [1] });
+
+    expect(updated.origin).toBe('unknown');
+    expect(updated.audioTypes).toEqual([{ id: 1, name: 'DEFAULT' }]);
+  });
+
   it('audioTypeIds に重複したidを渡しても成功し、1回だけ割り当てられる', () => {
     seed();
     const chime = listTracks().find((t) => t.name === 'my_chime')!;

@@ -83,17 +83,22 @@ DB のスキーマ作成・マイグレーションは Python 側(`src/music_db.
 - `listTracks()`: `wav_tracks` を `track_audio_types` 経由で `audio_types` と
   JOIN し、各楽曲に割り当て済みタイプ配列を付けて返す。`file_path` を絶対パス化した
   上で `getSoundsDefaultDir()` / `getSoundsUserDir()` と前方一致するかを判定し、
-  `origin: "default" | "user"` を付与して返す。
+  `origin: "default" | "user" | "unknown"` を付与して返す(実装時の追加判断: `sounds/default`・
+  `sounds/user` のどちらの配下でもない `file_path` に遭遇しても一覧全体を落とさず、
+  `origin: "unknown"` として扱う。`unknown` は `default` と同様「編集・削除不可」の
+  安全側として扱う。詳細は 3 章の実装上の注意点を参照)。
 - `createTrackFromUpload(file, audioTypeIds)`: ファイル書き込み + DB INSERT
   (`wav_tracks` + `track_audio_types`)をトランザクションでまとめ、片方が
   失敗したらもう片方を巻き戻す(ファイル書き込み成功後に DB INSERT が失敗したら
-  書き込み済みファイルを削除する)。
+  書き込み済みファイルを削除する)。`audioTypeIds` に重複があっても
+  `track_audio_types` の複合PK違反にはならないよう重複除去してから INSERT する。
 - `updateTrack(id, { name, audioTypeIds })`: `name` 更新と
   `track_audio_types` の全置換(delete→insert)を1トランザクションで行う。
-  `origin: "default"` の楽曲に対しては `name` 変更を拒否する。
-- `deleteTrack(id)`: `origin: "default"` なら拒否。`origin: "user"` なら
-  DB 行削除(CASCADE で `track_audio_types` も消える)と実ファイル削除を
-  まとめて行う。
+  `origin: "default"` または `"unknown"` の楽曲に対しては、`name` が実際に
+  変わる場合のみ拒否する(`audioTypeIds` のみの更新は許可する)。
+- `deleteTrack(id)`: `origin: "default"` または `"unknown"` なら拒否。
+  `origin: "user"` なら DB 行削除(CASCADE で `track_audio_types` も消える)と
+  実ファイル削除をまとめて行う。
 
 **`file_path` の絶対パス化に関する既知の注意点**: Python 側は `file_path` を
 相対パス文字列で保存している可能性があり、TS 側プロセスの実行ディレクトリ次第では
@@ -121,7 +126,7 @@ DB のスキーマ作成・マイグレーションは Python 側(`src/music_db.
 | 409 | `file_path` 重複(同名ファイルが既に `sounds/user/` に存在)、または `name` 重複(表示名がアップロード時の自動生成・`PATCH` での変更いずれかで既存レコードと衝突) |
 | 413 | ファイルサイズが上限(10MB)超過 |
 | 404 | `PATCH`/`DELETE` で存在しない `id` |
-| 403 | `origin: "default"` の楽曲への `DELETE`、または `name` 変更 |
+| 403 | `origin: "default"` または `"unknown"` の楽曲への `DELETE`、または `name` の変更を伴う `PATCH` |
 | 500 | ファイル I/O・DB I/O 失敗 |
 
 ### アップロード時のファイル名サニタイズ(⭐セキュリティ上必須)
@@ -149,11 +154,12 @@ services:
     volumes:
       - settings:/data/settings
       - db:/data/db
-      - sounds:/data/sounds
+      # sounds だけ settings/db と異なるマウント先(/app/sounds)を使う(理由は下記)。
+      - sounds:/app/sounds
     environment:
       - SETTINGS_DIR=/data/settings
       - DB_DIR=/data/db
-      - SOUNDS_DIR=/data/sounds
+      - SOUNDS_DIR=/app/sounds
 
 volumes:
   settings:
@@ -169,6 +175,15 @@ volumes:
   この `SOUNDS_DIR` からの相対パスとして解決する。
 - 所有権・作成責務は `db`・`sounds` volume も backend 側リポジトリのままとし、
   このリポジトリは `external: true` 参照のみ(`settings` と同じ整理)。
+- **`sounds` のマウント先が `settings`/`db`(`/data/...`)と異なる理由(実機検証で
+  発覚・確定)**: `wav_tracks.file_path` は backend(Python)側が書き込む絶対パスで、
+  本番では `/app/sounds/default/...` のように既に保存されている(backend 側の
+  実際のマウント規約)。このコンテナ側の `SOUNDS_DIR` が `/data/sounds` のままだと、
+  `resolveOrigin()`(2章)が `file_path` を `default`/`user` のどちらの配下とも
+  判定できず、`GET /api/tracks` が default 楽曲のレコードで丸ごと失敗する
+  (実装・レビュー時に検出し修正した既知の不整合)。`sounds` は backend 側の
+  マウント規約 `/app/sounds` に合わせ、`settings`/`db` は既存の整理(`/data/...`)の
+  ままとする。
 
 ## 6. テスト方針
 
