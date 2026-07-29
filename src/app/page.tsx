@@ -9,6 +9,7 @@ import { CopyDialog } from '@/components/CopyDialog';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { ErrorDialog } from '@/components/ErrorDialog';
 import { CopyDiff } from '@/components/CopyDiff';
+import { NavSwitcher } from '@/components/NavSwitcher';
 import {
   DAY_TABS,
   dayLabel,
@@ -23,6 +24,7 @@ import {
 } from '@/lib/schedule-ui';
 import type { Weekday, Schedules } from '@/lib/types';
 import styles from './page.module.css';
+import shellStyles from '@/components/screen-shell.module.css';
 
 type Phase = 'loading' | 'needs-init' | 'ready' | 'load-error';
 
@@ -97,19 +99,31 @@ export default function Home() {
 
   if (phase === 'loading') {
     return (
-      <main className={styles.main}>
-        <div className={styles.loadingPanel}>読み込み中...</div>
-      </main>
+      <div className={shellStyles.shell}>
+        <header className={shellStyles.topbar}>
+          <h1>時報 設定</h1>
+          <NavSwitcher current="schedule" />
+        </header>
+        <main className={shellStyles.main}>
+          <div className={shellStyles.loadingPanel}>読み込み中...</div>
+        </main>
+      </div>
     );
   }
 
   if (phase === 'load-error') {
     return (
-      <main className={styles.main}>
-        <div className={styles.loadingPanel}>
-          読み込みに失敗しました。ページを再読み込みしてください。
-        </div>
-      </main>
+      <div className={shellStyles.shell}>
+        <header className={shellStyles.topbar}>
+          <h1>時報 設定</h1>
+          <NavSwitcher current="schedule" />
+        </header>
+        <main className={shellStyles.main}>
+          <div className={shellStyles.loadingPanel}>
+            読み込みに失敗しました。ページを再読み込みしてください。
+          </div>
+        </main>
+      </div>
     );
   }
 
@@ -218,17 +232,18 @@ export default function Home() {
   }));
 
   return (
-    <div className={styles.app}>
-      <header className={styles.topbar}>
+    <div className={shellStyles.shell}>
+      <header className={shellStyles.topbar}>
         <h1>時報 設定</h1>
         <div className={styles.actions}>
+          <NavSwitcher current="schedule" />
           {dirty && <span className={styles.unsavedChip}>未保存の変更があります</span>}
           <button type="button" onClick={handleSave} disabled={saving}>
             {viewMode ? '編集' : saving ? '保存中...' : '保存'}
           </button>
         </div>
       </header>
-      <main className={styles.main}>
+      <main className={shellStyles.main}>
         <DayTabs current={currentDay} onSelect={setCurrentDay} />
         <TimeGrid
           dayLabel={dayLabel(currentDay)}

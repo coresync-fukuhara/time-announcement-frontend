@@ -31,6 +31,7 @@ describe('Home ページ', () => {
     expect(await screen.findByRole('tab', { name: '月' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '編集' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '9時00分' })).toBeDisabled();
+    expect(screen.getByRole('link', { name: '楽曲管理' })).toHaveAttribute('href', '/tracks');
   });
 
   it('未初期化の場合は初期化ダイアログを表示し、「空で始める」を選ぶと編集モードで開始する(No.9)', async () => {
@@ -60,6 +61,15 @@ describe('Home ページ', () => {
       '/api/schedules',
       expect.objectContaining({ method: 'PUT' }),
     );
+  });
+
+  it('初期読み込みに失敗した場合はエラー表示にし、ヘッダー(NavSwitcher)は表示され続ける', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({}, false)));
+    render(<Home />);
+    expect(
+      await screen.findByText('読み込みに失敗しました。ページを再読み込みしてください。'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '楽曲管理' })).toHaveAttribute('href', '/tracks');
   });
 
   it('保存がバリデーションエラーの場合は画面遷移せずエラー内容をダイアログで表示する', async () => {

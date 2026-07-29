@@ -21,6 +21,7 @@
 - [x] [implementation/005](./implementation/005-ui-init-dialog.md) 初期化選択ダイアログの実装 — 完了
 - [x] [implementation/006](./implementation/006-ui-schedule-grid.md) 曜日タブ・時刻グリッド画面の実装 — 完了
 - [x] [implementation/007](./implementation/007-e2e-main-scenarios.md) E2E 主要シナリオ(Playwright)の実装 — 完了
+- [x] [implementation/008](./implementation/008-ui-track-management.md) 楽曲管理画面(`/tracks`)の実装 — 完了
 
 ## デプロイ
 
