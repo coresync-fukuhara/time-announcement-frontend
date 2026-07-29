@@ -15,7 +15,8 @@
 - Node.js は `>=22`(`package.json` の `engines` に既存設定あり。変更不要)。
 - `drizzle-orm` は `1.0.0-rc.4` を**キャレットなしで正確に固定**する(dependencies)。安定版(`latest`=0.45.2)には `drizzle-orm/node-sqlite` が存在しないことを実機検証済み。
 - `drizzle-kit` は `1.0.0-rc.4` をキャレットなしで正確に固定する(devDependencies)。
-- `better-sqlite3` は `^13.0.2`(devDependencies)。`drizzle-kit pull` のスキーマ取り込み専用で、アプリ実行時には一切使わない(実行時ドライバは `node:sqlite`)。
+- `better-sqlite3` は `^12.11.1`(devDependencies)。`drizzle-kit pull` のスキーマ取り込み専用で、アプリ実行時には一切使わない(実行時ドライバは `node:sqlite`)。**バージョンに関する注意(実機検証済み)**: `13.x`系(13.0.1/13.0.2)は `prebuild-install` フォールバックを含む `install` スクリプト自体を廃止しており、常に `node-gyp` でのネイティブビルドが必須になる(ビルドツールが揃わない環境では失敗する)。`12.11.1` は従来通り `prebuild-install || node-gyp rebuild --release` を持ち、コンパイラなしでプリビルドバイナリが使える。**`^13.0.2` を指定してはならない。**
+- `minimumReleaseAge: 10080`(7日)により、公開直後のバージョンは `pnpm install` で自動的に除外される(意図的な供給網セキュリティ対策。`docs`/`CLAUDE.md` に明記された既定動作)。**この値を書き換えて回避することは禁止**。パッケージが新しすぎて入らない場合は、ポリシーを満たす既存の古いバージョンに変更すること(上記の `better-sqlite3` の件が実例)。
 - `pnpm-workspace.yaml` の `strictDepBuilds: true` により、`better-sqlite3`(prebuild-install)と `esbuild`(drizzle-kit の transitive dependency)の2つを `allowBuilds` に追加しないと `pnpm install` が失敗する(node:22-slim の Docker ビルドで実機確認済み。ビルドツール追加は不要、prebuild バイナリで解決する)。
 - **`db.transaction()` のコールバックは必ず同期関数にし、`.run()`/`.get()`/`.all()` で終端すること。`async`コールバック+`await`を使うと、throw時にロールバックが機能しない(コミットが先に走ってしまう)ことを実機検証で確認済みの既知の罠。**
 - 接続確立時に `PRAGMA journal_mode = WAL;` と `PRAGMA foreign_keys = ON;` を必ず発行する(後者を忘れると `track_audio_types` の `ON DELETE CASCADE` が効かない)。
@@ -52,7 +53,7 @@
 `devDependencies` に追加:
 ```json
 "drizzle-kit": "1.0.0-rc.4",
-"better-sqlite3": "^13.0.2"
+"better-sqlite3": "^12.11.1"
 ```
 
 - [ ] **Step 2: `pnpm-workspace.yaml` の `allowBuilds` に2件追加**
