@@ -237,3 +237,20 @@ export function updateTrack(id: number, input: UpdateTrackInput): TrackRecord {
 
   return getTrackByIdOrThrow(id);
 }
+
+// DB削除(CASCADEでtrack_audio_typesも消える)→実ファイル削除の順で行う
+// (ユーザー判断。楽曲管理機能 概要設計 2章)。DB側が正であるため、
+// 万一ファイル削除だけ失敗しても孤立ファイルが残るだけで、DBの整合性は壊れない。
+export async function deleteTrack(id: number): Promise<void> {
+  const current = getDb().select().from(wavTracks).where(eq(wavTracks.id, id)).get();
+  if (!current) throw new TrackNotFoundError(id);
+  if (resolveOrigin(current.filePath) === 'default') throw new DefaultTrackForbiddenError(id);
+
+  getDb().transaction((tx) => {
+    tx.delete(wavTracks).where(eq(wavTracks.id, id)).run();
+  });
+
+  await unlink(current.filePath).catch((err) => {
+    if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
+  });
+}

@@ -1,15 +1,17 @@
 // @vitest-environment node
-import { mkdtemp, mkdir, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, rm, readFile, access } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { beforeEach, afterEach, describe, it, expect } from 'vitest';
 import { createTestDb } from './db/create-test-db';
 import { getDb, resetDbForTests } from './db/client';
 import { audioTypes, wavTracks, trackAudioTypes } from './db/generated/schema';
-import { listTracks, listAudioTypes, updateTrack } from './track-store';
-import { readFile } from 'node:fs/promises';
 import {
+  listTracks,
+  listAudioTypes,
+  updateTrack,
   createTrackFromUpload,
+  deleteTrack,
   InvalidFileNameError,
   TrackConflictError,
   InvalidAudioTypeError,
@@ -205,7 +207,6 @@ describe('createTrackFromUpload', () => {
       }),
     ).rejects.toThrow(TrackConflictError);
 
-    const { access } = await import('node:fs/promises');
     const conflictPath = path.join(process.env.SOUNDS_DIR!, 'user', 'sample.wav');
     await expect(access(conflictPath)).rejects.toThrow();
   });
@@ -220,7 +221,6 @@ describe('createTrackFromUpload', () => {
       }),
     ).rejects.toThrow(InvalidAudioTypeError);
 
-    const { access } = await import('node:fs/promises');
     const p = path.join(process.env.SOUNDS_DIR!, 'user', 'bad_type.wav');
     await expect(access(p)).rejects.toThrow();
   });
@@ -257,5 +257,33 @@ describe('updateTrack', () => {
       TrackConflictError,
     );
     expect(listTracks().find((t) => t.id === chime.id)!.name).toBe('my_chime');
+  });
+});
+
+describe('deleteTrack', () => {
+  it('DBレコードと実ファイルの両方を削除する', async () => {
+    seed();
+    const uploaded = await createTrackFromUpload({
+      fileName: 'to_delete.wav',
+      fileBuffer: Buffer.from('x'),
+      audioTypeIds: [1],
+    });
+
+    await deleteTrack(uploaded.id);
+
+    expect(listTracks().find((t) => t.id === uploaded.id)).toBeUndefined();
+    await expect(access(uploaded.filePath)).rejects.toThrow();
+  });
+
+  it('存在しないidはTrackNotFoundErrorを投げる', async () => {
+    seed();
+    await expect(deleteTrack(9999)).rejects.toThrow(TrackNotFoundError);
+  });
+
+  it('origin: default の楽曲はDefaultTrackForbiddenErrorを投げ、削除されない', async () => {
+    seed();
+    const sample = listTracks().find((t) => t.name === 'sample')!;
+    await expect(deleteTrack(sample.id)).rejects.toThrow(DefaultTrackForbiddenError);
+    expect(listTracks().find((t) => t.id === sample.id)).toBeDefined();
   });
 });
