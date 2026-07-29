@@ -7,10 +7,18 @@ services:
       - "3000:3000"
     volumes:
       - settings:/data/settings
+      - db:/data/db
+      - sounds:/data/sounds
     environment:
       - SETTINGS_DIR=/data/settings
+      - DB_DIR=/data/db
+      - SOUNDS_DIR=/data/sounds
     restart: unless-stopped
 
 volumes:
   settings:
+    external: true
+  db:
+    external: true
+  sounds:
     external: true
