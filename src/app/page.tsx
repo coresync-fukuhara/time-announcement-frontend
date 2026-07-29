@@ -9,6 +9,7 @@ import { CopyDialog } from '@/components/CopyDialog';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { ErrorDialog } from '@/components/ErrorDialog';
 import { CopyDiff } from '@/components/CopyDiff';
+import { NavSwitcher } from '@/components/NavSwitcher';
 import {
   DAY_TABS,
   dayLabel,
@@ -222,6 +223,7 @@ export default function Home() {
       <header className={styles.topbar}>
         <h1>時報 設定</h1>
         <div className={styles.actions}>
+          <NavSwitcher current="schedule" />
           {dirty && <span className={styles.unsavedChip}>未保存の変更があります</span>}
           <button type="button" onClick={handleSave} disabled={saving}>
             {viewMode ? '編集' : saving ? '保存中...' : '保存'}

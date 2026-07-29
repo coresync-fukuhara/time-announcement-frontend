@@ -31,6 +31,7 @@ describe('Home ページ', () => {
     expect(await screen.findByRole('tab', { name: '月' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '編集' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '9時00分' })).toBeDisabled();
+    expect(screen.getByRole('link', { name: '楽曲管理' })).toHaveAttribute('href', '/tracks');
   });
 
   it('未初期化の場合は初期化ダイアログを表示し、「空で始める」を選ぶと編集モードで開始する(No.9)', async () => {
