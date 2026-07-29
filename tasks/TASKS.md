@@ -10,6 +10,7 @@
 - [x] [design/002](./design/002-overview-design.md) 概要設計書の作成 — 完了
 - [x] [design/003](./design/003-testing-design.md) テスト設計書の作成 — 完了
 - [x] [design/004](./design/004-mcp-servers-design.md) MCP サーバー導入設計書の作成 — 完了
+- [x] [design/005](./design/005-music-management-overview-design.md) 楽曲管理機能 概要設計書の作成 — 完了
 
 ## 実装
 
