@@ -30,3 +30,29 @@ export function getBackupPath(): string {
 export function getTmpPath(): string {
   return path.join(getSettingsDir(), '.schedules.json.tmp');
 }
+
+// DB(music.sqlite3)ディレクトリ。SETTINGS_DIR と同じパターンで DB_DIR から解決する
+// (楽曲管理機能 概要設計 2章)。開発時(devcontainer)は未設定なら cwd 直下の db/ を使う。
+export function getDbDir(): string {
+  const dir = process.env.DB_DIR;
+  return dir && dir.length > 0 ? dir : path.join(process.cwd(), 'db');
+}
+
+export function getDbPath(): string {
+  return path.join(getDbDir(), 'music.sqlite3');
+}
+
+// サウンドファイルのルート。SOUNDS_DIR から解決し、配下に default/・user/ を持つ前提
+// (楽曲管理機能 概要設計 5章)。
+export function getSoundsDir(): string {
+  const dir = process.env.SOUNDS_DIR;
+  return dir && dir.length > 0 ? dir : path.join(process.cwd(), 'sounds');
+}
+
+export function getSoundsDefaultDir(): string {
+  return path.join(getSoundsDir(), 'default');
+}
+
+export function getSoundsUserDir(): string {
+  return path.join(getSoundsDir(), 'user');
+}
