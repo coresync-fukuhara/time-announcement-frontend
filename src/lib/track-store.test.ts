@@ -6,13 +6,15 @@ import { beforeEach, afterEach, describe, it, expect } from 'vitest';
 import { createTestDb } from './db/create-test-db';
 import { getDb, resetDbForTests } from './db/client';
 import { audioTypes, wavTracks, trackAudioTypes } from './db/generated/schema';
-import { listTracks, listAudioTypes } from './track-store';
+import { listTracks, listAudioTypes, updateTrack } from './track-store';
 import { readFile } from 'node:fs/promises';
 import {
   createTrackFromUpload,
   InvalidFileNameError,
   TrackConflictError,
   InvalidAudioTypeError,
+  TrackNotFoundError,
+  DefaultTrackForbiddenError,
 } from './track-store';
 
 let tmpDir: string;
@@ -221,5 +223,39 @@ describe('createTrackFromUpload', () => {
     const { access } = await import('node:fs/promises');
     const p = path.join(process.env.SOUNDS_DIR!, 'user', 'bad_type.wav');
     await expect(access(p)).rejects.toThrow();
+  });
+});
+
+describe('updateTrack', () => {
+  it('nameとaudioTypeIdsを全置換する', () => {
+    seed();
+    const before = listTracks().find((t) => t.name === 'my_chime')!;
+
+    const updated = updateTrack(before.id, { name: 'renamed_chime', audioTypeIds: [2] });
+
+    expect(updated.name).toBe('renamed_chime');
+    expect(updated.audioTypes).toEqual([{ id: 2, name: 'NOTIFICATION' }]);
+  });
+
+  it('存在しないidはTrackNotFoundErrorを投げる', () => {
+    seed();
+    expect(() => updateTrack(9999, { name: 'x', audioTypeIds: [] })).toThrow(TrackNotFoundError);
+  });
+
+  it('origin: default の楽曲はDefaultTrackForbiddenErrorを投げる', () => {
+    seed();
+    const sample = listTracks().find((t) => t.name === 'sample')!;
+    expect(() => updateTrack(sample.id, { name: 'renamed', audioTypeIds: [] })).toThrow(
+      DefaultTrackForbiddenError,
+    );
+  });
+
+  it('他レコードと同名にするとTrackConflictErrorを投げ、対象レコードは変更されない', () => {
+    seed();
+    const chime = listTracks().find((t) => t.name === 'my_chime')!;
+    expect(() => updateTrack(chime.id, { name: 'sample', audioTypeIds: [] })).toThrow(
+      TrackConflictError,
+    );
+    expect(listTracks().find((t) => t.id === chime.id)!.name).toBe('my_chime');
   });
 });

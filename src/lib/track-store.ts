@@ -209,3 +209,31 @@ export async function createTrackFromUpload(input: CreateTrackInput): Promise<Tr
 
   return getTrackByIdOrThrow(insertedId);
 }
+
+export interface UpdateTrackInput {
+  name: string;
+  audioTypeIds: number[];
+}
+
+// name変更とtrack_audio_typesの全置換を1トランザクションで行う(全体置換の方針。
+// 楽曲管理機能 概要設計 2章)。origin: default の楽曲はここで拒否する。
+export function updateTrack(id: number, input: UpdateTrackInput): TrackRecord {
+  const current = getDb().select().from(wavTracks).where(eq(wavTracks.id, id)).get();
+  if (!current) throw new TrackNotFoundError(id);
+  if (resolveOrigin(current.filePath) === 'default') throw new DefaultTrackForbiddenError(id);
+
+  try {
+    const now = nowSqliteTimestamp();
+    getDb().transaction((tx) => {
+      tx.update(wavTracks).set({ name: input.name, updatedAt: now }).where(eq(wavTracks.id, id)).run();
+      tx.delete(trackAudioTypes).where(eq(trackAudioTypes.trackId, id)).run();
+      for (const audioTypeId of input.audioTypeIds) {
+        tx.insert(trackAudioTypes).values({ trackId: id, audioTypeId, createdAt: now }).run();
+      }
+    });
+  } catch (err) {
+    throw mapDbError(err);
+  }
+
+  return getTrackByIdOrThrow(id);
+}
