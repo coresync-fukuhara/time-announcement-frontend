@@ -66,6 +66,7 @@ describe('楽曲管理画面', () => {
     expect(
       await screen.findByText('読み込みに失敗しました。ページを再読み込みしてください。'),
     ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'スケジュール設定' })).toHaveAttribute('href', '/');
   });
 
   it('アップロード成功時、一覧に新しい楽曲が追加される', async () => {

@@ -98,19 +98,31 @@ export default function Home() {
 
   if (phase === 'loading') {
     return (
-      <main className="screen-main">
-        <div className="screen-loading-panel">読み込み中...</div>
-      </main>
+      <div className="screen-shell">
+        <header className="screen-topbar">
+          <h1>時報 設定</h1>
+          <NavSwitcher current="schedule" />
+        </header>
+        <main className="screen-main">
+          <div className="screen-loading-panel">読み込み中...</div>
+        </main>
+      </div>
     );
   }
 
   if (phase === 'load-error') {
     return (
-      <main className="screen-main">
-        <div className="screen-loading-panel">
-          読み込みに失敗しました。ページを再読み込みしてください。
-        </div>
-      </main>
+      <div className="screen-shell">
+        <header className="screen-topbar">
+          <h1>時報 設定</h1>
+          <NavSwitcher current="schedule" />
+        </header>
+        <main className="screen-main">
+          <div className="screen-loading-panel">
+            読み込みに失敗しました。ページを再読み込みしてください。
+          </div>
+        </main>
+      </div>
     );
   }
 

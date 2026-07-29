@@ -63,6 +63,15 @@ describe('Home ページ', () => {
     );
   });
 
+  it('初期読み込みに失敗した場合はエラー表示にし、ヘッダー(NavSwitcher)は表示され続ける', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({}, false)));
+    render(<Home />);
+    expect(
+      await screen.findByText('読み込みに失敗しました。ページを再読み込みしてください。'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '楽曲管理' })).toHaveAttribute('href', '/tracks');
+  });
+
   it('保存がバリデーションエラーの場合は画面遷移せずエラー内容をダイアログで表示する', async () => {
     const details = [{ instancePath: '/monday/0/hour', message: 'must be <= 23' }];
     const fetchMock = vi
