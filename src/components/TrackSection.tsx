@@ -9,7 +9,7 @@ export interface TrackSectionProps {
   tracks: Track[];
   audioTypes: TrackAudioType[];
   emptyMessage: string;
-  busyTrackId: number | null;
+  busyTrackIds: ReadonlySet<number>;
   onRename: (id: number, name: string) => void;
   onToggleAudioType: (id: number, audioTypeId: number) => void;
   onDelete: (id: number) => void;
@@ -22,7 +22,7 @@ export function TrackSection({
   tracks,
   audioTypes,
   emptyMessage,
-  busyTrackId,
+  busyTrackIds,
   onRename,
   onToggleAudioType,
   onDelete,
@@ -39,7 +39,7 @@ export function TrackSection({
               key={track.id}
               track={track}
               audioTypes={audioTypes}
-              busy={track.id === busyTrackId}
+              busy={busyTrackIds.has(track.id)}
               onRename={(name) => onRename(track.id, name)}
               onToggleAudioType={(audioTypeId) => onToggleAudioType(track.id, audioTypeId)}
               onDelete={() => onDelete(track.id)}

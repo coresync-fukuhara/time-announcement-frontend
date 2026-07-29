@@ -113,6 +113,25 @@ describe('楽曲管理画面', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
+  it('アップロードのサーバーエラーは ErrorDialog に表示され、一覧に追加されない', async () => {
+    const fetchMock = vi.fn();
+    stubInitialLoad(fetchMock, [userTrack]);
+    fetchMock.mockResolvedValueOnce(jsonResponse({ error: 'conflict', field: 'name' }, false, 409));
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+
+    render(<TracksPage />);
+    await screen.findByText('chime_intro');
+
+    const input = screen.getByLabelText('ファイルを選択');
+    const file = new File([new Uint8Array(10)], 'dup_name.wav', { type: 'audio/wav' });
+    await user.upload(input, file);
+
+    expect(await screen.findByText('アップロードに失敗しました')).toBeInTheDocument();
+    expect(screen.getByText('同じ表示名の楽曲が既に存在します。')).toBeInTheDocument();
+    expect(screen.queryByText('dup_name')).not.toBeInTheDocument();
+  });
+
   it('名前変更に成功すると一覧に反映される', async () => {
     const fetchMock = vi.fn();
     stubInitialLoad(fetchMock, [userTrack]);
@@ -192,6 +211,25 @@ describe('楽曲管理画面', () => {
         'aria-pressed',
         'true',
       ),
+    );
+  });
+
+  it('音声タイプの切り替えに失敗すると ErrorDialog を表示し、切り替わらない', async () => {
+    const fetchMock = vi.fn();
+    stubInitialLoad(fetchMock, [userTrack]);
+    fetchMock.mockResolvedValueOnce(jsonResponse({ error: 'forbidden' }, false, 403));
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+
+    render(<TracksPage />);
+    await screen.findByText('chime_intro');
+
+    await user.click(screen.getByRole('button', { name: 'chime_intro NOTIFICATION' }));
+
+    expect(await screen.findByText('音声タイプの変更に失敗しました')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'chime_intro NOTIFICATION' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
     );
   });
 

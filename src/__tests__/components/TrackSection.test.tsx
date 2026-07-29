@@ -18,7 +18,7 @@ describe('TrackSection', () => {
         tracks={tracks}
         audioTypes={audioTypes}
         emptyMessage="ありません"
-        busyTrackId={null}
+        busyTrackIds={new Set()}
         onRename={() => {}}
         onToggleAudioType={() => {}}
         onDelete={() => {}}
@@ -36,7 +36,7 @@ describe('TrackSection', () => {
         tracks={[]}
         audioTypes={audioTypes}
         emptyMessage="アップロード済みの楽曲はまだありません。"
-        busyTrackId={null}
+        busyTrackIds={new Set()}
         onRename={() => {}}
         onToggleAudioType={() => {}}
         onDelete={() => {}}
@@ -45,14 +45,14 @@ describe('TrackSection', () => {
     expect(screen.getByText('アップロード済みの楽曲はまだありません。')).toBeInTheDocument();
   });
 
-  it('busyTrackId に一致する行だけ busy になる(削除ボタンが非活性)', () => {
+  it('busyTrackIds に含まれる行だけ busy になる(削除ボタンが非活性)', () => {
     render(
       <TrackSection
         title="アップロード済み"
         tracks={tracks}
         audioTypes={audioTypes}
         emptyMessage="ありません"
-        busyTrackId={2}
+        busyTrackIds={new Set([2])}
         onRename={() => {}}
         onToggleAudioType={() => {}}
         onDelete={() => {}}
@@ -71,7 +71,7 @@ describe('TrackSection', () => {
         tracks={tracks}
         audioTypes={audioTypes}
         emptyMessage="ありません"
-        busyTrackId={null}
+        busyTrackIds={new Set()}
         onRename={() => {}}
         onToggleAudioType={() => {}}
         onDelete={onDelete}

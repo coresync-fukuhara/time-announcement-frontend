@@ -30,10 +30,22 @@ export default function TracksPage() {
   const [phase, setPhase] = useState<Phase>('loading');
   const [tracks, setTracks] = useState<Track[]>([]);
   const [audioTypes, setAudioTypes] = useState<TrackAudioType[]>([]);
-  const [busyTrackId, setBusyTrackId] = useState<number | null>(null);
+  const [busyTrackIds, setBusyTrackIds] = useState<Set<number>>(new Set());
   const [uploading, setUploading] = useState(false);
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
   const [errorState, setErrorState] = useState<ErrorState | null>(null);
+
+  function markBusy(id: number) {
+    setBusyTrackIds((prev) => new Set(prev).add(id));
+  }
+
+  function clearBusy(id: number) {
+    setBusyTrackIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -47,6 +59,9 @@ export default function TracksPage() {
         const tracksJson = await tracksRes.json();
         const audioTypesJson = await audioTypesRes.json();
         if (cancelled) return;
+        if (!Array.isArray(tracksJson.tracks) || !Array.isArray(audioTypesJson.audioTypes)) {
+          throw new Error('unexpected response shape');
+        }
         setTracks(tracksJson.tracks as Track[]);
         setAudioTypes(audioTypesJson.audioTypes as TrackAudioType[]);
         setPhase('ready');
@@ -63,51 +78,40 @@ export default function TracksPage() {
     return tracks.find((t) => t.id === id);
   }
 
-  async function handleRename(id: number, name: string) {
-    const track = findTrack(id);
-    if (!track) return;
-    setBusyTrackId(id);
+  async function patchTrack(id: number, body: { name: string; audioTypeIds: number[] }, errorTitle: string) {
+    markBusy(id);
     try {
       const res = await fetch(`/api/tracks/${id}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ name, audioTypeIds: track.audioTypes.map((a) => a.id) }),
+        body: JSON.stringify(body),
       });
-      const json = await res.json();
       if (!res.ok) {
-        setErrorState({ message: '名前の変更に失敗しました', description: describeTrackError(json) });
+        const json = await res.json().catch(() => null);
+        setErrorState({ message: errorTitle, description: describeTrackError(json) });
         return;
       }
+      const json = await res.json();
+      if (!json.track) throw new Error('unexpected response shape');
       setTracks((prev) => prev.map((t) => (t.id === id ? (json.track as Track) : t)));
     } catch {
-      setErrorState({ message: '名前の変更に失敗しました', description: NETWORK_ERROR_DESCRIPTION });
+      setErrorState({ message: errorTitle, description: NETWORK_ERROR_DESCRIPTION });
     } finally {
-      setBusyTrackId(null);
+      clearBusy(id);
     }
+  }
+
+  async function handleRename(id: number, name: string) {
+    const track = findTrack(id);
+    if (!track) return;
+    await patchTrack(id, { name, audioTypeIds: track.audioTypes.map((a) => a.id) }, '名前の変更に失敗しました');
   }
 
   async function handleToggleAudioType(id: number, audioTypeId: number) {
     const track = findTrack(id);
     if (!track) return;
     const nextIds = toggleAudioTypeId(track.audioTypes.map((a) => a.id), audioTypeId);
-    setBusyTrackId(id);
-    try {
-      const res = await fetch(`/api/tracks/${id}`, {
-        method: 'PATCH',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ name: track.name, audioTypeIds: nextIds }),
-      });
-      const json = await res.json();
-      if (!res.ok) {
-        setErrorState({ message: '音声タイプの変更に失敗しました', description: describeTrackError(json) });
-        return;
-      }
-      setTracks((prev) => prev.map((t) => (t.id === id ? (json.track as Track) : t)));
-    } catch {
-      setErrorState({ message: '音声タイプの変更に失敗しました', description: NETWORK_ERROR_DESCRIPTION });
-    } finally {
-      setBusyTrackId(null);
-    }
+    await patchTrack(id, { name: track.name, audioTypeIds: nextIds }, '音声タイプの変更に失敗しました');
   }
 
   function handleRequestDelete(id: number) {
@@ -120,7 +124,7 @@ export default function TracksPage() {
     if (!confirmState) return;
     const { trackId } = confirmState;
     setConfirmState(null);
-    setBusyTrackId(trackId);
+    markBusy(trackId);
     try {
       const res = await fetch(`/api/tracks/${trackId}`, { method: 'DELETE' });
       if (!res.ok) {
@@ -132,7 +136,7 @@ export default function TracksPage() {
     } catch {
       setErrorState({ message: '削除に失敗しました', description: NETWORK_ERROR_DESCRIPTION });
     } finally {
-      setBusyTrackId(null);
+      clearBusy(trackId);
     }
   }
 
@@ -142,11 +146,13 @@ export default function TracksPage() {
       const form = new FormData();
       form.set('file', file);
       const res = await fetch('/api/tracks', { method: 'POST', body: form });
-      const json = await res.json();
       if (!res.ok) {
+        const json = await res.json().catch(() => null);
         setErrorState({ message: 'アップロードに失敗しました', description: describeTrackError(json) });
         return;
       }
+      const json = await res.json();
+      if (!json.track) throw new Error('unexpected response shape');
       setTracks((prev) => [...prev, json.track as Track]);
     } catch {
       setErrorState({ message: 'アップロードに失敗しました', description: NETWORK_ERROR_DESCRIPTION });
@@ -197,7 +203,7 @@ export default function TracksPage() {
           tracks={userTracks}
           audioTypes={audioTypes}
           emptyMessage="アップロード済みの楽曲はまだありません。上のエリアから .wav をアップロードしてください。"
-          busyTrackId={busyTrackId}
+          busyTrackIds={busyTrackIds}
           onRename={handleRename}
           onToggleAudioType={handleToggleAudioType}
           onDelete={handleRequestDelete}
@@ -207,7 +213,7 @@ export default function TracksPage() {
           tracks={otherTracks}
           audioTypes={audioTypes}
           emptyMessage="初期音源はありません。"
-          busyTrackId={busyTrackId}
+          busyTrackIds={busyTrackIds}
           onRename={handleRename}
           onToggleAudioType={handleToggleAudioType}
           onDelete={handleRequestDelete}
