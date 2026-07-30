@@ -6,15 +6,15 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - settings:/data/settings
-      - db:/data/db
+      - time-announcement-settings:/data/settings
+      - time-announcement-db:/data/db
       # sounds だけ settings/db と異なる /app/sounds にマウントする。
       # db/music.sqlite3 の wav_tracks.file_path は time-announcement-backend(Python側)が
       # 書き込む絶対パスで、本番では /app/sounds/default/... 等の形で既に保存されている。
       # このコンテナ側のマウント先が異なると、track-store.ts の resolveOrigin() が
       # file_path をどちらの配下(default/user)とも判定できず不整合になるため、
       # backend 側の実際のマウント規約に合わせる。
-      - sounds:/app/sounds
+      - time-announcement-sounds:/app/sounds
     environment:
       - SETTINGS_DIR=/data/settings
       - DB_DIR=/data/db
@@ -22,9 +22,9 @@ services:
     restart: unless-stopped
 
 volumes:
-  settings:
+  time-announcement-settings:
     external: true
-  db:
+  time-announcement-db:
     external: true
-  sounds:
+  time-announcement-sounds:
     external: true

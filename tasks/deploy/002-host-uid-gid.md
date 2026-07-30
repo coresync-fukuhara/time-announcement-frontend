@@ -18,7 +18,7 @@ UID/GID を事前に確認する必要はなくなった。
 
 ## 決定内容
 
-- `settings/` は bind mount ではなく named volume(`settings`)で共有する。
+- `settings/` は bind mount ではなく named volume(`time-announcement-settings`)で共有する。
 - volume の作成は backend 側リポジトリの compose の責務。このリポジトリでは
   `external: true` で参照するのみ。
 

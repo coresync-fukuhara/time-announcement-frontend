@@ -145,36 +145,38 @@ DB のスキーマ作成・マイグレーションは Python 側(`src/music_db.
 
 ## 5. デプロイ構成(volume 追加)
 
-既存の `settings` named volume と同じパターンで、`db`・`sounds` も backend 側
-リポジトリが作成する named volume を `external: true` で参照する。
+既存の `time-announcement-settings` named volume と同じパターンで、
+`time-announcement-db`・`time-announcement-sounds` も backend 側リポジトリが
+作成する named volume を `external: true` で参照する。
 
 ```yaml
 services:
   schedule-ui:
     volumes:
-      - settings:/data/settings
-      - db:/data/db
+      - time-announcement-settings:/data/settings
+      - time-announcement-db:/data/db
       # sounds だけ settings/db と異なるマウント先(/app/sounds)を使う(理由は下記)。
-      - sounds:/app/sounds
+      - time-announcement-sounds:/app/sounds
     environment:
       - SETTINGS_DIR=/data/settings
       - DB_DIR=/data/db
       - SOUNDS_DIR=/app/sounds
 
 volumes:
-  settings:
+  time-announcement-settings:
     external: true
-  db:
+  time-announcement-db:
     external: true
-  sounds:
+  time-announcement-sounds:
     external: true
 ```
 
 - `SOUNDS_DIR` 配下に `default/`・`user/` のサブディレクトリがある前提(現状の
   devcontainer 構成と同じ)。`getSoundsDefaultDir()` / `getSoundsUserDir()` は
   この `SOUNDS_DIR` からの相対パスとして解決する。
-- 所有権・作成責務は `db`・`sounds` volume も backend 側リポジトリのままとし、
-  このリポジトリは `external: true` 参照のみ(`settings` と同じ整理)。
+- 所有権・作成責務は `time-announcement-db`・`time-announcement-sounds` volume も
+  backend 側リポジトリのままとし、このリポジトリは `external: true` 参照のみ
+  (`time-announcement-settings` と同じ整理)。
 - **`sounds` のマウント先が `settings`/`db`(`/data/...`)と異なる理由(実機検証で
   発覚・確定)**: `wav_tracks.file_path` は backend(Python)側が書き込む絶対パスで、
   本番では `/app/sounds/default/...` のように既に保存されている(backend 側の

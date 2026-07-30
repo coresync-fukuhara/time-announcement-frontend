@@ -20,7 +20,7 @@ pnpm のセキュリティ設定は `pnpm-workspace.yaml`(`minimumReleaseAge`・
 設計文書は `settings/schedules.json`・`settings/schema.json`・`src/main.py` を
 「既存のもの」として参照していますが、これらは別リポジトリでコンテナ化される
 Python アプリ(実際の「タイムアナウンスメント」再生プログラム)側のものです。
-このフロントエンドは実行時に Docker の named volume(`settings`。backend 側
+このフロントエンドは実行時に Docker の named volume(`time-announcement-settings`。backend 側
 リポジトリが作成し、このリポジトリは `external: true` で参照するのみ)経由で
 連携するだけで、**これらのファイルは本リポジトリには含まれません**。
 
