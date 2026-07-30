@@ -11,15 +11,16 @@ Docker コンテナとして起動できるようにする。
 ## 完了条件
 
 - [x] `deploy/Dockerfile`(マルチステージビルド, `node:22-slim` ベース)を作成する
-- [x] `deploy/docker-compose.yaml` で `ports: 3000:3000`、`volumes: settings:/data/settings`(named volume、`external: true`)を設定する
+- [x] `deploy/docker-compose.yaml` で `ports: 3000:3000`、`volumes: time-announcement-settings:/data/settings`(named volume、`external: true`)を設定する
 - [x] `.dockerignore`(リポジトリ直下 = ビルドコンテキストの起点)を作成する
 - [x] `SETTINGS_DIR` 環境変数でファイルパスを受け取れるようにする(ハードコードしない)
 - [x] `restart: unless-stopped` を設定する([003](./003-container-startup-policy.md) で確定済み)
 
 ## 補足
 
-- `settings/` は backend 側リポジトリが作成する named volume(`settings`)を
-  `external: true` で参照する([002](./002-host-uid-gid.md) で確定済み)。
+- `settings/` は backend 側リポジトリが作成する named volume
+  (`time-announcement-settings`)を `external: true` で参照する
+  ([002](./002-host-uid-gid.md) で確定済み)。
   ホストへの bind mount は行わないため、ホスト側 UID/GID の確認は不要。
 - `Dockerfile`・`docker-compose.yaml` は `deploy/` にまとめる。ビルドコンテキストは
   `src/`・`package.json` 等一式が必要なためリポジトリ直下を指す

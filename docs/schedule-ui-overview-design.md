@@ -195,13 +195,13 @@ services:
     ports:
       - "3000:3000"              # 公開ポート(No.7 確定。外部公開しないため HTTPS 化は不要)
     volumes:
-      - settings:/data/settings     # backend コンテナ(別リポジトリ)と共有する named volume
+      - time-announcement-settings:/data/settings     # backend コンテナ(別リポジトリ)と共有する named volume
     environment:
       - SETTINGS_DIR=/data/settings
     restart: unless-stopped         # 起動管理方式(No.12 確定。下記参照)
 
 volumes:
-  settings:
+  time-announcement-settings:
     external: true    # 作成は backend 側リポジトリの compose の責務。ここでは参照のみ
 ```
 
