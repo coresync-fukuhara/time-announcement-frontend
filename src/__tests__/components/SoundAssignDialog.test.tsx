@@ -233,4 +233,33 @@ describe('SoundAssignDialog', () => {
     expect(onClose).toHaveBeenCalled();
     expect(onApply).not.toHaveBeenCalled();
   });
+
+  it('fetch が未解決の間は、存在する予定のトラックも「見つかりません」と表示しない', async () => {
+    let resolveResponse: (value: unknown) => void;
+    const responsePromise = new Promise((resolve) => {
+      resolveResponse = resolve;
+    });
+    vi.stubGlobal('fetch', vi.fn().mockReturnValue(responsePromise));
+
+    render(
+      <SoundAssignDialog
+        open
+        hour={9}
+        minute={0}
+        current={{ mode: 'track', name: 'sample' }}
+        onApply={noop}
+        onClose={noop}
+      />,
+    );
+
+    // fetch がまだ未解決のため、"見つかりません" テキストが無いことを確認
+    expect(screen.queryByText('sample(現在DBに見つかりません)')).not.toBeInTheDocument();
+
+    // fetch を解決する (sample は実際に存在する)
+    resolveResponse!(jsonResponse({ tracks: [{ name: 'sample' }] }));
+
+    // 解決後も "見つかりません" テキストが無いままで、sample が選択されている
+    await waitFor(() => expect(screen.getByLabelText('曲を選択')).toHaveValue('sample'));
+    expect(screen.queryByText('sample(現在DBに見つかりません)')).not.toBeInTheDocument();
+  });
 });

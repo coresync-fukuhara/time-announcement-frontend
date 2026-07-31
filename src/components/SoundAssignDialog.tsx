@@ -87,7 +87,7 @@ export function SoundAssignDialog({
   }
 
   const trackOptions = tracks ?? [];
-  const hasUnknownCurrentTrack = trackName !== '' && !trackOptions.includes(trackName);
+  const hasUnknownCurrentTrack = tracks !== null && trackName !== '' && !trackOptions.includes(trackName);
 
   return (
     <div className={dialogStyles.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
