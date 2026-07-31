@@ -96,9 +96,9 @@ describe('POST /api/tracks', () => {
     });
   });
 
-  it('10MB超は413 file_too_large', async () => {
+  it('50MB超は413 file_too_large', async () => {
     const bigForm = new FormData();
-    const bigFile = new File([new Uint8Array(10 * 1024 * 1024 + 1)], 'big.wav', { type: 'audio/wav' });
+    const bigFile = new File([new Uint8Array(50 * 1024 * 1024 + 1)], 'big.wav', { type: 'audio/wav' });
     bigForm.set('file', bigFile);
     await testApiHandler({
       appHandler,

@@ -8,8 +8,8 @@ import {
 import type { Track } from '@/lib/types';
 
 describe('track-ui', () => {
-  it('MAX_UPLOAD_BYTES は10MB', () => {
-    expect(MAX_UPLOAD_BYTES).toBe(10 * 1024 * 1024);
+  it('MAX_UPLOAD_BYTES は50MB', () => {
+    expect(MAX_UPLOAD_BYTES).toBe(50 * 1024 * 1024);
   });
 
   describe('toggleAudioTypeId', () => {

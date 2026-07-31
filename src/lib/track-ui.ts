@@ -5,7 +5,7 @@
 
 import type { Track, TrackOrigin } from './types';
 
-export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+export const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 
 // 音声タイプバッジのクリック時に次の audioTypeIds を計算する(画面詳細設計 6.2節)。
 export function toggleAudioTypeId(current: number[], id: number): number[] {
@@ -34,7 +34,7 @@ export function describeTrackError(body: unknown): string {
     case 'invalid_extension':
       return '.wav 形式のファイルのみアップロードできます。';
     case 'file_too_large':
-      return 'ファイルサイズが大きすぎます(上限10MB)。';
+      return 'ファイルサイズが大きすぎます(上限50MB)。';
     case 'invalid_file_name':
       return 'ファイル名に使用できない文字が含まれています。';
     case 'file_missing':

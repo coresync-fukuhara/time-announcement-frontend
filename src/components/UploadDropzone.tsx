@@ -29,7 +29,7 @@ export function UploadDropzone({ uploading, onUpload, onValidationError }: Uploa
       return;
     }
     if (file.size > MAX_UPLOAD_BYTES) {
-      onValidationError('ファイルサイズが大きすぎます(上限10MB)。');
+      onValidationError('ファイルサイズが大きすぎます(上限50MB)。');
       return;
     }
     onUpload(file);

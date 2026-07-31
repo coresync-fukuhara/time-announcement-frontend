@@ -46,15 +46,15 @@ describe('UploadDropzone', () => {
     expect(onUpload).not.toHaveBeenCalled();
   });
 
-  it('10MB超のファイルは onValidationError を呼ぶ', async () => {
+  it('50MB超のファイルは onValidationError を呼ぶ', async () => {
     const user = userEvent.setup();
     const onValidationError = vi.fn();
     render(
       <UploadDropzone uploading={false} onUpload={() => {}} onValidationError={onValidationError} />,
     );
     const input = screen.getByLabelText('ファイルを選択');
-    await user.upload(input, wavFile('big.wav', 10 * 1024 * 1024 + 1));
-    expect(onValidationError).toHaveBeenCalledWith('ファイルサイズが大きすぎます(上限10MB)。');
+    await user.upload(input, wavFile('big.wav', 50 * 1024 * 1024 + 1));
+    expect(onValidationError).toHaveBeenCalledWith('ファイルサイズが大きすぎます(上限50MB)。');
   });
 
   it('複数ファイルを同時にドロップすると onValidationError を呼ぶ', () => {
