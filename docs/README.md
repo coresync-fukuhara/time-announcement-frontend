@@ -10,11 +10,12 @@
 | [MCP サーバー導入設計書](./mcp-servers-design.md) | 開発時にエージェントが接続する MCP サーバー(Playwright MCP / Next.js DevTools MCP)の選定理由 |
 | [楽曲管理機能 概要設計書](./music-management-overview-design.md) | 楽曲(`db/music.sqlite3`)管理機能のスコープ・Drizzle ORM 導入・API 設計・デプロイ構成 |
 | [楽曲管理画面(`/tracks`)画面詳細設計](./superpowers/specs/2026-07-29-music-management-screen-design.md) | `/tracks` 画面のレイアウト・操作フロー・エラー処理・テスト方針 |
+| [スケジュール画面からの音設定 詳細設計](./superpowers/specs/2026-07-31-schedule-sound-assignment-design.md) | スケジュール画面のON分に曲/タイプを割り当てる機能のバックエンド解釈・UI配置・データ層設計 |
 
 ## スコープ(概要設計書より抜粋)
 
-- 対象: スケジュール(月〜日および `holiday` の hour / minutes)の閲覧・追加・変更・削除、`schedules.json` への保存
-- 対象外: `minute_settings` の編集、音声の再生そのもの、楽曲 DB のマイグレーション、サウンドファイルのアップロード
+- 対象: スケジュール(月〜日および `holiday` の hour / minutes)の閲覧・追加・変更・削除、`schedules.json` への保存、ON分への曲/タイプ(`minute_settings`)の割り当て
+- 対象外: 音声の再生そのもの、楽曲 DB のマイグレーション、サウンドファイルのアップロード
 
 ## 技術スタック(予定)
 

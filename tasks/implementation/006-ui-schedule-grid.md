@@ -12,6 +12,7 @@ CopyDiff)と `src/app/page.tsx` に実装。行削除・曜日コピー(上書�
 挟み、コピー確認では対象曜日ごとの差分(変更前→変更後)を表示する。保存前バリデーションエラーは
 エラーダイアログでそのまま内容を表示する。曲(`minute_settings.sound_file_name`)の割り当て UI は
 見た目のみ `TimeGrid.tsx` 内にコメントアウトで用意し、配線はしていない(実データ連携が無いため)。
+このスタブは [implementation/009](./009-schedule-sound-assignment.md) で実配線された。
 
 ## 完了条件
 
@@ -24,5 +25,5 @@ CopyDiff)と `src/app/page.tsx` に実装。行削除・曜日コピー(上書�
 - [x] 未保存の変更がある場合にインジケーターが表示され、保存後に消える
 - [x] `[保存]` ボタン押下で `PUT /api/schedules` に送信する(トグル即時保存はしない)
 - [x] 保存前バリデーションエラー時は画面遷移しない
-- [x] `minute_settings` は編集対象外(UI に出さない)
+- [x] `minute_settings` は編集対象外(UI に出さない)。※後に [implementation/009](./009-schedule-sound-assignment.md) で編集対象化された
 - [x] コンポーネントテスト(Vitest + React Testing Library)が green

@@ -1,8 +1,11 @@
 # スケジュール設定フロントエンド 概要設計書
 
 作成日: 2026-07-09
-更新日: 2026-07-18
-ステータス: 全事項確定([要件不足事項一覧](./schedule-ui-open-questions.md) 参照)
+更新日: 2026-07-31
+ステータス: 全事項確定([要件不足事項一覧](./schedule-ui-open-questions.md) 参照)。
+`minute_settings` の編集については
+[スケジュール画面からの音設定 詳細設計](./superpowers/specs/2026-07-31-schedule-sound-assignment-design.md)
+で対象化(2章「対象外」を参照)
 
 ## 1. 目的・背景
 
@@ -19,9 +22,9 @@ UI で設定した内容は `settings/schedules.json` に同期(書き込み)さ
 
 | 項目 | 対象 |
 | --- | --- |
-| 対象 | スケジュール(月〜日および `holiday` の hour / minutes)の閲覧・追加・変更・削除、`schedules.json` への保存 |
-| 対象外 | `minute_settings`(分ごとのサウンド指定)の編集、音声の再生そのもの、楽曲 DB(`db/music.sqlite3`)のマイグレーション、サウンドファイルのアップロード |
-| 備考 | `minute_settings` は保存時も破壊せず温存する(No.1 確定。詳細は [要件不足事項一覧](./schedule-ui-open-questions.md) 参照) |
+| 対象 | スケジュール(月〜日および `holiday` の hour / minutes)の閲覧・追加・変更・削除、`schedules.json` への保存、ON分への `minute_settings`(曲/タイプ)の割り当て(2026-07-31 追加。詳細は [スケジュール画面からの音設定 詳細設計](./superpowers/specs/2026-07-31-schedule-sound-assignment-design.md)) |
+| 対象外 | 音声の再生そのもの、楽曲 DB(`db/music.sqlite3`)のマイグレーション、サウンドファイルのアップロード |
+| 備考 | `minute_settings` は編集対象になった分以外、保存時も破壊せず温存する(No.1 確定当初は編集対象外だったが、楽曲管理機能の実装完了に伴い追加設計・実装済み。詳細は [要件不足事項一覧](./schedule-ui-open-questions.md) 参照) |
 
 ## 3. 技術選定
 

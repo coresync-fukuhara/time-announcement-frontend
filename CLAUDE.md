@@ -92,8 +92,9 @@ UI が責任を持つのはそれぞれ妥当なファイル/DB状態を書き�
      Promise チェーンで十分)
   4. 書き込み前に既存ファイルを `schedules.json.bak` として 1 世代分残す
      (世代管理はしない)
-  5. `minute_settings` には触れない・消さない — 編集対象外だが
-     GET→PUT で無傷のまま温存されなければならない
+  5. `minute_settings` は編集対象(ONの分に曲/タイプを割り当てる。詳細は
+     [docs/superpowers/specs/2026-07-31-schedule-sound-assignment-design.md](docs/superpowers/specs/2026-07-31-schedule-sound-assignment-design.md)
+     参照)。編集対象外の分・他のフィールドは GET→PUT で無傷のまま温存する
 - **認証なし・楽観ロックなし**: 家庭内 LAN・単一利用者運用のため、
   後勝ち(最後の保存が有効)とする。
 
