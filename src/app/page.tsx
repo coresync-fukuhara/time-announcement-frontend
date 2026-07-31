@@ -253,6 +253,7 @@ export default function Home() {
           onRequestDeleteHour={handleRequestDeleteHour}
           onRequestAddHour={() => setAddHourOpen(true)}
           onRequestCopy={() => setCopyOpen(true)}
+          onRequestAssignSound={() => {}}
         />
       </main>
 

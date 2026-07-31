@@ -178,8 +178,7 @@
   text-underline-offset: 2px;
 }
 
-/* 将来、曲(sound_file_name)割り当てを示すバッジ用(見た目のみ検討済み・未配線)。
-   詳細は TimeGrid.tsx 内のコメントを参照。 */
+/* ONの分に曲/タイプ割り当て状態を示すバッジ(No.13関連: 詳細設計3.1節)。 */
 .songBadge {
   position: absolute;
   top: 2px;
@@ -203,4 +202,10 @@
   background: var(--accent);
   border-color: var(--accent);
   color: #062a38;
+}
+
+.songBadgeTypes {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-ink);
 }

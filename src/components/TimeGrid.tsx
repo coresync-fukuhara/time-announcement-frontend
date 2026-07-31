@@ -1,6 +1,6 @@
 'use client';
 
-import { MINUTES, pad2 } from '@/lib/schedule-ui';
+import { getMinuteSound, MINUTES, pad2 } from '@/lib/schedule-ui';
 import type { HourMap } from '@/lib/schedule-ui';
 import styles from './TimeGrid.module.css';
 
@@ -12,6 +12,7 @@ export interface TimeGridProps {
   onRequestDeleteHour: (hour: number) => void;
   onRequestAddHour: () => void;
   onRequestCopy: () => void;
+  onRequestAssignSound: (hour: number, minute: number) => void;
 }
 
 // 曜日タブで選ばれた1日分の時刻グリッド(006)。
@@ -24,6 +25,7 @@ export function TimeGrid({
   onRequestDeleteHour,
   onRequestAddHour,
   onRequestCopy,
+  onRequestAssignSound,
 }: TimeGridProps) {
   const sortedHours = Object.keys(hours)
     .map(Number)
@@ -64,6 +66,19 @@ export function TimeGrid({
                   <div className={styles.hourLabel}>{hour}時</div>
                   {MINUTES.map((m) => {
                     const on = activeMinutes.includes(m);
+                    const sound = getMinuteSound(hours[hour], m);
+                    const badgeClass =
+                      sound.mode === 'track'
+                        ? `${styles.songBadge} ${styles.songBadgeAssigned}`
+                        : sound.mode === 'types'
+                          ? `${styles.songBadge} ${styles.songBadgeTypes}`
+                          : styles.songBadge;
+                    const badgeLabel =
+                      sound.mode === 'track'
+                        ? `${hour}時${pad2(m)}分: 曲「${sound.name}」(クリックで変更)`
+                        : sound.mode === 'types'
+                          ? `${hour}時${pad2(m)}分: タイプ ${sound.types.join('・')}(クリックで変更)`
+                          : `${hour}時${pad2(m)}分の音を割り当てる`;
                     return (
                       <div key={m} className={styles.lampCell}>
                         <button
@@ -74,30 +89,17 @@ export function TimeGrid({
                           disabled={viewMode}
                           onClick={() => onToggleMinute(hour, m)}
                         />
-                        {/*
-                          将来、この分に鳴らす曲(minute_settings.sound_file_name)を割り当てる
-                          UI の見た目のみブレインストーミング済み(未実装)。
-                          実データ(db/music.sqlite3 の曲一覧)を扱う API が無いため、配線はしない。
-
-                          {on && (
-                            <button
-                              type="button"
-                              className={
-                                songAssignments[hour]?.[m]
-                                  ? `${styles.songBadge} ${styles.songBadgeAssigned}`
-                                  : styles.songBadge
-                              }
-                              aria-label={
-                                songAssignments[hour]?.[m]
-                                  ? `${songAssignments[hour][m]}(クリックで変更)`
-                                  : '曲を割り当てる'
-                              }
-                              onClick={() => onRequestAssignSong(hour, m)}
-                            >
-                              ♪
-                            </button>
-                          )}
-                        */}
+                        {on && (
+                          <button
+                            type="button"
+                            className={badgeClass}
+                            aria-label={badgeLabel}
+                            disabled={viewMode}
+                            onClick={() => onRequestAssignSound(hour, m)}
+                          >
+                            ♪
+                          </button>
+                        )}
                       </div>
                     );
                   })}
