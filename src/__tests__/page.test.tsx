@@ -140,4 +140,35 @@ describe('Home ページ', () => {
     expect(screen.queryByRole('dialog', { name: '音の割り当て' })).not.toBeInTheDocument();
     expect(screen.queryByText('未保存の変更があります')).not.toBeInTheDocument();
   });
+
+  it('音割り当てダイアログが開いている状態で対象時間を削除してもクラッシュしない', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ initialized: true, schedules: baseSchedules }))
+      .mockResolvedValueOnce(jsonResponse({ tracks: [] }));
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+    render(<Home />);
+    await screen.findByRole('tab', { name: '月' });
+    await user.click(screen.getByRole('button', { name: '編集' }));
+
+    // 9時00分の音割り当てダイアログを開く
+    await user.click(screen.getByRole('button', { name: '9時00分の音を割り当てる' }));
+    await screen.findByRole('dialog', { name: '音の割り当て' });
+
+    // 9時の行を削除し、確認ダイアログで削除を確認
+    await user.click(screen.getByRole('button', { name: '9時の行を削除' }));
+    await user.click(screen.getByRole('button', { name: '削除する' }));
+
+    // ページが崩れず、ダイアログが安全な状態(未設定の状態で)残っていることを確認
+    const dialog = screen.getByRole('dialog', { name: '音の割り当て' });
+    expect(dialog).toBeInTheDocument();
+    // ダイアログのモード選択で「未設定」が選ばれていることを確認
+    const modeButtons = screen.getAllByRole('button').filter((btn) => btn.textContent === '未設定');
+    expect(modeButtons.some((btn) => btn.getAttribute('aria-pressed') === 'true')).toBe(true);
+    // 削除した9時が消えていることを確認
+    expect(screen.queryByRole('button', { name: /^9時[0-5][0-9]分$/ })).not.toBeInTheDocument();
+    // ページが正常に表示されている
+    expect(screen.getByRole('button', { name: '保存' })).toBeInTheDocument();
+  });
 });

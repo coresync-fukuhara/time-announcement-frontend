@@ -204,7 +204,10 @@ export default function Home() {
     if (!soundAssignTarget) return;
     const { hour, minute } = soundAssignTarget;
     const entry = hours[hour];
-    if (!entry) return;
+    if (!entry) {
+      setSoundAssignTarget(null);
+      return;
+    }
     const updatedEntry =
       next.mode === 'none'
         ? clearMinuteSound(entry, minute)
@@ -255,6 +258,7 @@ export default function Home() {
     label: d.label,
     count: Object.keys(data[d.key]).length,
   }));
+  const soundAssignEntry = soundAssignTarget ? hours[soundAssignTarget.hour] : undefined;
 
   return (
     <div className={shellStyles.shell}>
@@ -314,7 +318,7 @@ export default function Home() {
         open={soundAssignTarget !== null}
         hour={soundAssignTarget?.hour ?? 0}
         minute={soundAssignTarget?.minute ?? 0}
-        current={soundAssignTarget ? getMinuteSound(hours[soundAssignTarget.hour], soundAssignTarget.minute) : { mode: 'none' }}
+        current={soundAssignEntry && soundAssignTarget ? getMinuteSound(soundAssignEntry, soundAssignTarget.minute) : { mode: 'none' }}
         onApply={handleApplySound}
         onClose={() => setSoundAssignTarget(null)}
       />
