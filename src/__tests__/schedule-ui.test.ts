@@ -9,8 +9,12 @@ import {
   toggleMinute,
   copyDay,
   diffHourMinutes,
+  getMinuteSound,
+  setMinuteSoundTrack,
+  setMinuteSoundTypes,
+  clearMinuteSound,
 } from '@/lib/schedule-ui';
-import type { DaySchedule, Schedules } from '@/lib/types';
+import type { AudioType, DaySchedule, Schedules } from '@/lib/types';
 
 describe('DAY_TABS / dayLabel', () => {
   it('月〜日 + holiday の 8 タブを曜日順に持つ', () => {
@@ -175,5 +179,120 @@ describe('diffHourMinutes', () => {
     const rows = diffHourMinutes({ 9: { hour: 9, minutes: [0] } }, { 9: { hour: 9, minutes: [0] } });
     expect(rows.every((r) => r.hour === 9)).toBe(true);
     expect(rows).toHaveLength(1);
+  });
+});
+
+describe('getMinuteSound', () => {
+  it('minute_settings が無ければ none', () => {
+    expect(getMinuteSound({ hour: 9, minutes: [0] }, 0)).toEqual({ mode: 'none' });
+  });
+
+  it('sound_file_name が非空なら track(sound_types があっても track を優先する)', () => {
+    const entry = {
+      hour: 9,
+      minutes: [0],
+      minute_settings: { '0': { sound_file_name: 'sample', sound_types: ['ALARM'] as AudioType[] } },
+    };
+    expect(getMinuteSound(entry, 0)).toEqual({ mode: 'track', name: 'sample' });
+  });
+
+  it('sound_file_name が空文字で sound_types があれば types', () => {
+    const entry = {
+      hour: 9,
+      minutes: [30],
+      minute_settings: { '30': { sound_file_name: '', sound_types: ['DEFAULT', 'ALARM'] as AudioType[] } },
+    };
+    expect(getMinuteSound(entry, 30)).toEqual({ mode: 'types', types: ['DEFAULT', 'ALARM'] });
+  });
+
+  it('sound_file_name が空文字で sound_types も無ければ none', () => {
+    const entry = { hour: 9, minutes: [0], minute_settings: { '0': { sound_file_name: '' } } };
+    expect(getMinuteSound(entry, 0)).toEqual({ mode: 'none' });
+  });
+
+  it('他の分の設定には影響されない', () => {
+    const entry = {
+      hour: 9,
+      minutes: [0, 30],
+      minute_settings: { '0': { sound_file_name: 'sample' } },
+    };
+    expect(getMinuteSound(entry, 30)).toEqual({ mode: 'none' });
+  });
+});
+
+describe('setMinuteSoundTrack', () => {
+  it('指定した分に sound_file_name をセットする', () => {
+    const entry = { hour: 9, minutes: [0] };
+    expect(setMinuteSoundTrack(entry, 0, 'sample')).toEqual({
+      hour: 9,
+      minutes: [0],
+      minute_settings: { '0': { sound_file_name: 'sample' } },
+    });
+  });
+
+  it('既存の sound_types は除去する', () => {
+    const entry = {
+      hour: 9,
+      minutes: [0],
+      minute_settings: { '0': { sound_file_name: '', sound_types: ['ALARM'] as AudioType[] } },
+    };
+    expect(setMinuteSoundTrack(entry, 0, 'sample')).toEqual({
+      hour: 9,
+      minutes: [0],
+      minute_settings: { '0': { sound_file_name: 'sample' } },
+    });
+  });
+
+  it('他の分の minute_settings は温存する', () => {
+    const entry = {
+      hour: 9,
+      minutes: [0, 30],
+      minute_settings: { '30': { sound_file_name: 'other' } },
+    };
+    expect(setMinuteSoundTrack(entry, 0, 'sample')).toEqual({
+      hour: 9,
+      minutes: [0, 30],
+      minute_settings: { '30': { sound_file_name: 'other' }, '0': { sound_file_name: 'sample' } },
+    });
+  });
+});
+
+describe('setMinuteSoundTypes', () => {
+  it('指定した分に sound_file_name: "" と sound_types をセットする', () => {
+    const entry = { hour: 9, minutes: [30] };
+    expect(setMinuteSoundTypes(entry, 30, ['DEFAULT', 'ALARM'])).toEqual({
+      hour: 9,
+      minutes: [30],
+      minute_settings: { '30': { sound_file_name: '', sound_types: ['DEFAULT', 'ALARM'] } },
+    });
+  });
+});
+
+describe('clearMinuteSound', () => {
+  it('指定した分の minute_settings キーを削除する', () => {
+    const entry = {
+      hour: 9,
+      minutes: [0, 30],
+      minute_settings: { '0': { sound_file_name: 'sample' }, '30': { sound_file_name: 'other' } },
+    };
+    expect(clearMinuteSound(entry, 0)).toEqual({
+      hour: 9,
+      minutes: [0, 30],
+      minute_settings: { '30': { sound_file_name: 'other' } },
+    });
+  });
+
+  it('対象の分に設定が無ければ何もしない(同じ内容を返す)', () => {
+    const entry = { hour: 9, minutes: [0] };
+    expect(clearMinuteSound(entry, 0)).toEqual({ hour: 9, minutes: [0] });
+  });
+
+  it('minutes など他フィールドは変更しない', () => {
+    const entry = {
+      hour: 9,
+      minutes: [0, 30],
+      minute_settings: { '0': { sound_file_name: 'sample' } },
+    };
+    expect(clearMinuteSound(entry, 0)).toEqual({ hour: 9, minutes: [0, 30] });
   });
 });

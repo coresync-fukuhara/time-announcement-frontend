@@ -4,7 +4,7 @@
 // 画面の状態としては hour をキーにしたマップ(EditableSchedules)を持ち、
 // GET/PUT の境界でのみ配列表現と相互変換する。
 
-import type { DaySchedule, HourEntry, Schedules, Weekday } from './types';
+import type { AudioType, DaySchedule, HourEntry, Schedules, Weekday } from './types';
 
 export const DAY_TABS: { key: Weekday; label: string }[] = [
   { key: 'monday', label: '月' },
@@ -123,4 +123,56 @@ export function diffHourMinutes(source: HourMap, target: HourMap): MinuteDiffRow
       else status = beforeText === afterText ? 'same' : 'changed';
       return { hour, beforeText, afterText, status };
     });
+}
+
+// スケジュール画面から曲/タイプを割り当てる機能(minute_settings の編集)。
+// バックエンド(別リポジトリの src/main.py)の優先順位に合わせ、sound_file_name が
+// 非空なら track、そうでなく sound_types があれば types、どちらも無ければ none とする
+// (詳細設計 2章)。
+export type MinuteSoundState =
+  | { mode: 'none' }
+  | { mode: 'track'; name: string }
+  | { mode: 'types'; types: AudioType[] };
+
+export function getMinuteSound(entry: HourEntry, minute: number): MinuteSoundState {
+  const setting = entry.minute_settings?.[String(minute)];
+  if (!setting) return { mode: 'none' };
+  if (setting.sound_file_name) return { mode: 'track', name: setting.sound_file_name };
+  if (setting.sound_types && setting.sound_types.length > 0) {
+    return { mode: 'types', types: setting.sound_types };
+  }
+  return { mode: 'none' };
+}
+
+// 指定した分以外(hour・minutes・他の分の minute_settings)には触れない(toggleMinute と同じ方針)。
+export function setMinuteSoundTrack(entry: HourEntry, minute: number, trackName: string): HourEntry {
+  return {
+    ...entry,
+    minute_settings: {
+      ...entry.minute_settings,
+      [String(minute)]: { sound_file_name: trackName },
+    },
+  };
+}
+
+export function setMinuteSoundTypes(entry: HourEntry, minute: number, types: AudioType[]): HourEntry {
+  return {
+    ...entry,
+    minute_settings: {
+      ...entry.minute_settings,
+      [String(minute)]: { sound_file_name: '', sound_types: types },
+    },
+  };
+}
+
+export function clearMinuteSound(entry: HourEntry, minute: number): HourEntry {
+  if (!entry.minute_settings || !(String(minute) in entry.minute_settings)) return entry;
+  const nextSettings = { ...entry.minute_settings };
+  delete nextSettings[String(minute)];
+  // If nextSettings is empty, don't include it in the result
+  if (Object.keys(nextSettings).length === 0) {
+    const { minute_settings, ...rest } = entry;
+    return rest;
+  }
+  return { ...entry, minute_settings: nextSettings };
 }
