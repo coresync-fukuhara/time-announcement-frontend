@@ -51,3 +51,11 @@
 .same {
   color: var(--ink-faint);
 }
+
+.soundNote {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--ink-faint);
+}

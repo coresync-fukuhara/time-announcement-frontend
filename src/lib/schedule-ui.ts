@@ -97,11 +97,23 @@ export interface MinuteDiffRow {
   beforeText: string;
   afterText: string;
   status: 'added' | 'removed' | 'same' | 'changed';
+  // minutes は同じだが minute_settings(音の割り当て)が異なるために changed になった行の場合のみ true。
+  // コピー確認ダイアログで「minutes 表示は同じなのに音設定が上書きされる」ことを黙って見逃さないための目印。
+  soundChanged?: boolean;
 }
 
 function minutesText(entry: HourEntry | undefined): string {
   const minutes = entry?.minutes ?? [];
   return minutes.length > 0 ? minutes.map(pad2).join(',') : '―';
+}
+
+// minute_settings の値の等価性を比較する(未設定・空オブジェクトはどちらも「無し」として扱う)。
+// minutes が一致していても minute_settings が異なる場合を見逃さないために使う
+// (曜日コピーで音の割り当てが黙って上書きされるのを防ぐ、レビュー指摘対応)。
+function minuteSettingsEqual(a: HourEntry | undefined, b: HourEntry | undefined): boolean {
+  const aSettings = a?.minute_settings ?? {};
+  const bSettings = b?.minute_settings ?? {};
+  return JSON.stringify(aSettings) === JSON.stringify(bSettings);
 }
 
 // 曜日コピーの確認ダイアログ用: コピー先(before)とコピー元(after)を hour ごとに比較する。
@@ -120,7 +132,12 @@ export function diffHourMinutes(source: HourMap, target: HourMap): MinuteDiffRow
       let status: MinuteDiffRow['status'];
       if (!before && after) status = 'added';
       else if (before && !after) status = 'removed';
-      else status = beforeText === afterText ? 'same' : 'changed';
+      else if (beforeText !== afterText) status = 'changed';
+      else if (!minuteSettingsEqual(before, after)) {
+        // minutes の表示上は同じでも音の割り当てが異なる場合は、コピーで上書きされることが
+        // 分かるよう changed 扱いにし、目印として soundChanged を立てる。
+        return { hour, beforeText, afterText, status: 'changed', soundChanged: true };
+      } else status = 'same';
       return { hour, beforeText, afterText, status };
     });
 }

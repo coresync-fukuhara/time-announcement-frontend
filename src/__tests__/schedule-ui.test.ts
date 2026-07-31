@@ -180,6 +180,40 @@ describe('diffHourMinutes', () => {
     expect(rows.every((r) => r.hour === 9)).toBe(true);
     expect(rows).toHaveLength(1);
   });
+
+  it('minutes が同じで minute_settings も同じ(両方無し)なら same', () => {
+    const rows = diffHourMinutes(
+      { 9: { hour: 9, minutes: [0] } },
+      { 9: { hour: 9, minutes: [0] } },
+    );
+    expect(rows).toEqual([{ hour: 9, beforeText: '00', afterText: '00', status: 'same' }]);
+  });
+
+  it('minutes が同じで minute_settings も同じ(内容あり)なら same', () => {
+    const rows = diffHourMinutes(
+      { 9: { hour: 9, minutes: [0], minute_settings: { '0': { sound_file_name: 'chime' } } } },
+      { 9: { hour: 9, minutes: [0], minute_settings: { '0': { sound_file_name: 'chime' } } } },
+    );
+    expect(rows).toEqual([{ hour: 9, beforeText: '00', afterText: '00', status: 'same' }]);
+  });
+
+  it('minutes が同じでも minute_settings が違えば changed(音の割り当てが上書きされることを見逃さない)', () => {
+    const rows = diffHourMinutes(
+      { 9: { hour: 9, minutes: [0] } },
+      { 9: { hour: 9, minutes: [0], minute_settings: { '0': { sound_file_name: 'chime' } } } },
+    );
+    expect(rows).toEqual([
+      { hour: 9, beforeText: '00', afterText: '00', status: 'changed', soundChanged: true },
+    ]);
+  });
+
+  it('minutes・minute_settings のどちらも違えば changed', () => {
+    const rows = diffHourMinutes(
+      { 9: { hour: 9, minutes: [0], minute_settings: { '0': { sound_file_name: 'a' } } } },
+      { 9: { hour: 9, minutes: [30], minute_settings: { '30': { sound_file_name: 'b' } } } },
+    );
+    expect(rows).toEqual([{ hour: 9, beforeText: '30', afterText: '00', status: 'changed' }]);
+  });
 });
 
 describe('getMinuteSound', () => {

@@ -23,4 +23,16 @@ describe('CopyDiff', () => {
     expect(screen.getByText('日曜日')).toBeInTheDocument();
     expect(screen.getByText(/変更はありません/)).toBeInTheDocument();
   });
+
+  it('minutes は同じでも音の割り当てが変わる行では、その旨の注記を表示する', () => {
+    render(
+      <CopyDiff
+        dayLabel="土"
+        rows={[
+          { hour: 9, beforeText: '00', afterText: '00', status: 'changed', soundChanged: true },
+        ]}
+      />,
+    );
+    expect(screen.getByText(/音の割り当ても変更されます/)).toBeInTheDocument();
+  });
 });

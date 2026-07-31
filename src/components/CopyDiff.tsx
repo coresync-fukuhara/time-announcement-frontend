@@ -33,6 +33,7 @@ export function CopyDiff({ dayLabel, rows }: CopyDiffProps) {
                   }
                 >
                   {row.afterText}
+                  {row.soundChanged && <span className={styles.soundNote}>(音の割り当ても変更されます)</span>}
                 </td>
               </tr>
             ))}
