@@ -28,6 +28,27 @@ describe('validateSchedules(settings/schema.json を Ajv でコンパイル)', (
     expect(result.errors).toBeNull();
   });
 
+  // 音の割り当て機能(setMinuteSoundTypes)が書き出す新しい形("タイプで指定":
+  // sound_file_name は空文字、sound_types に AudioType の値を複数指定)が、
+  // モックではなく実際の settings/schema.json を通ることを確認する。
+  it('sound_file_name が空文字 + sound_types 複数指定(タイプ指定)の minute_settings で valid: true を返す', () => {
+    const result = validateSchedules({
+      ...validData,
+      monday: [
+        {
+          hour: 9,
+          minutes: [0, 30],
+          minute_settings: {
+            '0': { sound_file_name: '', sound_types: ['DEFAULT', 'ALARM'] },
+            '30': { sound_file_name: '', sound_types: ['NOTIFICATION'] },
+          },
+        },
+      ],
+    });
+    expect(result.valid).toBe(true);
+    expect(result.errors).toBeNull();
+  });
+
   // 実スキーマは hour に minimum/maximum を持たず type: number のみのため、
   // 範囲外(例: 25)は valid 判定になる。型不一致(文字列)を違反ケースとして検証する。
   it('hour が数値でなければ valid: false でエラー配列を返す', () => {

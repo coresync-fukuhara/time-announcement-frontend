@@ -80,7 +80,9 @@ test.describe('スケジュール設定画面 主要シナリオ', () => {
     expect(saved.monday).toEqual([{ hour: 9, minutes: [0] }]);
   });
 
-  test('シナリオ2: 曜日タブ切替→トグル→保存→再読み込み後も反映されている', async ({ page }) => {
+  test('シナリオ2: 曜日タブ切替→トグル→音の割り当て→保存→再読み込み後も反映されている', async ({
+    page,
+  }) => {
     await writeFile(SCHEDULES_PATH, JSON.stringify(emptySchedules, null, 2), 'utf-8');
 
     await page.goto('/');
@@ -92,6 +94,18 @@ test.describe('スケジュール設定画面 主要シナリオ', () => {
     await page.getByRole('button', { name: '10時', exact: true }).click();
     await page.getByRole('button', { name: '追加する', exact: true }).click();
     await page.getByRole('button', { name: '10時30分', exact: true }).click();
+
+    // 音設定(minute_settings)の変更を1ステップ混ぜる(詳細設計 6章: 新規シナリオは追加せず
+    // 既存の編集→保存→再読み込みシナリオに混ぜる方針)。トラック一覧の準備が不要な
+    // 「タイプで指定」を使う。
+    await page.getByRole('button', { name: '10時30分の音を割り当てる' }).click();
+    const soundDialog = page.getByRole('dialog', { name: '音の割り当て' });
+    await expect(soundDialog).toBeVisible();
+    await soundDialog.getByRole('button', { name: 'タイプで指定' }).click();
+    await soundDialog.getByRole('button', { name: 'ALARM', exact: true }).click();
+    await soundDialog.getByRole('button', { name: '適用', exact: true }).click();
+    await expect(soundDialog).not.toBeVisible();
+
     await page.getByRole('button', { name: '保存', exact: true }).click();
     await expect(page.getByRole('button', { name: '編集' })).toBeVisible();
 
@@ -102,6 +116,10 @@ test.describe('スケジュール設定画面 主要シナリオ', () => {
       'aria-pressed',
       'true',
     );
+    // バッジのラベルに割り当てたタイプが再読み込み後も反映されていること。
+    await expect(
+      page.getByRole('button', { name: '10時30分: タイプ ALARM(クリックで変更)' }),
+    ).toBeVisible();
   });
 
   test('シナリオ3: 保存前に未保存インジケーターが表示され、保存後に消える(No.2)', async ({

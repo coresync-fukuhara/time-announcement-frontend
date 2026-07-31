@@ -186,7 +186,8 @@ export function clearMinuteSound(entry: HourEntry, minute: number): HourEntry {
   if (!entry.minute_settings || !(String(minute) in entry.minute_settings)) return entry;
   const nextSettings = { ...entry.minute_settings };
   delete nextSettings[String(minute)];
-  // If nextSettings is empty, don't include it in the result
+  // nextSettings が空になった場合は minute_settings 自体を結果に含めない
+  // (空の "minute_settings": {} をファイルに書き込まないため。意図的な挙動)
   if (Object.keys(nextSettings).length === 0) {
     const { minute_settings, ...rest } = entry;
     return rest;
