@@ -10,6 +10,7 @@ import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { ErrorDialog } from '@/components/ErrorDialog';
 import { CopyDiff } from '@/components/CopyDiff';
 import { NavSwitcher } from '@/components/NavSwitcher';
+import { SoundAssignDialog } from '@/components/SoundAssignDialog';
 import {
   DAY_TABS,
   dayLabel,
@@ -19,8 +20,13 @@ import {
   toggleMinute,
   copyDay,
   diffHourMinutes,
+  getMinuteSound,
+  setMinuteSoundTrack,
+  setMinuteSoundTypes,
+  clearMinuteSound,
   type EditableSchedules,
   type HourMap,
+  type MinuteSoundState,
 } from '@/lib/schedule-ui';
 import type { Weekday, Schedules } from '@/lib/types';
 import styles from './page.module.css';
@@ -55,6 +61,9 @@ export default function Home() {
   const [copyOpen, setCopyOpen] = useState(false);
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
   const [errorState, setErrorState] = useState<ErrorState | null>(null);
+  const [soundAssignTarget, setSoundAssignTarget] = useState<{ hour: number; minute: number } | null>(
+    null,
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -191,6 +200,22 @@ export default function Home() {
     });
   }
 
+  function handleApplySound(next: MinuteSoundState) {
+    if (!soundAssignTarget) return;
+    const { hour, minute } = soundAssignTarget;
+    const entry = hours[hour];
+    if (!entry) return;
+    const updatedEntry =
+      next.mode === 'none'
+        ? clearMinuteSound(entry, minute)
+        : next.mode === 'track'
+          ? setMinuteSoundTrack(entry, minute, next.name)
+          : setMinuteSoundTypes(entry, minute, next.types);
+    updateDay(currentDay, { ...hours, [hour]: updatedEntry });
+    setDirty(true);
+    setSoundAssignTarget(null);
+  }
+
   async function handleSave() {
     if (viewMode) {
       setViewMode(false);
@@ -253,7 +278,7 @@ export default function Home() {
           onRequestDeleteHour={handleRequestDeleteHour}
           onRequestAddHour={() => setAddHourOpen(true)}
           onRequestCopy={() => setCopyOpen(true)}
-          onRequestAssignSound={() => {}}
+          onRequestAssignSound={(hour, minute) => setSoundAssignTarget({ hour, minute })}
         />
       </main>
 
@@ -284,6 +309,14 @@ export default function Home() {
         message={errorState?.message ?? ''}
         detail={errorState?.detail}
         onClose={() => setErrorState(null)}
+      />
+      <SoundAssignDialog
+        open={soundAssignTarget !== null}
+        hour={soundAssignTarget?.hour ?? 0}
+        minute={soundAssignTarget?.minute ?? 0}
+        current={soundAssignTarget ? getMinuteSound(hours[soundAssignTarget.hour], soundAssignTarget.minute) : { mode: 'none' }}
+        onApply={handleApplySound}
+        onClose={() => setSoundAssignTarget(null)}
       />
     </div>
   );

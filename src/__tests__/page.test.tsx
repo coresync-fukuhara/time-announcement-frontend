@@ -89,4 +89,55 @@ describe('Home ページ', () => {
     // 画面遷移していない(編集モードのまま「保存」ボタンが残る)
     expect(screen.getByRole('button', { name: '保存' })).toBeInTheDocument();
   });
+
+  it('分バッジでタイプを指定すると保存時にminute_settingsへ反映される', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ initialized: true, schedules: baseSchedules }))
+      .mockResolvedValueOnce(jsonResponse({ tracks: [] }))
+      .mockResolvedValueOnce(jsonResponse({ initialized: true, schedules: baseSchedules }));
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+    render(<Home />);
+    await screen.findByRole('tab', { name: '月' });
+    await user.click(screen.getByRole('button', { name: '編集' }));
+    await user.click(screen.getByRole('button', { name: '9時00分の音を割り当てる' }));
+    await screen.findByRole('dialog', { name: '音の割り当て' });
+    await user.click(screen.getByRole('button', { name: 'タイプで指定' }));
+    await user.click(screen.getByRole('button', { name: 'ALARM' }));
+    await user.click(screen.getByRole('button', { name: '適用' }));
+    expect(screen.queryByRole('dialog', { name: '音の割り当て' })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: '9時00分: タイプ ALARM(クリックで変更)' }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '保存' }));
+    await screen.findByRole('button', { name: '編集' });
+
+    const putCall = fetchMock.mock.calls.find(
+      ([url, init]) => url === '/api/schedules' && (init as RequestInit | undefined)?.method === 'PUT',
+    );
+    expect(putCall).toBeDefined();
+    const body = JSON.parse((putCall![1] as RequestInit).body as string);
+    expect(body.monday[0].minute_settings).toEqual({
+      '0': { sound_file_name: '', sound_types: ['ALARM'] },
+    });
+  });
+
+  it('ダイアログをキャンセルしても未保存インジケーターは出ない', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ initialized: true, schedules: baseSchedules }))
+      .mockResolvedValueOnce(jsonResponse({ tracks: [] }));
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+    render(<Home />);
+    await screen.findByRole('tab', { name: '月' });
+    await user.click(screen.getByRole('button', { name: '編集' }));
+    await user.click(screen.getByRole('button', { name: '9時00分の音を割り当てる' }));
+    await screen.findByRole('dialog', { name: '音の割り当て' });
+    await user.click(screen.getByRole('button', { name: 'キャンセル' }));
+    expect(screen.queryByRole('dialog', { name: '音の割り当て' })).not.toBeInTheDocument();
+    expect(screen.queryByText('未保存の変更があります')).not.toBeInTheDocument();
+  });
 });
