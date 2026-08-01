@@ -26,6 +26,31 @@ function byName(a: TrackOption, b: TrackOption): number {
   return a.name.localeCompare(b.name);
 }
 
+function renderTrackGroup(
+  label: string,
+  options: TrackOption[],
+  trackName: string,
+  onSelect: (name: string) => void,
+) {
+  if (options.length === 0) return null;
+  return (
+    <>
+      <div className={styles.trackGroupLabel}>{label}</div>
+      {options.map((t) => (
+        <label key={t.name} className={styles.trackRow}>
+          <input
+            type="radio"
+            name="track"
+            checked={trackName === t.name}
+            onChange={() => onSelect(t.name)}
+          />
+          <span>{t.name}</span>
+        </label>
+      ))}
+    </>
+  );
+}
+
 // スケジュール画面の各ON分に曲/タイプを割り当てるダイアログ(詳細設計 3.2節)。
 // 保存はしない(適用でクライアント側状態を返すのみ。実際のPUTは既存の「保存」ボタンまで待つ)。
 export function SoundAssignDialog({
@@ -152,38 +177,8 @@ export function SoundAssignDialog({
                     <span>{trackName}(現在DBに見つかりません)</span>
                   </label>
                 )}
-                {userTrackOptions.length > 0 && (
-                  <>
-                    <div className={styles.trackGroupLabel}>アップロード済み</div>
-                    {userTrackOptions.map((t) => (
-                      <label key={t.name} className={styles.trackRow}>
-                        <input
-                          type="radio"
-                          name="track"
-                          checked={trackName === t.name}
-                          onChange={() => setTrackName(t.name)}
-                        />
-                        <span>{t.name}</span>
-                      </label>
-                    ))}
-                  </>
-                )}
-                {otherTrackOptions.length > 0 && (
-                  <>
-                    <div className={styles.trackGroupLabel}>初期音源・その他</div>
-                    {otherTrackOptions.map((t) => (
-                      <label key={t.name} className={styles.trackRow}>
-                        <input
-                          type="radio"
-                          name="track"
-                          checked={trackName === t.name}
-                          onChange={() => setTrackName(t.name)}
-                        />
-                        <span>{t.name}</span>
-                      </label>
-                    ))}
-                  </>
-                )}
+                {renderTrackGroup('アップロード済み', userTrackOptions, trackName, setTrackName)}
+                {renderTrackGroup('初期音源・その他', otherTrackOptions, trackName, setTrackName)}
               </div>
             </div>
           ))}
