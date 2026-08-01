@@ -10,9 +10,11 @@ export interface TrackSectionProps {
   audioTypes: TrackAudioType[];
   emptyMessage: string;
   busyTrackIds: ReadonlySet<number>;
+  playingTrackId: number | null;
   onRename: (id: number, name: string) => void;
   onToggleAudioType: (id: number, audioTypeId: number) => void;
   onDelete: (id: number) => void;
+  onTogglePlay: (id: number) => void;
 }
 
 // 楽曲一覧の1セクション分(「アップロード済み」または「初期音源・その他」)。
@@ -23,9 +25,11 @@ export function TrackSection({
   audioTypes,
   emptyMessage,
   busyTrackIds,
+  playingTrackId,
   onRename,
   onToggleAudioType,
   onDelete,
+  onTogglePlay,
 }: TrackSectionProps) {
   return (
     <section className={styles.section}>
@@ -40,9 +44,11 @@ export function TrackSection({
               track={track}
               audioTypes={audioTypes}
               busy={busyTrackIds.has(track.id)}
+              playing={track.id === playingTrackId}
               onRename={(name) => onRename(track.id, name)}
               onToggleAudioType={(audioTypeId) => onToggleAudioType(track.id, audioTypeId)}
               onDelete={() => onDelete(track.id)}
+              onTogglePlay={() => onTogglePlay(track.id)}
             />
           ))}
         </div>
