@@ -39,6 +39,11 @@ function stubInitialLoad(fetchMock: ReturnType<typeof vi.fn>, tracks: Track[]) {
 }
 
 describe('楽曲管理画面', () => {
+  beforeEach(() => {
+    window.HTMLMediaElement.prototype.play = vi.fn().mockResolvedValue(undefined);
+    window.HTMLMediaElement.prototype.pause = vi.fn();
+  });
+
   afterEach(() => {
     vi.unstubAllGlobals();
   });
@@ -267,5 +272,60 @@ describe('楽曲管理画面', () => {
 
     expect(await screen.findByText('削除に失敗しました')).toBeInTheDocument();
     expect(screen.getByText('chime_intro')).toBeInTheDocument();
+  });
+
+  it('再生ボタンをクリックすると音声を再生し、アイコンが⏸に切り替わる', async () => {
+    const fetchMock = vi.fn();
+    stubInitialLoad(fetchMock, [userTrack]);
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+    const playSpy = vi.fn().mockResolvedValue(undefined);
+    window.HTMLMediaElement.prototype.play = playSpy;
+
+    render(<TracksPage />);
+    await screen.findByText('chime_intro');
+
+    await user.click(screen.getByRole('button', { name: 'chime_intro を再生' }));
+
+    expect(playSpy).toHaveBeenCalled();
+    expect(await screen.findByRole('button', { name: 'chime_intro を停止' })).toBeInTheDocument();
+    const audio = screen.getByTestId('track-preview-audio') as HTMLAudioElement;
+    expect(audio.src).toContain('/api/tracks/1/audio');
+  });
+
+  it('再生中に同じ行のボタンをクリックすると停止する', async () => {
+    const fetchMock = vi.fn();
+    stubInitialLoad(fetchMock, [userTrack]);
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+    const pauseSpy = vi.fn();
+    window.HTMLMediaElement.prototype.pause = pauseSpy;
+
+    render(<TracksPage />);
+    await screen.findByText('chime_intro');
+
+    await user.click(screen.getByRole('button', { name: 'chime_intro を再生' }));
+    await screen.findByRole('button', { name: 'chime_intro を停止' });
+    await user.click(screen.getByRole('button', { name: 'chime_intro を停止' }));
+
+    expect(pauseSpy).toHaveBeenCalled();
+    expect(await screen.findByRole('button', { name: 'chime_intro を再生' })).toBeInTheDocument();
+  });
+
+  it('再生エラー時は ErrorDialog を表示し、再生中状態を解除する', async () => {
+    const fetchMock = vi.fn();
+    stubInitialLoad(fetchMock, [userTrack]);
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+
+    render(<TracksPage />);
+    await screen.findByText('chime_intro');
+
+    await user.click(screen.getByRole('button', { name: 'chime_intro を再生' }));
+    const audio = screen.getByTestId('track-preview-audio');
+    audio.dispatchEvent(new Event('error'));
+
+    expect(await screen.findByText('再生に失敗しました')).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'chime_intro を再生' })).toBeInTheDocument();
   });
 });

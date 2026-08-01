@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NavSwitcher } from '@/components/NavSwitcher';
 import { UploadDropzone } from '@/components/UploadDropzone';
 import { TrackSection } from '@/components/TrackSection';
@@ -35,6 +35,8 @@ export default function TracksPage() {
   const [uploading, setUploading] = useState(false);
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
   const [errorState, setErrorState] = useState<ErrorState | null>(null);
+  const [playingId, setPlayingId] = useState<number | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   function markBusy(id: number) {
     setBusyTrackIds((prev) => new Set(prev).add(id));
@@ -166,6 +168,32 @@ export default function TracksPage() {
     setErrorState({ message: 'アップロードに失敗しました', description: message });
   }
 
+  // 単一の <audio> 要素を全行で共有し、同時に鳴るのは常に1曲までにする
+  // (試し聴き機能 詳細設計 3.1節)。
+  function handleTogglePlay(id: number) {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playingId === id) {
+      audio.pause();
+      setPlayingId(null);
+      return;
+    }
+    audio.src = `/api/tracks/${id}/audio`;
+    setPlayingId(id);
+    audio.play().catch(() => {
+      // 失敗時の表示は <audio> の onError(handlePlaybackError)に一本化する
+    });
+  }
+
+  function handlePlaybackEnded() {
+    setPlayingId(null);
+  }
+
+  function handlePlaybackError() {
+    setPlayingId(null);
+    setErrorState({ message: '再生に失敗しました', description: NETWORK_ERROR_DESCRIPTION });
+  }
+
   if (phase === 'loading') {
     return (
       <div className={shellStyles.shell}>
@@ -217,9 +245,11 @@ export default function TracksPage() {
           audioTypes={audioTypes}
           emptyMessage="アップロード済みの楽曲はまだありません。上のエリアから .wav をアップロードしてください。"
           busyTrackIds={busyTrackIds}
+          playingTrackId={playingId}
           onRename={handleRename}
           onToggleAudioType={handleToggleAudioType}
           onDelete={handleRequestDelete}
+          onTogglePlay={handleTogglePlay}
         />
         <TrackSection
           title="初期音源・その他(名前変更・削除不可)"
@@ -227,11 +257,20 @@ export default function TracksPage() {
           audioTypes={audioTypes}
           emptyMessage="初期音源はありません。"
           busyTrackIds={busyTrackIds}
+          playingTrackId={playingId}
           onRename={handleRename}
           onToggleAudioType={handleToggleAudioType}
           onDelete={handleRequestDelete}
+          onTogglePlay={handleTogglePlay}
         />
       </main>
+      <audio
+        ref={audioRef}
+        data-testid="track-preview-audio"
+        hidden
+        onEnded={handlePlaybackEnded}
+        onError={handlePlaybackError}
+      />
       <ConfirmDialog
         open={confirmState !== null}
         title={`${confirmState?.trackName ?? ''}を削除`}
