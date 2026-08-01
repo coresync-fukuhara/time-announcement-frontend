@@ -12,6 +12,7 @@
 - [x] [design/004](./design/004-mcp-servers-design.md) MCP サーバー導入設計書の作成 — 完了
 - [x] [design/005](./design/005-music-management-overview-design.md) 楽曲管理機能 概要設計書の作成 — 完了
 - [x] [design/006](./design/006-schedule-sound-assignment-design.md) スケジュール画面からの音設定 詳細設計書の作成 — 完了
+- [x] [design/007](./design/007-track-preview-playback-design.md) 楽曲試し聴き機能 詳細設計書の作成 — 完了
 
 ## 実装
 
@@ -24,6 +25,7 @@
 - [x] [implementation/007](./implementation/007-e2e-main-scenarios.md) E2E 主要シナリオ(Playwright)の実装 — 完了
 - [x] [implementation/008](./implementation/008-ui-track-management.md) 楽曲管理画面(`/tracks`)の実装 — 完了
 - [x] [implementation/009](./implementation/009-schedule-sound-assignment.md) スケジュール画面からの音設定の実装 — 完了
+- [x] [implementation/010](./implementation/010-track-preview-playback.md) 楽曲試し聴き機能の実装 — 完了
 
 ## デプロイ
 
