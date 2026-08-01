@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { AudioType } from '@/lib/types';
+import type { AudioType, TrackOrigin } from '@/lib/types';
 import type { MinuteSoundState } from '@/lib/schedule-ui';
 import { pad2 } from '@/lib/schedule-ui';
+import { isEditableOrigin } from '@/lib/track-ui';
 import dialogStyles from './dialog.module.css';
 import styles from './SoundAssignDialog.module.css';
 
@@ -19,6 +20,11 @@ export interface SoundAssignDialogProps {
 const AUDIO_TYPES: AudioType[] = ['DEFAULT', 'NOTIFICATION', 'ALARM'];
 
 type Mode = MinuteSoundState['mode'];
+type TrackOption = { name: string; origin: TrackOrigin };
+
+function byName(a: TrackOption, b: TrackOption): number {
+  return a.name.localeCompare(b.name);
+}
 
 // スケジュール画面の各ON分に曲/タイプを割り当てるダイアログ(詳細設計 3.2節)。
 // 保存はしない(適用でクライアント側状態を返すのみ。実際のPUTは既存の「保存」ボタンまで待つ)。
@@ -33,7 +39,7 @@ export function SoundAssignDialog({
   const [mode, setMode] = useState<Mode>('none');
   const [trackName, setTrackName] = useState('');
   const [types, setTypes] = useState<AudioType[]>([]);
-  const [tracks, setTracks] = useState<string[] | null>(null);
+  const [tracks, setTracks] = useState<TrackOption[] | null>(null);
   const [tracksError, setTracksError] = useState(false);
 
   useEffect(() => {
@@ -51,7 +57,12 @@ export function SoundAssignDialog({
         if (!res.ok) throw new Error('failed to load tracks');
         const json = await res.json();
         if (!cancelled) {
-          setTracks((json.tracks as { name: string }[]).map((t) => t.name));
+          setTracks(
+            (json.tracks as { name: string; origin: TrackOrigin }[]).map((t) => ({
+              name: t.name,
+              origin: t.origin,
+            })),
+          );
         }
       } catch {
         if (!cancelled) setTracksError(true);
@@ -87,7 +98,10 @@ export function SoundAssignDialog({
   }
 
   const trackOptions = tracks ?? [];
-  const hasUnknownCurrentTrack = tracks !== null && trackName !== '' && !trackOptions.includes(trackName);
+  const hasUnknownCurrentTrack =
+    tracks !== null && trackName !== '' && !trackOptions.some((t) => t.name === trackName);
+  const userTrackOptions = trackOptions.filter((t) => isEditableOrigin(t.origin)).sort(byName);
+  const otherTrackOptions = trackOptions.filter((t) => !isEditableOrigin(t.origin)).sort(byName);
 
   return (
     <div className={dialogStyles.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -131,21 +145,46 @@ export function SoundAssignDialog({
             </div>
           ) : (
             <div className={styles.section}>
-              <select
-                aria-label="曲を選択"
-                value={trackName}
-                onChange={(e) => setTrackName(e.target.value)}
-              >
-                <option value="">選択してください</option>
+              <div className={styles.trackList} role="radiogroup" aria-label="曲を選択">
                 {hasUnknownCurrentTrack && (
-                  <option value={trackName}>{trackName}(現在DBに見つかりません)</option>
+                  <label className={styles.trackRow}>
+                    <input type="radio" name="track" checked onChange={() => setTrackName(trackName)} />
+                    <span>{trackName}(現在DBに見つかりません)</span>
+                  </label>
                 )}
-                {trackOptions.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
-              </select>
+                {userTrackOptions.length > 0 && (
+                  <>
+                    <div className={styles.trackGroupLabel}>アップロード済み</div>
+                    {userTrackOptions.map((t) => (
+                      <label key={t.name} className={styles.trackRow}>
+                        <input
+                          type="radio"
+                          name="track"
+                          checked={trackName === t.name}
+                          onChange={() => setTrackName(t.name)}
+                        />
+                        <span>{t.name}</span>
+                      </label>
+                    ))}
+                  </>
+                )}
+                {otherTrackOptions.length > 0 && (
+                  <>
+                    <div className={styles.trackGroupLabel}>初期音源・その他</div>
+                    {otherTrackOptions.map((t) => (
+                      <label key={t.name} className={styles.trackRow}>
+                        <input
+                          type="radio"
+                          name="track"
+                          checked={trackName === t.name}
+                          onChange={() => setTrackName(t.name)}
+                        />
+                        <span>{t.name}</span>
+                      </label>
+                    ))}
+                  </>
+                )}
+              </div>
             </div>
           ))}
 

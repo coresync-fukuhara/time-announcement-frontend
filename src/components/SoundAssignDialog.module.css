@@ -32,15 +32,39 @@
   margin-bottom: 20px;
 }
 
-.section select {
-  width: 100%;
-  font: inherit;
-  font-size: 13px;
-  padding: 8px 10px;
-  border-radius: 8px;
+.trackList {
+  max-height: 240px;
+  overflow-y: auto;
   border: 1px solid var(--panel-border);
-  background: var(--panel);
-  color: var(--ink);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.trackGroupLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  padding: 8px 10px 4px;
+}
+
+.trackRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.trackRow:hover {
+  background: var(--accent-soft);
+}
+
+.trackRow input[type='radio'] {
+  flex: none;
+  accent-color: var(--accent);
 }
 
 .typeChips {

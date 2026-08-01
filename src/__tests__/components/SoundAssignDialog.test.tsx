@@ -28,7 +28,9 @@ describe('SoundAssignDialog', () => {
   });
 
   it('開くと現在の状態(none)でモード「未設定」が選ばれた状態になり、楽曲一覧を取得する', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ tracks: [{ name: 'sample' }] }));
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(jsonResponse({ tracks: [{ name: 'sample', origin: 'default' }] }));
     vi.stubGlobal('fetch', fetchMock);
     render(
       <SoundAssignDialog
@@ -48,7 +50,14 @@ describe('SoundAssignDialog', () => {
   it('current が track のとき、開いた時点で「曲を指定」モードかつ選択済みになる', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue(jsonResponse({ tracks: [{ name: 'sample' }, { name: 'chime' }] })),
+      vi.fn().mockResolvedValue(
+        jsonResponse({
+          tracks: [
+            { name: 'sample', origin: 'default' },
+            { name: 'chime', origin: 'default' },
+          ],
+        }),
+      ),
     );
     render(
       <SoundAssignDialog
@@ -61,11 +70,15 @@ describe('SoundAssignDialog', () => {
       />,
     );
     expect(screen.getByRole('button', { name: '曲を指定' })).toHaveAttribute('aria-pressed', 'true');
-    await waitFor(() => expect(screen.getByLabelText('曲を選択')).toHaveValue('sample'));
+    await waitFor(() => expect(screen.getByRole('radio', { name: 'sample' })).toBeChecked());
+    expect(screen.getByRole('radio', { name: 'chime' })).not.toBeChecked();
   });
 
-  it('現在の曲が取得した一覧に無くても選択肢として保持する', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ tracks: [{ name: 'chime' }] })));
+  it('現在の曲が取得した一覧に無くても選択肢として保持し、単独行としてグループの外に表示する', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(jsonResponse({ tracks: [{ name: 'chime', origin: 'user' }] })),
+    );
     render(
       <SoundAssignDialog
         open
@@ -76,8 +89,10 @@ describe('SoundAssignDialog', () => {
         onClose={noop}
       />,
     );
-    await waitFor(() => expect(screen.getByLabelText('曲を選択')).toHaveValue('deleted_track'));
-    expect(screen.getByText('deleted_track(現在DBに見つかりません)')).toBeInTheDocument();
+    const radio = await screen.findByRole('radio', { name: 'deleted_track(現在DBに見つかりません)' });
+    expect(radio).toBeChecked();
+    const list = screen.getByRole('radiogroup', { name: '曲を選択' });
+    expect(list.textContent).toBe('deleted_track(現在DBに見つかりません)アップロード済みchime');
   });
 
   it('current が types のとき、開いた時点で「タイプで指定」モードかつ選択済みになる', () => {
@@ -98,7 +113,10 @@ describe('SoundAssignDialog', () => {
   });
 
   it('「曲を指定」で未選択のうちは適用ボタンが非活性', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ tracks: [{ name: 'sample' }] })));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(jsonResponse({ tracks: [{ name: 'sample', origin: 'default' }] })),
+    );
     const user = userEvent.setup();
     render(
       <SoundAssignDialog
@@ -117,7 +135,14 @@ describe('SoundAssignDialog', () => {
   it('曲を選んで適用すると onApply({ mode: "track", name }) を呼ぶ', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue(jsonResponse({ tracks: [{ name: 'sample' }, { name: 'chime' }] })),
+      vi.fn().mockResolvedValue(
+        jsonResponse({
+          tracks: [
+            { name: 'sample', origin: 'default' },
+            { name: 'chime', origin: 'default' },
+          ],
+        }),
+      ),
     );
     const user = userEvent.setup();
     const onApply = vi.fn();
@@ -132,10 +157,91 @@ describe('SoundAssignDialog', () => {
       />,
     );
     await user.click(screen.getByRole('button', { name: '曲を指定' }));
-    await screen.findByLabelText('曲を選択');
-    await user.selectOptions(screen.getByLabelText('曲を選択'), 'chime');
+    await user.click(await screen.findByRole('radio', { name: 'chime' }));
     await user.click(screen.getByRole('button', { name: '適用' }));
     expect(onApply).toHaveBeenCalledWith({ mode: 'track', name: 'chime' });
+  });
+
+  it('origin別にグループ見出しが表示され、各グループ内は名前順になる', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        jsonResponse({
+          tracks: [
+            { name: 'zzz_track', origin: 'user' },
+            { name: 'mystery', origin: 'unknown' },
+            { name: 'chime', origin: 'user' },
+            { name: 'apple_sound', origin: 'default' },
+          ],
+        }),
+      ),
+    );
+    const user = userEvent.setup();
+    render(
+      <SoundAssignDialog
+        open
+        hour={9}
+        minute={0}
+        current={{ mode: 'none' }}
+        onApply={noop}
+        onClose={noop}
+      />,
+    );
+    await user.click(screen.getByRole('button', { name: '曲を指定' }));
+    await screen.findByRole('radio', { name: 'chime' });
+    const list = screen.getByRole('radiogroup', { name: '曲を選択' });
+    expect(list.textContent).toBe('アップロード済みchimezzz_track初期音源・その他apple_soundmystery');
+  });
+
+  it('あるグループが0件のときは見出しごと非表示にする', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(jsonResponse({ tracks: [{ name: 'sample', origin: 'default' }] })),
+    );
+    const user = userEvent.setup();
+    render(
+      <SoundAssignDialog
+        open
+        hour={9}
+        minute={0}
+        current={{ mode: 'none' }}
+        onApply={noop}
+        onClose={noop}
+      />,
+    );
+    await user.click(screen.getByRole('button', { name: '曲を指定' }));
+    await screen.findByRole('radio', { name: 'sample' });
+    expect(screen.queryByText('アップロード済み')).not.toBeInTheDocument();
+    expect(screen.getByText('初期音源・その他')).toBeInTheDocument();
+  });
+
+  it('別グループの曲を選ぶと元の選択が外れる(単一選択)', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        jsonResponse({
+          tracks: [
+            { name: 'chime', origin: 'user' },
+            { name: 'sample', origin: 'default' },
+          ],
+        }),
+      ),
+    );
+    const user = userEvent.setup();
+    render(
+      <SoundAssignDialog
+        open
+        hour={9}
+        minute={0}
+        current={{ mode: 'track', name: 'chime' }}
+        onApply={noop}
+        onClose={noop}
+      />,
+    );
+    await waitFor(() => expect(screen.getByRole('radio', { name: 'chime' })).toBeChecked());
+    await user.click(screen.getByRole('radio', { name: 'sample' }));
+    expect(screen.getByRole('radio', { name: 'sample' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'chime' })).not.toBeChecked();
   });
 
   it('タイプを0件選択の状態では適用ボタンが非活性', async () => {
@@ -256,10 +362,10 @@ describe('SoundAssignDialog', () => {
     expect(screen.queryByText('sample(現在DBに見つかりません)')).not.toBeInTheDocument();
 
     // fetch を解決する (sample は実際に存在する)
-    resolveResponse!(jsonResponse({ tracks: [{ name: 'sample' }] }));
+    resolveResponse!(jsonResponse({ tracks: [{ name: 'sample', origin: 'default' }] }));
 
     // 解決後も "見つかりません" テキストが無いままで、sample が選択されている
-    await waitFor(() => expect(screen.getByLabelText('曲を選択')).toHaveValue('sample'));
+    await waitFor(() => expect(screen.getByRole('radio', { name: 'sample' })).toBeChecked());
     expect(screen.queryByText('sample(現在DBに見つかりません)')).not.toBeInTheDocument();
   });
 });
