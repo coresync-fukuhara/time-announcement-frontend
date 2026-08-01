@@ -3,6 +3,30 @@ import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
+// ブラウザで実際に再生可能な最小の PCM WAV(8kHz・8bit・モノラル・0.1秒の無音)を生成する。
+// アップロード自体の検証には中身は関係ないが、試し聴きシナリオでは実際にデコードできる
+// 必要があるため、以前のダミーバイト列(非WAV形式)から差し替える。
+function buildMinimalWavBuffer(): Buffer {
+  const sampleRate = 8000;
+  const numSamples = Math.floor(sampleRate * 0.1);
+  const header = Buffer.alloc(44);
+  header.write('RIFF', 0, 'ascii');
+  header.writeUInt32LE(36 + numSamples, 4);
+  header.write('WAVE', 8, 'ascii');
+  header.write('fmt ', 12, 'ascii');
+  header.writeUInt32LE(16, 16);
+  header.writeUInt16LE(1, 20);
+  header.writeUInt16LE(1, 22);
+  header.writeUInt32LE(sampleRate, 24);
+  header.writeUInt32LE(sampleRate, 28);
+  header.writeUInt16LE(1, 32);
+  header.writeUInt16LE(8, 34);
+  header.write('data', 36, 'ascii');
+  header.writeUInt32LE(numSamples, 40);
+  const data = Buffer.alloc(numSamples, 0x80);
+  return Buffer.concat([header, data]);
+}
+
 // このテストは devcontainer がバインドマウントする実 db/music.sqlite3・sounds/user/ を
 // 直接使う(schedule-editing.spec.ts が実 settings/schedules.json を使うのと同じ前提)。
 // audio_types に DEFAULT/NOTIFICATION/ALARM が既にシードされている前提(楽曲管理機能
@@ -14,7 +38,7 @@ test.describe('楽曲管理画面 主要シナリオ', () => {
     const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'track-e2e-'));
     const fileName = `e2e_test_track_${Date.now()}.wav`;
     const filePath = path.join(tmpDir, fileName);
-    await writeFile(filePath, Buffer.from('RIFF----WAVEfmt dummy-content-for-e2e-test'));
+    await writeFile(filePath, buildMinimalWavBuffer());
     const trackName = fileName.replace(/\.wav$/i, '');
 
     let trackId: number | null = null;
@@ -36,6 +60,14 @@ test.describe('楽曲管理画面 主要シナリオ', () => {
       const notificationBadge = page.getByRole('button', { name: `${trackName} NOTIFICATION` });
       await notificationBadge.click();
       await expect(notificationBadge).toHaveAttribute('aria-pressed', 'true');
+
+      const playButton = page.getByRole('button', { name: `${trackName} を再生` });
+      const audioRequest = page.waitForRequest((req) => req.url().includes(`/api/tracks/${trackId}/audio`));
+      await playButton.click();
+      await audioRequest;
+      await expect(page.getByRole('button', { name: `${trackName} を停止` })).toBeVisible();
+      await page.getByRole('button', { name: `${trackName} を停止` }).click();
+      await expect(page.getByRole('button', { name: `${trackName} を再生` })).toBeVisible();
 
       await page.getByRole('button', { name: `${trackName} を削除` }).click();
       await page.getByRole('button', { name: '削除する', exact: true }).click();
