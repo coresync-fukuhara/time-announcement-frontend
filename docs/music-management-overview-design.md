@@ -117,6 +117,7 @@ DB のスキーマ作成・マイグレーションは Python 側(`src/music_db.
 | POST | `/api/tracks` | `multipart/form-data` でファイル本体を受け取り、`sounds/user/` へ保存 + `wav_tracks` へ INSERT。`audioTypeIds`(任意、省略時は空)も同時に登録する |
 | PATCH | `/api/tracks/:id` | `{ name, audioTypeIds }` を受け取り、名前と音声タイプ割り当てを全置換する |
 | DELETE | `/api/tracks/:id` | DB 行 + 実ファイルを削除する |
+| GET | `/api/tracks/:id/audio` | 試し聴き用に`.wav`本体を`Content-Type: audio/wav`でそのまま返す(Rangeヘッダ非対応。詳細は[`/tracks`試し聴き機能 詳細設計](./superpowers/specs/2026-08-01-track-preview-playback-design.md)参照) |
 
 ### バリデーション・エラー
 
@@ -125,7 +126,7 @@ DB のスキーマ作成・マイグレーションは Python 側(`src/music_db.
 | 400 | 拡張子/MIME が `.wav` 以外、`audioTypeIds` に存在しないIDが含まれる、ファイル名が不正(サニタイズ違反) |
 | 409 | `file_path` 重複(同名ファイルが既に `sounds/user/` に存在)、または `name` 重複(表示名がアップロード時の自動生成・`PATCH` での変更いずれかで既存レコードと衝突) |
 | 413 | ファイルサイズが上限(50MB)超過 |
-| 404 | `PATCH`/`DELETE` で存在しない `id` |
+| 404 | `PATCH`/`DELETE` で存在しない `id`、または `GET /api/tracks/:id/audio` で DB 行はあるが実ファイルが `ENOENT`(孤立レコード。`file_not_found`) |
 | 403 | `origin: "default"` または `"unknown"` の楽曲への `DELETE`、または `name` の変更を伴う `PATCH` |
 | 500 | ファイル I/O・DB I/O 失敗 |
 
@@ -195,7 +196,7 @@ volumes:
 | --- | --- | --- |
 | ユニット | `src/lib/track-store.ts` | `@vitest-environment node`。テスト用の一時ディレクトリに一時 SQLite ファイルを作成し、後述の方法でスキーマを流し込んでから検証する。実ファイル(`.wav`)は数バイトのダミーバッファで代用 |
 | API | `/api/tracks`・`/api/tracks/:id`・`/api/audio-types` | next-test-api-route-handler。`DB_DIR`/`SOUNDS_DIR` をテスト用一時ディレクトリに向けて実行 |
-| E2E | 楽曲管理の主要シナリオ1本 | Playwright。アップロード→一覧に反映→音声タイプ変更→削除、を一連で確認(ユニット/APIで担保できる細かいバリデーション分岐は重複させない) |
+| E2E | 楽曲管理の主要シナリオ1本 | Playwright。アップロード→一覧に反映→音声タイプ変更→試し聴き→削除、を一連で確認(ユニット/APIで担保できる細かいバリデーション分岐は重複させない。試し聴きステップの詳細は[`/tracks`試し聴き機能 詳細設計](./superpowers/specs/2026-08-01-track-preview-playback-design.md)参照) |
 
 ### テスト用DBの構築方法(⭐私のオススメ)
 

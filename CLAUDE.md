@@ -48,7 +48,8 @@ UI が責任を持つのはそれぞれ妥当なファイル/DB状態を書き�
 
 - **[src/](src/)** — アプリ本体。`src/app/`(Next.js App Router: スケジュール画面
   `page.tsx` + `api/schedules/route.ts`、楽曲管理画面 `tracks/page.tsx` +
-  `api/tracks/route.ts`・`api/tracks/[id]/route.ts`・`api/audio-types/route.ts`)、
+  `api/tracks/route.ts`・`api/tracks/[id]/route.ts`・`api/tracks/[id]/audio/route.ts`
+  (試し聴き用の音声配信)・`api/audio-types/route.ts`)、
   `src/lib/`(`validator.ts` = Ajv、`schedule-store.ts`・`track-store.ts` =
   アトミック書き込み/DB操作・直列化、`paths.ts`、`types.ts`、`db/`(Drizzle ORM。
   `client.ts` = シングルトン接続、`generated/` = `drizzle-kit pull` 生成物・
@@ -130,7 +131,7 @@ TDD、3 層のテストピラミッド。最も下のレイヤーから先にテ
 | --- | --- | --- |
 | ユニット/コンポーネント | Vitest + React Testing Library | `src/lib/schedule-store.ts`・`track-store.ts`、`src/lib/validator.ts`、UI コンポーネント |
 | API | Vitest + next-test-api-route-handler | `/api/schedules`・`/api/tracks`・`/api/audio-types` の GET/PUT/PATCH/DELETE、エラー系、ファイル I/O(モック) |
-| E2E | Playwright | 画面をまたぐ主要シナリオのみ(初期化ダイアログ、編集→保存→再読み込み、未保存インジケーター、楽曲アップロード→一覧反映→削除)。ユニット/API で担保できる内容は重複させない |
+| E2E | Playwright | 画面をまたぐ主要シナリオのみ(初期化ダイアログ、編集→保存→再読み込み、未保存インジケーター、楽曲アップロード→一覧反映→タイプ変更→試し聴き→削除)。ユニット/API で担保できる内容は重複させない |
 
 標準コマンドは `pnpm test`(Vitest: ユニット + API)と `pnpm test:e2e`(Playwright)。
 ユニット/API テストは既定 jsdom 環境で動き、ファイル I/O・DB・Route Handler を扱う
