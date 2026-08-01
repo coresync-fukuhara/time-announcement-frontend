@@ -67,14 +67,17 @@ export function emptyEditableSchedules(): EditableSchedules {
   return result;
 }
 
-// minute のトグル。minute_settings など他フィールドには触れない(温存)。
+// minute のトグル。ONにする場合は他フィールドに触れない(温存)。OFFにする場合は
+// その分の minute_settings をリセットする(2026-08-01 確定: 温存すると再度ONに
+// したときに古い音設定が意図せず復活してしまうため)。
 export function toggleMinute(entry: HourEntry, minute: number): HourEntry {
   const minutes = entry.minutes ?? [];
   const has = minutes.includes(minute);
   const nextMinutes = has
     ? minutes.filter((m) => m !== minute)
     : [...minutes, minute].sort((a, b) => a - b);
-  return { ...entry, minutes: nextMinutes };
+  const nextEntry = { ...entry, minutes: nextMinutes };
+  return has ? clearMinuteSound(nextEntry, minute) : nextEntry;
 }
 
 // 曜日間コピー。指定した対象曜日だけを上書きし、それ以外(コピー元含む)は変更しない。

@@ -105,6 +105,9 @@ function clearMinuteSound(entry: HourEntry, minute: number): HourEntry;
   空文字は妥当)
 - `clearMinuteSound`: その分の`minute_settings`キー自体を削除(未設定=バックエンドの
   ALARMデフォルト扱いに戻す)
+- `toggleMinute`(既存関数): ONにする場合は他フィールドに触れないが、**OFFにする場合は
+  その分の`minute_settings`も`clearMinuteSound`でリセットする**(2026-08-01 追加決定)。
+  温存すると、後で同じ分を再度ONにしたときに古い音設定が意図せず復活してしまうため
 
 `src/lib/types.ts`・`settings/schema.json`は変更不要(既存の型・スキーマが
 そのまま対応済み)。`src/lib/validator.ts`・`/api/schedules`のBFFも無改修。

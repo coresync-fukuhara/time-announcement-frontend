@@ -104,7 +104,7 @@ describe('toggleMinute', () => {
     expect(toggleMinute(entry, 15)).toEqual({ hour: 9, minutes: [15] });
   });
 
-  it('minute_settings など他のフィールドは変更しない', () => {
+  it('ONにするときは他の分のminute_settingsは変更しない', () => {
     const entry = {
       hour: 9,
       minutes: [0],
@@ -115,6 +115,27 @@ describe('toggleMinute', () => {
       minutes: [0, 30],
       minute_settings: { '0': { sound_file_name: 'a.wav' } },
     });
+  });
+
+  it('OFFにするときはその分のminute_settingsを削除する(リセット)', () => {
+    const entry = {
+      hour: 9,
+      minutes: [0, 30],
+      minute_settings: {
+        '0': { sound_file_name: 'a.wav' },
+        '30': { sound_file_name: '', sound_types: ['ALARM'] as AudioType[] },
+      },
+    };
+    expect(toggleMinute(entry, 0)).toEqual({
+      hour: 9,
+      minutes: [30],
+      minute_settings: { '30': { sound_file_name: '', sound_types: ['ALARM'] } },
+    });
+  });
+
+  it('OFFにする分にminute_settingsが無ければminute_settingsキー自体は変更しない', () => {
+    const entry = { hour: 9, minutes: [0, 30] };
+    expect(toggleMinute(entry, 0)).toEqual({ hour: 9, minutes: [30] });
   });
 });
 

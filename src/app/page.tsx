@@ -214,8 +214,11 @@ export default function Home() {
         : next.mode === 'track'
           ? setMinuteSoundTrack(entry, minute, next.name)
           : setMinuteSoundTypes(entry, minute, next.types);
-    updateDay(currentDay, { ...hours, [hour]: updatedEntry });
-    setDirty(true);
+    // 実質変更が無ければ(例: 未設定の分に未設定を適用)未保存インジケーターを出さない。
+    if (updatedEntry !== entry) {
+      updateDay(currentDay, { ...hours, [hour]: updatedEntry });
+      setDirty(true);
+    }
     setSoundAssignTarget(null);
   }
 
@@ -315,10 +318,14 @@ export default function Home() {
         onClose={() => setErrorState(null)}
       />
       <SoundAssignDialog
-        open={soundAssignTarget !== null}
+        open={soundAssignEntry !== undefined}
         hour={soundAssignTarget?.hour ?? 0}
         minute={soundAssignTarget?.minute ?? 0}
-        current={soundAssignEntry && soundAssignTarget ? getMinuteSound(soundAssignEntry, soundAssignTarget.minute) : { mode: 'none' }}
+        current={
+          soundAssignEntry && soundAssignTarget
+            ? getMinuteSound(soundAssignEntry, soundAssignTarget.minute)
+            : { mode: 'none' }
+        }
         onApply={handleApplySound}
         onClose={() => setSoundAssignTarget(null)}
       />

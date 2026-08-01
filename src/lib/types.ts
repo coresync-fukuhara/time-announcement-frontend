@@ -3,8 +3,11 @@
 
 export type AudioType = 'DEFAULT' | 'NOTIFICATION' | 'ALARM';
 
-// 分ごとのサウンド指定。UI の編集対象外だが保存時も温存する(No.1 確定)。
-// schema.json 上は各 hour エントリの minute_settings(分文字列キー)にネストする。
+// 分ごとのサウンド指定。ONの分に対して UI から曲/タイプを割り当てられる
+// (src/lib/schedule-ui.ts の getMinuteSound・setMinuteSoundTrack・
+// setMinuteSoundTypes・clearMinuteSound 参照)。編集対象外の分は保存時も
+// 温存する。schema.json 上は各 hour エントリの minute_settings(分文字列キー)
+// にネストする。
 export interface MinuteSetting {
   sound_file_name: string;
   sound_types?: AudioType[];
