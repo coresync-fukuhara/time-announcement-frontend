@@ -168,6 +168,15 @@ function getTrackByIdOrThrow(id: number): TrackRecord {
   return track;
 }
 
+// 試し聴き用に filePath だけを返す(試し聴き機能 詳細設計 2.3節)。
+// updateTrack・deleteTrack と異なり origin による権限チェックは行わない
+// (再生は origin を問わず許可する方針のため)。
+export function getTrackFilePathOrThrow(id: number): string {
+  const current = getDb().select().from(wavTracks).where(eq(wavTracks.id, id)).get();
+  if (!current) throw new TrackNotFoundError(id);
+  return current.filePath;
+}
+
 export interface CreateTrackInput {
   fileName: string;
   fileBuffer: Buffer;

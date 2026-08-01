@@ -12,6 +12,7 @@ import {
   updateTrack,
   createTrackFromUpload,
   deleteTrack,
+  getTrackFilePathOrThrow,
   InvalidFileNameError,
   TrackConflictError,
   InvalidAudioTypeError,
@@ -405,6 +406,19 @@ describe('deleteTrack', () => {
 
     await expect(deleteTrack(mysteryId)).rejects.toThrow(DefaultTrackForbiddenError);
     expect(listTracks().find((t) => t.id === mysteryId)).toBeDefined();
+  });
+});
+
+describe('getTrackFilePathOrThrow', () => {
+  it('存在するidはfilePathを返す', () => {
+    seed();
+    const chime = listTracks().find((t) => t.name === 'my_chime')!;
+    expect(getTrackFilePathOrThrow(chime.id)).toBe(chime.filePath);
+  });
+
+  it('存在しないidはTrackNotFoundErrorを投げる', () => {
+    seed();
+    expect(() => getTrackFilePathOrThrow(9999)).toThrow(TrackNotFoundError);
   });
 });
 
