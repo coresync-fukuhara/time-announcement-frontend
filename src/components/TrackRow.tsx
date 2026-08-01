@@ -9,20 +9,25 @@ export interface TrackRowProps {
   track: Track;
   audioTypes: TrackAudioType[];
   busy: boolean;
+  playing: boolean;
   onRename: (name: string) => void;
   onToggleAudioType: (audioTypeId: number) => void;
   onDelete: () => void;
+  onTogglePlay: () => void;
 }
 
 // 楽曲一覧の1行。origin が "user" の行のみ名前変更・削除ができる
 // (画面詳細設計 4.2・6章)。音声タイプの割り当ては origin を問わず変更できる。
+// 再生ボタンは origin・busy に関係なく常に操作できる(試し聴き機能 詳細設計 3.4節)。
 export function TrackRow({
   track,
   audioTypes,
   busy,
+  playing,
   onRename,
   onToggleAudioType,
   onDelete,
+  onTogglePlay,
 }: TrackRowProps) {
   const editable = isEditableOrigin(track.origin);
   const [editing, setEditing] = useState(false);
@@ -43,7 +48,16 @@ export function TrackRow({
   }
 
   return (
-    <div className={styles.row}>
+    <div className={playing ? `${styles.row} ${styles.rowPlaying}` : styles.row}>
+      <button
+        type="button"
+        className={playing ? `${styles.playBtn} ${styles.playBtnPlaying}` : styles.playBtn}
+        aria-label={playing ? `${track.name} を停止` : `${track.name} を再生`}
+        onClick={onTogglePlay}
+      >
+        {playing ? '⏸' : '▶'}
+      </button>
+
       {editable && editing ? (
         <input
           type="text"
