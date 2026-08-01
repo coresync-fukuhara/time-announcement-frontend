@@ -136,6 +136,13 @@ export default function TracksPage() {
         return;
       }
       setTracks((prev) => prev.filter((t) => t.id !== trackId));
+      // 再生中の楽曲が削除された場合、共有プレイヤーを止めておかないと
+      // 存在しない playingId を指し続け、後日 id が再利用された別レコードが
+      // 誤って「再生中」表示になる(id は SQLite の単純な rowid のため再利用され得る)。
+      if (playingId === trackId) {
+        audioRef.current?.pause();
+        setPlayingId(null);
+      }
     } catch {
       setErrorState({ message: '削除に失敗しました', description: NETWORK_ERROR_DESCRIPTION });
     } finally {

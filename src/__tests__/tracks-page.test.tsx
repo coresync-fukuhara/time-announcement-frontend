@@ -24,6 +24,14 @@ const defaultTrack: Track = {
   audioTypes: [],
 };
 
+const anotherUserTrack: Track = {
+  id: 3,
+  name: 'school_bell',
+  filePath: '/data/sounds/user/school_bell.wav',
+  origin: 'user',
+  audioTypes: [],
+};
+
 function jsonResponse(body: unknown, ok = true, status = ok ? 200 : 400): Response {
   return { ok, status, json: async () => body } as Response;
 }
@@ -274,6 +282,28 @@ describe('楽曲管理画面', () => {
     expect(screen.getByText('chime_intro')).toBeInTheDocument();
   });
 
+  it('再生中の楽曲を削除すると、共有プレイヤーも停止し playingId がクリアされる', async () => {
+    const fetchMock = vi.fn();
+    stubInitialLoad(fetchMock, [userTrack]);
+    fetchMock.mockResolvedValueOnce(noContentResponse());
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+    const pauseSpy = vi.fn();
+    window.HTMLMediaElement.prototype.pause = pauseSpy;
+
+    render(<TracksPage />);
+    await screen.findByText('chime_intro');
+
+    await user.click(screen.getByRole('button', { name: 'chime_intro を再生' }));
+    await screen.findByRole('button', { name: 'chime_intro を停止' });
+
+    await user.click(screen.getByRole('button', { name: 'chime_intro を削除' }));
+    await user.click(screen.getByRole('button', { name: '削除する' }));
+
+    await waitFor(() => expect(screen.queryByText('chime_intro')).not.toBeInTheDocument());
+    expect(pauseSpy).toHaveBeenCalled();
+  });
+
   it('再生ボタンをクリックすると音声を再生し、アイコンが⏸に切り替わる', async () => {
     const fetchMock = vi.fn();
     stubInitialLoad(fetchMock, [userTrack]);
@@ -327,5 +357,42 @@ describe('楽曲管理画面', () => {
 
     expect(await screen.findByText('再生に失敗しました')).toBeInTheDocument();
     expect(await screen.findByRole('button', { name: 'chime_intro を再生' })).toBeInTheDocument();
+  });
+
+  it('再生が自然終了(onEnded)すると、再生中状態が解除される', async () => {
+    const fetchMock = vi.fn();
+    stubInitialLoad(fetchMock, [userTrack]);
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+
+    render(<TracksPage />);
+    await screen.findByText('chime_intro');
+
+    await user.click(screen.getByRole('button', { name: 'chime_intro を再生' }));
+    await screen.findByRole('button', { name: 'chime_intro を停止' });
+    const audio = screen.getByTestId('track-preview-audio');
+    audio.dispatchEvent(new Event('ended'));
+
+    expect(await screen.findByRole('button', { name: 'chime_intro を再生' })).toBeInTheDocument();
+  });
+
+  it('別の行の再生ボタンをクリックすると、前の再生が止まり新しい行の再生に切り替わる', async () => {
+    const fetchMock = vi.fn();
+    stubInitialLoad(fetchMock, [userTrack, anotherUserTrack]);
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+
+    render(<TracksPage />);
+    await screen.findByText('chime_intro');
+
+    await user.click(screen.getByRole('button', { name: 'chime_intro を再生' }));
+    expect(await screen.findByRole('button', { name: 'chime_intro を停止' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'school_bell を再生' }));
+
+    expect(await screen.findByRole('button', { name: 'chime_intro を再生' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'school_bell を停止' })).toBeInTheDocument();
+    const audio = screen.getByTestId('track-preview-audio') as HTMLAudioElement;
+    expect(audio.src).toContain('/api/tracks/3/audio');
   });
 });
