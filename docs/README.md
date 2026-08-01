@@ -11,6 +11,7 @@
 | [楽曲管理機能 概要設計書](./music-management-overview-design.md) | 楽曲(`db/music.sqlite3`)管理機能のスコープ・Drizzle ORM 導入・API 設計・デプロイ構成 |
 | [楽曲管理画面(`/tracks`)画面詳細設計](./superpowers/specs/2026-07-29-music-management-screen-design.md) | `/tracks` 画面のレイアウト・操作フロー・エラー処理・テスト方針 |
 | [スケジュール画面からの音設定 詳細設計](./superpowers/specs/2026-07-31-schedule-sound-assignment-design.md) | スケジュール画面のON分に曲/タイプを割り当てる機能のバックエンド解釈・UI配置・データ層設計 |
+| [曲指定UIのラジオボタン化 詳細設計](./superpowers/specs/2026-08-01-track-select-radio-list-design.md) | 「曲を指定」の選択UIを`<select>`からorigin別グループ分け付きラジオボタンリストに変更した設計 |
 
 ## スコープ(概要設計書より抜粋)
 

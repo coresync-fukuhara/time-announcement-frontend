@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { AudioType, TrackOrigin } from '@/lib/types';
 import type { MinuteSoundState } from '@/lib/schedule-ui';
 import { pad2 } from '@/lib/schedule-ui';
@@ -66,6 +66,7 @@ export function SoundAssignDialog({
   const [types, setTypes] = useState<AudioType[]>([]);
   const [tracks, setTracks] = useState<TrackOption[] | null>(null);
   const [tracksError, setTracksError] = useState(false);
+  const trackListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -99,6 +100,15 @@ export function SoundAssignDialog({
     // current は open が true になった瞬間の初期値としてのみ使う(以降は自分の state で管理する)。
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  // 選択中の曲がスクロール範囲外にあっても、リスト表示時点で見える位置までスクロールする。
+  useEffect(() => {
+    if (!open || mode !== 'track' || tracks === null) return;
+    const checked = trackListRef.current?.querySelector<HTMLInputElement>('input[type="radio"]:checked');
+    if (checked && typeof checked.scrollIntoView === 'function') {
+      checked.scrollIntoView({ block: 'nearest' });
+    }
+  }, [open, mode, tracks]);
 
   if (!open) return null;
 
@@ -170,7 +180,12 @@ export function SoundAssignDialog({
             </div>
           ) : (
             <div className={styles.section}>
-              <div className={styles.trackList} role="radiogroup" aria-label="曲を選択">
+              <div
+                className={styles.trackList}
+                role="radiogroup"
+                aria-label="曲を選択"
+                ref={trackListRef}
+              >
                 {hasUnknownCurrentTrack && (
                   <label className={styles.trackRow}>
                     <input type="radio" name="track" checked onChange={() => setTrackName(trackName)} />

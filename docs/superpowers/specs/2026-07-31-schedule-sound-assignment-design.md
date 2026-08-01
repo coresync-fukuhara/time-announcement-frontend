@@ -64,6 +64,10 @@ UIのみ。`audio_types`マスタ自体の編集・DBスキーマ変更は既存
 
 ### 3.2 `SoundAssignDialog`(新規コンポーネント)
 
+> **2026-08-01改訂**: 「曲を指定」の選択UIは、本節記載の`<select>`から
+> origin(`default`/`user`)別グループ分け付きのラジオボタンリストに変更された。
+> 詳細は [2026-08-01改訂設計](2026-08-01-track-select-radio-list-design.md) を参照。
+
 既存の`AddHourDialog`・`CopyDialog`・`ConfirmDialog`と同じ作法
 (`dialog.module.css`、`open`propで表示制御)に合わせる。
 
